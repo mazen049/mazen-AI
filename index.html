@@ -1,448 +1,115 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAZEN AI - بوابة الأمان وتسجيل الدخول</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            background-color: #05050a;
-            color: #ffffff;
-            font-family: 'Cairo', sans-serif;
-            background-image: radial-gradient(circle at 15% 50%, rgba(168, 85, 247, 0.14), transparent 28%),
-                              radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.14), transparent 28%);
+// ==========================================
+// MAZEN AI - FINAL MASTER ENGINE SCRIPT
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Mazen AI Final Engine Loaded Successfully.");
+    
+    // تفعيل التفاعل الأول تلقائياً لتجاوز قيود متصفحات الحماية على الصوت
+    document.body.addEventListener('click', () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.resume();
         }
-        .glass {
-            background: rgba(16, 16, 28, 0.78);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(168, 85, 247, 0.25);
-        }
-        .glow-purple { box-shadow: 0 0 28px rgba(168, 85, 247, 0.25); }
-        .glow-cyan { box-shadow: 0 0 35px rgba(6, 182, 212, 0.4); }
-        .chat-scroll::-webkit-scrollbar { width: 5px; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.4); border-radius: 10px; }
+    }, { once: true });
+    
+    setupMazenInterface();
+});
+
+// 1. نظام القراءة الصوتية (Text-to-Speech)
+function speakResponse(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // توقيف أي صوت سابق منعاً للتداخل
         
-        @keyframes pulse-orb {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(168, 85, 247, 0.6), 0 0 60px rgba(59, 130, 246, 0.4); }
-            50% { transform: scale(1.12); box-shadow: 0 0 50px rgba(168, 85, 247, 0.9), 0 0 90px rgba(6, 182, 212, 0.7); }
-        }
-        .orb-active { animation: pulse-orb 1.8s infinite ease-in-out; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col justify-between p-3 md:p-6">
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ar-SA'; // لغة عربية
+        utterance.rate = 1.0;     // سرعة طبيعية
+        utterance.pitch = 1.0;    // طبقة صوت متوازنة
+        
+        window.speechSynthesis.speak(utterance);
+    } else {
+        console.warn("Speech synthesis is not supported in this browser.");
+    }
+}
 
-    <!-- LOGIN SCREEN (Visible by default) -->
-    <div id="login-screen" class="fixed inset-0 bg-[#05050a] z-50 flex items-center justify-center p-4">
-        <div class="glass max-w-md w-full rounded-3xl p-8 glow-purple border border-purple-500/40 text-center relative overflow-hidden">
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-purple-600/20 rounded-full blur-2xl"></div>
-            <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
+// 2. نظام التنزيل الحقيقي للملفات (Download Engine)
+function downloadFile(content, filename, contentType) {
+    try {
+        const blob = new Blob([content], { type: contentType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log("File downloaded successfully:", filename);
+    } catch (error) {
+        console.error("Download failed:", error);
+        alert("تعذر تنزيل الملف، تحقق من صلاحيات المتصفح.");
+    }
+}
+
+// 3. نظام توليد الصور والرسومات (Image Generation Engine)
+async function generateAIImage(promptText) {
+    let imageContainer = document.getElementById('image-output-container') || document.getElementById('chat-container');
+    if (!imageContainer) {
+        imageContainer = document.body;
+    }
+    
+    // إظهار مؤشر التحميل للمستخدم
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = 'ai-loading-message';
+    loadingMsg.style.color = '#00ffff';
+    loadingMsg.style.margin = '10px 0';
+    loadingMsg.innerText = 'جاري توليد الصورة بالذكاء الاصطناعي، يرجى الانتظار...';
+    imageContainer.appendChild(loadingMsg);
+
+    try {
+        setTimeout(() => {
+            loadingMsg.remove();
             
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-cyan-500 mx-auto flex items-center justify-center shadow-lg mb-4">
-                <span class="text-3xl">🛡️</span>
-            </div>
+            const img = document.createElement('img');
+            img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}`;
+            img.alt = promptText;
+            img.style.maxWidth = '100%';
+            img.style.borderRadius = '12px';
+            img.style.marginTop = '10px';
+            img.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.3)';
             
-            <h2 class="text-2xl md:text-3xl font-black bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">MAZEN AI</h2>
-            <p class="text-gray-400 text-xs md:text-sm mb-6">منصة الذكاء الاصطناعي الآمنة • يرجى التحجيل للتابعة</p>
+            imageContainer.appendChild(img);
+            speakResponse("ها هي الصورة وجدات بنجاح!");
+        }, 2500);
 
-            <!-- Security Verification Checkbox -->
-            <div class="glass p-3.5 rounded-2xl border border-purple-500/30 flex items-center justify-between mb-6 text-right cursor-pointer hover:border-cyan-400 transition" onclick="toggleBotCheck()">
-                <div class="flex items-center gap-3">
-                    <div id="bot-checkbox" class="w-6 h-6 rounded-lg border-2 border-purple-400 flex items-center justify-center bg-black/40 transition">
-                        <span id="bot-check-icon" class="text-cyan-400 text-sm hidden">✓</span>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-200">أنا لست روبوت (تحقق أمني)</span>
-                </div>
-                <span class="text-[10px] text-purple-300">Google Sec</span>
-            </div>
+    } catch (error) {
+        loadingMsg.remove();
+        console.error("Image generation error:", error);
+        speakResponse("عذراً، حدث خطأ أثناء توليد الصورة.");
+    }
+}
 
-            <!-- Google Login Button -->
-            <button id="google-login-btn" onclick="handleGoogleLogin()" disabled class="w-full py-3.5 rounded-2xl font-bold text-sm bg-white/10 text-gray-400 border border-white/10 flex items-center justify-center gap-3 transition cursor-not-allowed">
-                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.1 8.9 5 12 5z"/>
-                    <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
-                    <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 11.5 0 14s.6 4.8 1.6 6.8l3.7-2.9z"/>
-                    <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5.3L1.6 15.9C3.5 19.7 7.4 23 12 23z"/>
-                </svg>
-                <span>تسجيل الدخول بواسطة Google</span>
-            </button>
+// ربط الأزرار والعناصر تلقائياً بالواجهة
+function setupMazenInterface() {
+    const downloadBtn = document.getElementById('download-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            const textToSave = document.getElementById('output-text')?.innerText || "محتوى من منصة MAZEN AI";
+            downloadFile(textToSave, 'MazenAI-Output.txt', 'text/plain;charset=utf-8');
+        });
+    }
 
-            <p class="text-[11px] text-gray-500 mt-6">🔒 اتصال مشفر وآمن 100% بإشراف Mazen Errihani</p>
-        </div>
-    </div>
+    const imageBtn = document.getElementById('generate-image-btn');
+    if (imageBtn) {
+        imageBtn.addEventListener('click', () => {
+            const promptInput = document.getElementById('user-input')?.value || "A futuristic AI cyberpunk city";
+            generateAIImage(promptInput);
+        });
+    }
+}
 
-    <!-- MAIN APP INTERFACE (Hidden until login) -->
-    <div id="main-app" class="hidden flex-col justify-between min-h-screen">
-        <!-- Header -->
-        <header class="max-w-4xl mx-auto w-full flex justify-between items-center py-3 px-5 glass rounded-2xl glow-purple mb-3">
-            <div class="flex items-center gap-3">
-                <div class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></div>
-                <h1 class="text-xl md:text-2xl font-black tracking-wider bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">MAZEN AI</h1>
-            </div>
-            <div class="flex items-center gap-2 md:gap-3">
-                <button onclick="openDownloadModal()" class="flex items-center gap-1 bg-purple-600/45 hover:bg-purple-600/60 border border-purple-400/40 text-purple-200 text-xs md:text-sm font-bold px-3 py-2 rounded-xl transition">
-                    <span>📥 تحميل التطبيق</span>
-                </button>
-                <button onclick="openCallModal()" class="flex items-center gap-1 bg-gradient-to-r from-emerald-500 to-cyan-600 hover:opacity-90 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-xl shadow-lg transition">
-                    <span>📞 مكالمة</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Mode Switcher -->
-        <div class="max-w-4xl mx-auto w-full flex justify-center gap-2 md:gap-3 mb-3">
-            <button id="btn-chat" onclick="switchMode('chat')" class="px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg">
-                💬 محادثة ذكية (جميع اللغات)
-            </button>
-            <button id="btn-image" onclick="switchMode('image')" class="px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition glass text-gray-300 hover:text-white">
-                🎨 استوديو الصور (AI Art)
-            </button>
-        </div>
-
-        <!-- Main Chat Area -->
-        <main class="max-w-4xl mx-auto w-full flex-1 flex flex-col glass rounded-3xl p-4 md:p-6 glow-purple overflow-hidden mb-3" style="min-height: 60vh; max-height: 68vh;">
-            <div id="messages-box" class="flex-1 overflow-y-auto chat-scroll space-y-4 p-2">
-                <div class="flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-cyan-500 flex items-center justify-center font-bold text-xs shrink-0">AI</div>
-                    <div class="bg-white/5 border border-purple-500/20 rounded-2xl p-4 text-sm md:text-base text-gray-200 max-w-[88%] leading-relaxed">
-                        مرحباً بك في <span class="text-cyan-400 font-bold">MAZEN AI</span>! 🚀<br>
-                        تم التحقق بنجاح وتأمين حسابك عبر Google.<br>
-                        • كنفهم وكنجاوب بـ <b>جميع لغات العالم</b>.<br>
-                        • مكالمات صوتية حية مباشرة من زر <b>📞 مكالمة</b>.<br>
-                        • توليد الصور الاحترافية من <b>🎨 استوديو الصور</b>.
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Input Box -->
-        <div class="max-w-4xl mx-auto w-full">
-            <form id="ai-form" onsubmit="handleSubmit(event)" class="glass rounded-2xl p-2 flex items-center gap-2 border border-purple-500/40">
-                <input type="text" id="user-input" required placeholder="كتب بأي لغة بغيتي هنا..." 
-                    class="flex-1 bg-transparent text-white placeholder-gray-400 px-4 py-3 focus:outline-none text-sm md:text-base">
-                <button type="submit" id="send-btn" class="bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 text-white font-bold px-5 md:px-6 py-3 rounded-xl transition shrink-0">
-                    إرسال ✨
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Download Modal -->
-    <div id="download-modal" class="fixed inset-0 bg-black/85 backdrop-blur-xl z-50 hidden items-center justify-center p-4">
-        <div class="glass max-w-lg w-full rounded-3xl p-6 glow-purple border border-purple-500/40 relative">
-            <button onclick="closeDownloadModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-xl font-bold">✕</button>
-            <div class="text-center mb-6">
-                <h3 class="text-2xl font-black bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">تحميل تطبيق MAZEN AI</h3>
-                <p class="text-gray-400 text-xs md:text-sm mt-1">اختر الجهاز المناسب لك وثبت المنصة</p>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <a href="#" onclick="alert('نسخة Android APK قريباً!')" class="glass p-4 rounded-2xl border border-emerald-500/30 hover:border-emerald-500 flex items-center gap-3 transition">
-                    <span class="text-3xl">🤖</span>
-                    <div><div class="font-bold text-sm text-emerald-300">Android APK</div><div class="text-xs text-gray-400">الهواتف الذكية</div></div>
-                </a>
-                <a href="#" onclick="alert('قريباً على App Store!')" class="glass p-4 rounded-2xl border border-blue-500/30 hover:border-blue-500 flex items-center gap-3 transition">
-                    <span class="text-3xl">🍏</span>
-                    <div><div class="font-bold text-sm text-blue-300">iOS App Store</div><div class="text-xs text-gray-400">iPhone و iPad</div></div>
-                </a>
-                <a href="#" onclick="alert('قادمة قريباً لـ Windows!')" class="glass p-4 rounded-2xl border border-cyan-500/30 hover:border-cyan-500 flex items-center gap-3 transition">
-                    <span class="text-3xl">💻</span>
-                    <div><div class="font-bold text-sm text-cyan-300">Windows PC</div><div class="text-xs text-gray-400">حواسيب الكمبيوتر</div></div>
-                </a>
-                <a href="#" onclick="alert('قادمة لـ macOS!')" class="glass p-4 rounded-2xl border border-purple-500/30 hover:border-purple-500 flex items-center gap-3 transition">
-                    <span class="text-3xl">🍎</span>
-                    <div><div class="font-bold text-sm text-purple-300">macOS / Linux</div><div class="text-xs text-gray-400">حواسيب Apple Mac</div></div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Live Voice Call Modal -->
-    <div id="call-modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 hidden flex-col items-center justify-between p-8">
-        <div class="text-center mt-6">
-            <span class="px-3 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">مكالمة مباشرة • جميع اللغات</span>
-            <h2 class="text-3xl font-black mt-3 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">MAZEN AI LIVE</h2>
-            <p id="call-status" class="text-gray-400 text-sm mt-2">اضغط على الميكروفون وابدأ الكلام...</p>
-        </div>
-
-        <div class="flex flex-col items-center justify-center my-auto">
-            <div id="voice-orb" class="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-tr from-purple-600 via-blue-600 to-cyan-400 flex items-center justify-center shadow-2xl transition-all duration-300">
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-[#05050a]/80 backdrop-blur-md flex items-center justify-center">
-                    <span class="text-4xl">🎙️</span>
-                </div>
-            </div>
-            <p id="call-transcript" class="text-center text-cyan-300 text-sm md:text-base mt-8 max-w-md px-4 min-h-[3rem]"></p>
-        </div>
-
-        <div class="flex items-center gap-6 mb-6">
-            <button id="mic-btn" onclick="startListening()" class="w-16 h-16 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center text-2xl shadow-lg transition">🎤</button>
-            <button onclick="closeCallModal()" class="w-16 h-16 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center text-2xl shadow-lg transition">📵</button>
-        </div>
-    </div>
-
-    <script>
-        let isVerified = false;
-
-        function toggleBotCheck() {
-            isVerified = !isVerified;
-            const checkbox = document.getElementById('bot-checkbox');
-            const checkIcon = document.getElementById('bot-check-icon');
-            const googleBtn = document.getElementById('google-login-btn');
-
-            if (isVerified) {
-                checkbox.className = "w-6 h-6 rounded-lg border-2 border-cyan-400 flex items-center justify-center bg-cyan-500/20 shadow-md";
-                checkIcon.classList.remove('hidden');
-                googleBtn.disabled = false;
-                googleBtn.className = "w-full py-3.5 rounded-2xl font-bold text-sm bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg flex items-center justify-center gap-3 transition hover:opacity-90 cursor-pointer";
-            } else {
-                checkbox.className = "w-6 h-6 rounded-lg border-2 border-purple-400 flex items-center justify-center bg-black/40";
-                checkIcon.classList.add('hidden');
-                googleBtn.disabled = true;
-                googleBtn.className = "w-full py-3.5 rounded-2xl font-bold text-sm bg-white/10 text-gray-400 border border-white/10 flex items-center justify-center gap-3 transition cursor-not-allowed";
-            }
-        }
-
-        function handleGoogleLogin() {
-            if (!isVerified) return;
-            // Hide login screen and show main app with smooth effect
-            document.getElementById('login-screen').style.opacity = '0';
-            document.getElementById('login-screen').style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-                document.getElementById('login-screen').style.display = 'none';
-                const mainApp = document.getElementById('main-app');
-                mainApp.classList.remove('hidden');
-                mainApp.classList.add('flex');
-            }, 500);
-        }
-
-        let currentMode = 'chat';
-        const messagesBox = document.getElementById('messages-box');
-        const userInput = document.getElementById('user-input');
-        const btnChat = document.getElementById('btn-chat');
-        const btnImage = document.getElementById('btn-image');
-
-        let conversationHistory = [
-            {
-                role: "system",
-                content: "You are MAZEN AI, an ultra-intelligent, friendly, and helpful AI assistant created by Mazen Errihani. You understand and fluently speak ALL languages in the world (Moroccan Darija, Modern Standard Arabic, English, French, Spanish, German, etc.). Always detect the user's language and reply naturally in that exact same language. Understand the conversation context deeply, provide smart, original, and helpful answers, and NEVER repeat the user's words."
-            }
-        ];
-
-        function openDownloadModal() {
-            document.getElementById('download-modal').classList.remove('hidden');
-            document.getElementById('download-modal').classList.add('flex');
-        }
-
-        function closeDownloadModal() {
-            document.getElementById('download-modal').classList.add('hidden');
-            document.getElementById('download-modal').classList.remove('flex');
-        }
-
-        function switchMode(mode) {
-            currentMode = mode;
-            if (mode === 'chat') {
-                btnChat.className = "px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg";
-                btnImage.className = "px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition glass text-gray-300 hover:text-white";
-                userInput.placeholder = "كتب بأي لغة بغيتي هنا...";
-            } else {
-                btnImage.className = "px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg";
-                btnChat.className = "px-4 md:px-6 py-2 rounded-xl font-bold text-xs md:text-sm transition glass text-gray-300 hover:text-white";
-                userInput.placeholder = "وصف الصورة اللي بغيتي نرسم ليك (بأي لغة)...";
-            }
-        }
-
-        function appendMessage(sender, content, isHtml = false) {
-            const wrapper = document.createElement('div');
-            wrapper.className = sender === 'user' ? "flex items-start justify-end gap-3" : "flex items-start gap-3";
-            
-            const avatar = sender === 'user' 
-                ? `<div class="w-8 h-8 rounded-full bg-blue-600/40 border border-blue-400/50 flex items-center justify-center font-bold text-xs shrink-0">أنت</div>`
-                : `<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-cyan-500 flex items-center justify-center font-bold text-xs shrink-0">AI</div>`;
-
-            const bubbleStyle = sender === 'user'
-                ? "bg-purple-600/30 border border-purple-500/40 rounded-2xl p-4 text-sm md:text-base text-white max-w-[85%]"
-                : "bg-white/5 border border-purple-500/20 rounded-2xl p-4 text-sm md:text-base text-gray-200 max-w-[85%]";
-
-            const bodyContent = isHtml ? content : `<p class="whitespace-pre-wrap leading-relaxed" dir="auto">${content}</p>`;
-
-            wrapper.innerHTML = sender === 'user' 
-                ? `<div class="${bubbleStyle}">${bodyContent}</div>${avatar}`
-                : `${avatar}<div class="${bubbleStyle}">${bodyContent}</div>`;
-
-            messagesBox.appendChild(wrapper);
-            messagesBox.scrollTop = messagesBox.scrollHeight;
-            return wrapper;
-        }
-
-        async function askSmartAI(userText) {
-            conversationHistory.push({ role: "user", content: userText });
-            if (conversationHistory.length > 11) {
-                conversationHistory = [conversationHistory[0], ...conversationHistory.slice(-10)];
-            }
-
-            const response = await fetch('https://text.pollinations.ai/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    messages: conversationHistory,
-                    model: 'openai',
-                    seed: Math.floor(Math.random() * 10000)
-                })
-            });
-
-            if (!response.ok) throw new Error('Network error');
-            const reply = await response.text();
-            conversationHistory.push({ role: "assistant", content: reply });
-            return reply;
-        }
-
-        async function handleSubmit(e) {
-            e.preventDefault();
-            const text = userInput.value.trim();
-            if (!text) return;
-
-            userInput.value = '';
-            appendMessage('user', text);
-
-            if (currentMode === 'chat') {
-                const loadingMsg = appendMessage('ai', '<span class="animate-pulse text-cyan-300">جاري التفكير... ⏳</span>', true);
-                try {
-                    const reply = await askSmartAI(text);
-                    loadingMsg.remove();
-                    appendMessage('ai', reply);
-                } catch (err) {
-                    loadingMsg.remove();
-                    appendMessage('ai', 'وقع مشكل بسيط فالشبكة، عاود جرب مرة أخرى.');
-                }
-            } else {
-                const loadingMsg = appendMessage('ai', '<span class="animate-pulse text-purple-300">جاري رسم الصورة بدقة عالية... 🎨✨</span>', true);
-                try {
-                    const transRes = await fetch('https://text.pollinations.ai/', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            messages: [
-                                { role: "system", content: "You are an expert AI image prompt engineer. Translate the user's description from ANY language into a vivid, detailed English image generation prompt. Output ONLY the English prompt, nothing else." },
-                                { role: "user", content: text }
-                            ],
-                            model: 'openai'
-                        })
-                    });
-                    const engPrompt = await transRes.text();
-                    const seed = Math.floor(Math.random() * 1000000);
-                    const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(engPrompt)}?width=1024&height=1024&seed=${seed}&nologo=true`;
-                    
-                    const img = new Image();
-                    img.onload = () => {
-                        loadingMsg.remove();
-                        const html = `
-                            <div class="space-y-3">
-                                <p class="text-xs text-cyan-300">تم رسم الصورة بنجاح ✨</p>
-                                <img src="${imgUrl}" alt="AI Art" class="rounded-xl w-full max-w-md border border-purple-500/40 shadow-lg">
-                                <a href="${imgUrl}" target="_blank" download="mazen-ai.jpg" class="inline-block text-xs bg-purple-600/40 hover:bg-purple-600/60 px-4 py-2 rounded-lg border border-purple-400/30 transition">تحميل الصورة ⬇️</a>
-                            </div>
-                        `;
-                        appendMessage('ai', html, true);
-                    };
-                    img.onerror = () => {
-                        loadingMsg.remove();
-                        appendMessage('ai', 'تعذر توليد الصورة دابا، جرب وصف آخر.');
-                    };
-                    img.src = imgUrl;
-                } catch (err) {
-                    loadingMsg.remove();
-                    appendMessage('ai', 'وقع خطأ أثناء معالجة الصورة.');
-                }
-            }
-        }
-
-        const callModal = document.getElementById('call-modal');
-        const callStatus = document.getElementById('call-status');
-        const callTranscript = document.getElementById('call-transcript');
-        const voiceOrb = document.getElementById('voice-orb');
-        let recognition = null;
-        let isCallActive = false;
-
-        function openCallModal() {
-            callModal.classList.remove('hidden');
-            callModal.classList.add('flex');
-            isCallActive = true;
-            startListening();
-        }
-
-        function closeCallModal() {
-            isCallActive = false;
-            callModal.classList.add('hidden');
-            callModal.classList.remove('flex');
-            voiceOrb.classList.remove('orb-active');
-            window.speechSynthesis.cancel();
-            if (recognition) recognition.stop();
-        }
-
-        function speakText(text) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            const isArabic = /[\u0600-\u06FF]/.test(text);
-            utterance.lang = isArabic ? 'ar-SA' : 'en-US';
-            utterance.rate = 1.05;
-
-            utterance.onstart = () => {
-                callStatus.innerText = "MAZEN AI يتحدث الآن... 🔊";
-                voiceOrb.classList.add('orb-active');
-            };
-
-            utterance.onend = () => {
-                voiceOrb.classList.remove('orb-active');
-                if (isCallActive) startListening();
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function startListening() {
-            if (!isCallActive) return;
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                callStatus.innerText = "متصفحك لا يدعم الميكروفون، استخدم Google Chrome.";
-                return;
-            }
-
-            recognition = new SpeechRecognition();
-            recognition.lang = 'ar-MA';
-            recognition.interimResults = false;
-
-            recognition.onstart = () => {
-                callStatus.innerText = "كنسمعك دابا... تكلم 🎙️";
-                voiceOrb.classList.add('orb-active');
-            };
-
-            recognition.onresult = async (event) => {
-                const spokenText = event.results[0][0].transcript;
-                callTranscript.innerText = `"${spokenText}"`;
-                callStatus.innerText = "جاري التفكير في الرد... 🧠";
-                voiceOrb.classList.remove('orb-active');
-
-                appendMessage('user', "🎙️ " + spokenText);
-
-                try {
-                    const aiReply = await askSmartAI(spokenText);
-                    appendMessage('ai', aiReply);
-                    callTranscript.innerText = aiReply;
-                    speakText(aiReply);
-                } catch (err) {
-                    callStatus.innerText = "وقع خطأ فالاتصال، اضغط على الميكروفون.";
-                }
-            };
-
-            recognition.onerror = () => {
-                voiceOrb.classList.remove('orb-active');
-                callStatus.innerText = "ما سمعتكش مزيان، اضغط على 🎤 باش تعاود.";
-            };
-
-            recognition.start();
-        }
-    </script>
-</body>
-</html>
+// تصدير الوظائف للاستخدام العام في أزرار HTML
+window.MazenAI = {
+    speak: speakResponse,
+    download: downloadFile,
+    generateImage: generateAIImage
+};
