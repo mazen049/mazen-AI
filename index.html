@@ -1,159 +1,424 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAZEN AI LIVE</title>
-    <!-- مكتبة Google Identity Services لتسجيل الدخول -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        body {
-            background-color: #0b0f19;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 40px;
-        }
-        .orb {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
-            margin: 20px auto;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
-        }
-        .btn {
-            background: #ff4757;
-            border: none;
-            color: white;
-            padding: 12px 22px;
-            font-size: 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            margin: 8px;
-            transition: 0.3s;
-        }
-        .btn:hover { opacity: 0.8; }
-        .google-btn { background: #4285F4; }
-        #output-text {
-            margin: 20px auto;
-            font-size: 18px;
-            color: #00ffff;
-            max-width: 600px;
-        }
-        #user-info {
-            margin-bottom: 15px;
-            color: #a4b0be;
-            font-size: 14px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>مازن AI</title>
+<meta name="description" content="Mazen AI — Chat and image generation web app" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%23ec4899'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Cpath d='M32 14 L37 27 L50 32 L37 37 L32 50 L27 37 L14 32 L27 27 Z' fill='white'/%3E%3C/svg%3E" />
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTWF6ZW4gQUkiLCJzaG9ydF9uYW1lIjoiTWF6ZW4gQUkiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYxNCIsInRoZW1lX2NvbG9yIjoiIzdjM2FlZCJ9" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Poppins:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;600&family=Noto+Sans+KR:wght@400;600&family=Noto+Sans+SC:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000; --surface:#15151aee; --surface-2:#1c1c22;
+    --text:#f5f5fa; --text-dim:#9999a8; --border:#2a2a32;
+    --accent:#a855f7; --accent-2:#f472b6; --accent-3:#22d3ee; --danger:#ff6b6e;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:'Poppins','Tajawal','Noto Sans Arabic','Noto Sans JP','Noto Sans KR','Noto Sans SC','Noto Sans Devanagari',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--text);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    display:flex; flex-direction:column;
+    position:relative;
+  }
+  /* animated ambient background: three soft blobs drifting slowly behind the UI */
+  #bg-anim{
+    position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none;
+  }
+  #bg-anim span{
+    position:absolute; border-radius:50%; filter:blur(60px); opacity:0.35;
+    mix-blend-mode:normal;
+  }
+  #bg-anim span:nth-child(1){
+    width:420px; height:420px; background:var(--accent); top:-120px; left:-100px;
+    animation: drift1 22s ease-in-out infinite;
+  }
+  #bg-anim span:nth-child(2){
+    width:380px; height:380px; background:var(--accent-2); bottom:-140px; right:-80px;
+    animation: drift2 26s ease-in-out infinite;
+  }
+  #bg-anim span:nth-child(3){
+    width:300px; height:300px; background:var(--accent-3); top:40%; left:50%;
+    animation: drift3 30s ease-in-out infinite;
+  }
+  @keyframes drift1{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(60px,80px) scale(1.15); }
+  }
+  @keyframes drift2{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    50%{ transform:translate(-70px,-50px) scale(1.1); }
+  }
+  @keyframes drift3{
+    0%,100%{ transform:translate(-50%,-50%) scale(1); }
+    50%{ transform:translate(-45%,-55%) scale(1.25); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #bg-anim span{ animation:none; }
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; border-bottom:1px solid var(--border);
+    background:var(--surface);
+    position:sticky; top:0; z-index:10;
+  }
+  header h1{font-size:18px; margin:0; background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    -webkit-background-clip:text; background-clip:text; color:transparent;}
+  nav{display:flex; gap:6px;}
+  nav button{
+    background:none; border:none; color:var(--text-dim); font-size:14px;
+    padding:8px 12px; border-radius:8px; cursor:pointer;
+  }
+  nav button.active{background:var(--surface-2); color:var(--text); font-weight:600;}
+  #account-btn{
+    border:1px solid var(--border); border-radius:8px; padding:6px 12px;
+    background:var(--surface-2); color:var(--text); font-size:13px; cursor:pointer;
+  }
+  main{flex:1; overflow-y:auto; padding:16px; max-width:720px; width:100%; margin:0 auto;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* Auth */
+  .auth-box{max-width:360px; margin:40px auto; background:var(--surface); border:1px solid var(--border);
+    border-radius:14px; padding:24px;}
+  .auth-box h2{margin-top:0;}
+  .auth-box input{
+    width:100%; padding:10px 12px; margin:6px 0; border-radius:8px;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:14px;
+  }
+  .auth-box button{
+    width:100%; margin-top:10px; padding:10px; border:none; border-radius:8px;
+    background:var(--accent); color:#fff; font-weight:600; cursor:pointer;
+  }
+  .switch-link{text-align:center; margin-top:10px; font-size:13px; color:var(--text-dim); cursor:pointer;}
+  .warn{font-size:12px; color:var(--text-dim); margin-top:14px; line-height:1.5; border-top:1px solid var(--border); padding-top:10px;}
+
+  /* Chat */
+  .msg{max-width:85%; padding:10px 14px; border-radius:14px; margin-bottom:10px; line-height:1.45; font-size:15px; white-space:pre-wrap;}
+  .msg.user{background:var(--accent); color:#fff; margin-left:auto; border-bottom-right-radius:4px;}
+  .msg.bot{background:var(--surface); border:1px solid var(--border); margin-right:auto; border-bottom-left-radius:4px;}
+  .composer{
+    position:sticky; bottom:0; display:flex; gap:8px; padding:10px;
+    background:var(--bg); border-top:1px solid var(--border);
+  }
+  .composer textarea{
+    flex:1; resize:none; border-radius:10px; border:1px solid var(--border);
+    background:var(--surface); color:var(--text); padding:10px 12px; font-size:15px; font-family:inherit;
+  }
+  .composer button{
+    background:var(--accent); color:#fff; border:none; border-radius:10px; padding:0 18px; font-weight:600; cursor:pointer;
+  }
+
+  /* Images */
+  .img-row{display:flex; gap:8px; margin-bottom:12px;}
+  .img-row input{flex:1; padding:10px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);}
+  .img-row button{background:var(--accent); color:#fff; border:none; border-radius:8px; padding:0 16px; cursor:pointer;}
+  .img-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .img-grid img{width:100%; border-radius:10px; border:1px solid var(--border);}
+
+  /* Settings */
+  .settings-box{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px;}
+  .settings-box label{display:block; font-size:13px; color:var(--text-dim); margin:12px 0 4px;}
+  .settings-box input{width:100%; padding:9px 11px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); color:var(--text);}
+  .settings-box small{display:block; color:var(--text-dim); margin-top:4px; font-size:12px;}
+  .save-btn{margin-top:16px; background:var(--accent); color:#fff; border:none; padding:9px 16px; border-radius:8px; cursor:pointer;}
+
+  .roadmap{background:var(--surface); border:1px dashed var(--border); border-radius:12px; padding:16px; margin-top:16px; font-size:13px; color:var(--text-dim); line-height:1.6;}
+  .roadmap b{color:var(--text);}
+  .error{color:var(--danger); font-size:13px; margin-top:8px;}
+</style>
 </head>
 <body>
 
-    <h1>MAZEN AI LIVE</h1>
-    <p>مكالمة مباشرة - جميع اللغات والأدوات</p>
+<div id="bg-anim"><span></span><span></span><span></span></div>
 
-    <!-- معلومات المستخدم بعد تسجيل الدخول -->
-    <div id="user-info">يرجى تسجيل الدخول للبدء</div>
+<header>
+  <div style="display:flex; align-items:center; gap:10px;">
+    <svg width="32" height="32" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#7c3aed"/>
+          <stop offset="100%" stop-color="#ec4899"/>
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="30" fill="url(#logoGrad)"/>
+      <path d="M32 14 L37 27 L50 32 L37 37 L32 50 L27 37 L14 32 L27 27 Z"
+            fill="white" opacity="0.95"/>
+      <circle cx="46" cy="18" r="4" fill="white" opacity="0.8"/>
+    </svg>
+    <h1>مازن AI</h1>
+  </div>
+  <nav id="tabs" style="display:none;">
+    <button data-view="chat" class="active">Chat</button>
+    <button data-view="images">Images</button>
+    <button data-view="settings">Settings</button>
+  </nav>
+  <button id="account-btn" style="display:none;">Log out</button>
+</header>
 
-    <!-- زر تسجيل الدخول بـ جوجل (مع إجبار اختيار الحساب) -->
-    <button id="google-login-btn" class="btn google-btn">تسجيل الدخول بـ Google (اختيار الحساب)</button>
+<main>
 
-    <div class="orb"></div>
+  <!-- AUTH VIEW -->
+  <section id="view-auth" class="view active">
+    <div class="auth-box">
+      <h2 id="auth-title">Log in</h2>
+      <input id="auth-email" type="email" placeholder="Email" autocomplete="username" />
+      <input id="auth-pass" type="password" placeholder="Password" autocomplete="current-password" />
+      <div id="auth-error" class="error"></div>
+      <button id="auth-submit">Log in</button>
+      <div class="switch-link" id="auth-switch">No account? Create one</div>
+      <div class="warn">
+        ⚠️ This demo stores your account only in this browser (localStorage), not on a real server.
+        It's fine for trying the app out, but don't reuse a real password here. For production use,
+        swap this for a real auth backend (Firebase Auth, Supabase, Auth0, etc).
+      </div>
+    </div>
+  </section>
 
-    <div id="output-text">مرحباً! كيف يمكنني مساعدتك اليوم؟</div>
+  <!-- CHAT VIEW -->
+  <section id="view-chat" class="view">
+    <div id="chat-log"></div>
+  </section>
 
-    <br>
-    <button id="download-btn" class="btn">تنزيل المحتوى</button>
-    <button id="generate-image-btn" class="btn">توليد صورة بالذكاء الاصطناعي</button>
+  <!-- IMAGES VIEW -->
+  <section id="view-images" class="view">
+    <div class="img-row">
+      <input id="img-prompt" placeholder="Describe the image you want..." />
+      <button id="img-generate">Generate</button>
+    </div>
+    <div id="img-error" class="error"></div>
+    <div class="img-grid" id="img-grid"></div>
+    <div class="roadmap">
+      <b>About video/montage generation:</b> AI video tools (like Higgsfield) run large video-diffusion
+      models on GPU servers — that can't run inside a browser page. To add real video generation here,
+      you'd call a hosted video API (e.g. Runway, Luma, Pika) from a backend server and stream the result back.
+      <br><br>
+      <b>About voice calls:</b> A live voice conversation needs real-time audio streaming plus
+      speech-to-text and text-to-speech services talking to each other continuously — also a backend job,
+      not something a static HTML file can do alone.
+    </div>
+  </section>
 
-    <div id="image-output-container" style="margin-top: 20px;"></div>
+  <!-- SETTINGS VIEW -->
+  <section id="view-settings" class="view">
+    <div class="settings-box">
+      <h3 style="margin-top:0;">API Keys</h3>
+      <label>Anthropic (Claude) API Key — powers the chatbot</label>
+      <input id="key-anthropic" type="password" placeholder="sk-ant-..." />
+      <small>Get one at console.anthropic.com. Stored only in your browser.</small>
 
-    <script>
-        // 1. تفعيل الصوت عند أول تفاعل
-        document.body.addEventListener('click', () => {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.resume();
-            }
-        }, { once: true });
+      <label>Image generation API Key (OpenAI DALL·E)</label>
+      <input id="key-openai" type="password" placeholder="sk-..." />
+      <small>Get one at platform.openai.com. Stored only in your browser.</small>
 
-        // نظام النطق الصوتي
-        function speakResponse(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA';
-                window.speechSynthesis.speak(utterance);
-            }
-        }
+      <button class="save-btn" id="save-keys">Save</button>
+    </div>
+    <div class="roadmap">
+      <b>Installing on devices:</b> Open this page's GitHub Pages link on a phone or computer, then
+      use the browser's "Add to Home Screen" / "Install app" option. That installs it like a real app
+      (a Progressive Web App) on iOS, Android, Windows, and Mac — no app store needed.
+    </div>
+  </section>
 
-        // 2. إعداد تسجيل الدخول بـ Google مع إجبار ظهور نافذة اختيار الحسابات
-        window.onload = function () {
-            if (typeof google !== 'undefined') {
-                google.accounts.id.initialize({
-                    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // استبدل هاد الكود بـ Client ID ديالك فـ Google Cloud
-                    callback: handleCredentialResponse,
-                    auto_select_false: true, // منع الدخول التلقائي بدون إذن
-                    cancel_on_tap_outside: false
-                });
+</main>
 
-                // ربط زر تسجيل الدخول لإظهار نافذة اختيار الحسابات (Prompt)
-                document.getElementById('google-login-btn').addEventListener('click', () => {
-                    google.accounts.id.prompt((notification) => {
-                        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                            // طريقة بديلة في حال تم حظر الـ Prompt من المتصفح
-                            console.log("Prompt blocked, rendering standard button.");
-                        }
-                    });
-                });
-            }
-        };
+<div class="composer" id="composer" style="display:none;">
+  <textarea id="chat-input" rows="1" placeholder="Message MyAI..."></textarea>
+  <button id="chat-send">Send</button>
+</div>
 
-        // دالة استقبال بيانات المستخدم بعد تسجيل الدخول الناجح
-        function handleCredentialResponse(response) {
-            try {
-                const base64Url = response.credential.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                
-                const user = JSON.parse(jsonPayload);
-                document.getElementById('user-info').innerText = `مرحباً بك، ${user.name} (${user.email})_`;
-                speakResponse(`أهلاً بك ${user.name}`);
-            } catch (error) {
-                console.error("Login parsing error:", error);
-            }
-        }
+<script>
+/* ---------- tiny local "account" system (NOT secure, demo only) ---------- */
+const USERS_KEY = 'myai_users';
+const SESSION_KEY = 'myai_session';
 
-        // 3. نظام التنزيل الحقيقي
-        document.getElementById('download-btn').addEventListener('click', () => {
-            const text = document.getElementById('output-text').innerText;
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'MazenAI-Output.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
+function getUsers(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; }catch(e){ return {}; } }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
 
-        // 4. نظام توليد الصور
-        document.getElementById('generate-image-btn').addEventListener('click', () => {
-            const container = document.getElementById('image-output-container');
-            container.innerHTML = '<p style="color:#00ffff;">جاري توليد الصورة بالذكاء الاصطناعي...</p>';
-            
-            setTimeout(() => {
-                container.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = 'https://image.pollinations.ai/prompt/Futuristic%20Cyberpunk%20AI%20City';
-                img.style.maxWidth = '100%';
-                img.style.borderRadius = '12px';
-                container.appendChild(img);
-                speakResponse("ها هي الصورة وجدات بنجاح!");
-            }, 2000);
-        });
-    </script>
+// NOTE: this is a simple hash for demo purposes only — it is NOT real security.
+async function hash(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+let authMode = 'login';
+const authTitle = document.getElementById('auth-title');
+const authSwitch = document.getElementById('auth-switch');
+const authSubmit = document.getElementById('auth-submit');
+const authError = document.getElementById('auth-error');
+
+authSwitch.onclick = () => {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  authTitle.textContent = authMode === 'login' ? 'Log in' : 'Create account';
+  authSubmit.textContent = authTitle.textContent;
+  authSwitch.textContent = authMode === 'login' ? 'No account? Create one' : 'Have an account? Log in';
+  authError.textContent = '';
+};
+
+authSubmit.onclick = async () => {
+  const email = document.getElementById('auth-email').value.trim().toLowerCase();
+  const pass = document.getElementById('auth-pass').value;
+  authError.textContent = '';
+  if(!email || !pass){ authError.textContent = 'Enter an email and password.'; return; }
+
+  const users = getUsers();
+  const pHash = await hash(pass);
+
+  if(authMode === 'signup'){
+    if(users[email]){ authError.textContent = 'Account already exists — log in instead.'; return; }
+    users[email] = { pass: pHash };
+    saveUsers(users);
+    logIn(email);
+  } else {
+    if(!users[email] || users[email].pass !== pHash){ authError.textContent = 'Wrong email or password.'; return; }
+    logIn(email);
+  }
+};
+
+function logIn(email){
+  localStorage.setItem(SESSION_KEY, email);
+  showApp();
+}
+function logOut(){
+  localStorage.removeItem(SESSION_KEY);
+  document.getElementById('view-auth').classList.add('active');
+  ['chat','images','settings'].forEach(v=>document.getElementById('view-'+v).classList.remove('active'));
+  document.getElementById('tabs').style.display = 'none';
+  document.getElementById('account-btn').style.display = 'none';
+  document.getElementById('composer').style.display = 'none';
+}
+
+function showApp(){
+  document.getElementById('view-auth').classList.remove('active');
+  document.getElementById('view-chat').classList.add('active');
+  document.getElementById('tabs').style.display = 'flex';
+  document.getElementById('account-btn').style.display = 'inline-block';
+  document.getElementById('composer').style.display = 'flex';
+  loadKeys();
+}
+
+document.getElementById('account-btn').onclick = logOut;
+
+// restore session
+if(localStorage.getItem(SESSION_KEY)){ showApp(); }
+
+/* ---------- tabs ---------- */
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  if(e.target.tagName !== 'BUTTON') return;
+  const view = e.target.dataset.view;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.getElementById('composer').style.display = (view === 'chat') ? 'flex' : 'none';
+});
+
+/* ---------- API keys (stored locally) ---------- */
+function loadKeys(){
+  document.getElementById('key-anthropic').value = localStorage.getItem('myai_key_anthropic') || '';
+  document.getElementById('key-openai').value = localStorage.getItem('myai_key_openai') || '';
+}
+document.getElementById('save-keys').onclick = () => {
+  localStorage.setItem('myai_key_anthropic', document.getElementById('key-anthropic').value.trim());
+  localStorage.setItem('myai_key_openai', document.getElementById('key-openai').value.trim());
+  alert('Saved locally in this browser.');
+};
+
+/* ---------- chat ---------- */
+const chatLog = document.getElementById('chat-log');
+function addMsg(text, who){
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.textContent = text;
+  chatLog.appendChild(d);
+  chatLog.scrollTop = chatLog.scrollHeight;
+  return d;
+}
+
+let chatHistory = [];
+
+async function sendChat(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  addMsg(text, 'user');
+  chatHistory.push({role:'user', content:text});
+
+  const key = localStorage.getItem('myai_key_anthropic');
+  if(!key){
+    addMsg('⚠️ Add your Anthropic API key in Settings first.', 'bot');
+    return;
+  }
+
+  const botEl = addMsg('...', 'bot');
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system: "You are 'Mazen AI', an assistant created by Mazen Rihani (مازن الريحاني). If anyone asks who made you, who you are, or who is behind you, always answer that you were created by Mazen Rihani. Always reply in the same language the user writes in, whatever language that is (Arabic, Darija, French, English, Spanish, or any other language) — match their language and dialect naturally.",
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    if(data.error){
+      botEl.textContent = 'Error: ' + data.error.message;
+      return;
+    }
+    const reply = (data.content || []).map(c=>c.text||'').join('\n');
+    botEl.textContent = reply;
+    chatHistory.push({role:'assistant', content:reply});
+  }catch(err){
+    botEl.textContent = 'Request failed — check your API key and that this page is allowed to call the API directly from the browser (CORS). For production, route this through your own backend instead.';
+  }
+}
+
+document.getElementById('chat-send').onclick = sendChat;
+document.getElementById('chat-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+});
+
+/* ---------- images ---------- */
+document.getElementById('img-generate').onclick = async () => {
+  const prompt = document.getElementById('img-prompt').value.trim();
+  const errEl = document.getElementById('img-error');
+  errEl.textContent = '';
+  if(!prompt) return;
+  const key = localStorage.getItem('myai_key_openai');
+  if(!key){ errEl.textContent = 'Add your OpenAI API key in Settings first.'; return; }
+
+  try{
+    const res = await fetch('https://api.openai.com/v1/images/generations', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer ' + key
+      },
+      body: JSON.stringify({ model:'dall-e-3', prompt, n:1, size:'1024x1024' })
+    });
+    const data = await res.json();
+    if(data.error){ errEl.textContent = data.error.message; return; }
+    const url = data.data[0].url;
+    const img = document.createElement('img');
+    img.src = url;
+    document.getElementById('img-grid').prepend(img);
+  }catch(err){
+    errEl.textContent = 'Request failed — check your API key and CORS settings.';
+  }
+};
+</script>
 </body>
 </html>
