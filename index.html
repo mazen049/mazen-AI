@@ -1,114 +1,159 @@
-// ==========================================
-// MAZEN AI - FINAL CLEAN MASTER SCRIPT
-// ==========================================
-
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Mazen AI Engine Loaded Successfully.");
-    
-    // تفعيل التفاعل الأول تلقائياً لتجاوز قيود متصفحات الحماية على الصوت
-    document.body.addEventListener('click', () => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.resume();
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAZEN AI LIVE</title>
+    <!-- مكتبة Google Identity Services لتسجيل الدخول -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 40px;
         }
-    }, { once: true });
-    
-    setupMazenInterface();
-});
+        .orb {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            margin: 20px auto;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        }
+        .btn {
+            background: #ff4757;
+            border: none;
+            color: white;
+            padding: 12px 22px;
+            font-size: 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 8px;
+            transition: 0.3s;
+        }
+        .btn:hover { opacity: 0.8; }
+        .google-btn { background: #4285F4; }
+        #output-text {
+            margin: 20px auto;
+            font-size: 18px;
+            color: #00ffff;
+            max-width: 600px;
+        }
+        #user-info {
+            margin-bottom: 15px;
+            color: #a4b0be;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
 
-// 1. نظام القراءة الصوتية (Text-to-Speech)
-function speakResponse(text) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ar-SA';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        
-        window.speechSynthesis.speak(utterance);
-    } else {
-        console.warn("Speech synthesis is not supported in this browser.");
-    }
-}
+    <h1>MAZEN AI LIVE</h1>
+    <p>مكالمة مباشرة - جميع اللغات والأدوات</p>
 
-// 2. نظام التنزيل الحقيقي للملفات (Download Engine)
-function downloadFile(content, filename, contentType) {
-    try {
-        const blob = new Blob([content], { type: contentType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        console.log("File downloaded successfully:", filename);
-    } catch (error) {
-        console.error("Download failed:", error);
-        alert("تعذر تنزيل الملف، تحقق من صلاحيات المتصفح.");
-    }
-}
+    <!-- معلومات المستخدم بعد تسجيل الدخول -->
+    <div id="user-info">يرجى تسجيل الدخول للبدء</div>
 
-// 3. نظام توليد الصور والرسومات (Image Generation Engine)
-async function generateAIImage(promptText) {
-    let imageContainer = document.getElementById('image-output-container') || document.getElementById('chat-container');
-    if (!imageContainer) {
-        imageContainer = document.body;
-    }
-    
-    const loadingMsg = document.createElement('div');
-    loadingMsg.className = 'ai-loading-message';
-    loadingMsg.style.color = '#00ffff';
-    loadingMsg.style.margin = '10px 0';
-    loadingMsg.innerText = 'جاري توليد الصورة بالذكاء الاصطناعي، يرجى الانتظار...';
-    imageContainer.appendChild(loadingMsg);
+    <!-- زر تسجيل الدخول بـ جوجل (مع إجبار اختيار الحساب) -->
+    <button id="google-login-btn" class="btn google-btn">تسجيل الدخول بـ Google (اختيار الحساب)</button>
 
-    try {
-        setTimeout(() => {
-            loadingMsg.remove();
-            
-            const img = document.createElement('img');
-            img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}`;
-            img.alt = promptText;
-            img.style.maxWidth = '100%';
-            img.style.borderRadius = '12px';
-            img.style.marginTop = '10px';
-            img.style.boxShadow = '0 0 15px rgba(0, 255, 255, 0.3)';
-            
-            imageContainer.appendChild(img);
-            speakResponse("ها هي الصورة وجدات بنجاح!");
-        }, 2500);
+    <div class="orb"></div>
 
-    } catch (error) {
-        loadingMsg.remove();
-        console.error("Image generation error:", error);
-        speakResponse("عذراً، حدث خطأ أثناء توليد الصورة.");
-    }
-}
+    <div id="output-text">مرحباً! كيف يمكنني مساعدتك اليوم؟</div>
 
-// ربط الأزرار والعناصر تلقائياً بالواجهة
-function setupMazenInterface() {
-    const downloadBtn = document.getElementById('download-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            const textToSave = document.getElementById('output-text')?.innerText || "محتوى من منصة MAZEN AI";
-            downloadFile(textToSave, 'MazenAI-Output.txt', 'text/plain;charset=utf-8');
+    <br>
+    <button id="download-btn" class="btn">تنزيل المحتوى</button>
+    <button id="generate-image-btn" class="btn">توليد صورة بالذكاء الاصطناعي</button>
+
+    <div id="image-output-container" style="margin-top: 20px;"></div>
+
+    <script>
+        // 1. تفعيل الصوت عند أول تفاعل
+        document.body.addEventListener('click', () => {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.resume();
+            }
+        }, { once: true });
+
+        // نظام النطق الصوتي
+        function speakResponse(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // 2. إعداد تسجيل الدخول بـ Google مع إجبار ظهور نافذة اختيار الحسابات
+        window.onload = function () {
+            if (typeof google !== 'undefined') {
+                google.accounts.id.initialize({
+                    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // استبدل هاد الكود بـ Client ID ديالك فـ Google Cloud
+                    callback: handleCredentialResponse,
+                    auto_select_false: true, // منع الدخول التلقائي بدون إذن
+                    cancel_on_tap_outside: false
+                });
+
+                // ربط زر تسجيل الدخول لإظهار نافذة اختيار الحسابات (Prompt)
+                document.getElementById('google-login-btn').addEventListener('click', () => {
+                    google.accounts.id.prompt((notification) => {
+                        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                            // طريقة بديلة في حال تم حظر الـ Prompt من المتصفح
+                            console.log("Prompt blocked, rendering standard button.");
+                        }
+                    });
+                });
+            }
+        };
+
+        // دالة استقبال بيانات المستخدم بعد تسجيل الدخول الناجح
+        function handleCredentialResponse(response) {
+            try {
+                const base64Url = response.credential.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                const user = JSON.parse(jsonPayload);
+                document.getElementById('user-info').innerText = `مرحباً بك، ${user.name} (${user.email})_`;
+                speakResponse(`أهلاً بك ${user.name}`);
+            } catch (error) {
+                console.error("Login parsing error:", error);
+            }
+        }
+
+        // 3. نظام التنزيل الحقيقي
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const text = document.getElementById('output-text').innerText;
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'MazenAI-Output.txt';
+            a.click();
+            URL.revokeObjectURL(url);
         });
-    }
 
-    const imageBtn = document.getElementById('generate-image-btn');
-    if (imageBtn) {
-        imageBtn.addEventListener('click', () => {
-            const promptInput = document.getElementById('user-input')?.value || "A futuristic AI cyberpunk city";
-            generateAIImage(promptInput);
+        // 4. نظام توليد الصور
+        document.getElementById('generate-image-btn').addEventListener('click', () => {
+            const container = document.getElementById('image-output-container');
+            container.innerHTML = '<p style="color:#00ffff;">جاري توليد الصورة بالذكاء الاصطناعي...</p>';
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = 'https://image.pollinations.ai/prompt/Futuristic%20Cyberpunk%20AI%20City';
+                img.style.maxWidth = '100%';
+                img.style.borderRadius = '12px';
+                container.appendChild(img);
+                speakResponse("ها هي الصورة وجدات بنجاح!");
+            }, 2000);
         });
-    }
-}
-
-// تصدير الوظائف للاستخدام العام في أزرار HTML
-window.MazenAI = {
-    speak: speakResponse,
-    download: downloadFile,
-    generateImage: generateAIImage
-};
+    </script>
+</body>
+</html>
