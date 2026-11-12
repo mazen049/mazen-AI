@@ -188,6 +188,12 @@
 
   <!-- IMAGES VIEW -->
   <section id="view-images" class="view">
+    <div class="img-row" style="margin-bottom:6px;">
+      <select id="img-provider" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">
+        <option value="openai">OpenAI (DALL·E 3)</option>
+        <option value="gemini">Google Gemini (Nano Banana)</option>
+      </select>
+    </div>
     <div class="img-row">
       <input id="img-prompt" placeholder="Describe the image you want..." />
       <button id="img-generate">Generate</button>
@@ -216,6 +222,10 @@
       <label>Image generation API Key (OpenAI DALL·E)</label>
       <input id="key-openai" type="password" placeholder="sk-..." />
       <small>Get one at platform.openai.com. Stored only in your browser.</small>
+
+      <label>Image generation API Key (Google Gemini)</label>
+      <input id="key-gemini" type="password" placeholder="AIza..." />
+      <small>Get one free at aistudio.google.com/apikey. Stored only in your browser.</small>
 
       <button class="save-btn" id="save-keys">Save</button>
     </div>
@@ -323,10 +333,12 @@ document.getElementById('tabs').addEventListener('click', (e)=>{
 function loadKeys(){
   document.getElementById('key-anthropic').value = localStorage.getItem('myai_key_anthropic') || '';
   document.getElementById('key-openai').value = localStorage.getItem('myai_key_openai') || '';
+  document.getElementById('key-gemini').value = localStorage.getItem('myai_key_gemini') || '';
 }
 document.getElementById('save-keys').onclick = () => {
   localStorage.setItem('myai_key_anthropic', document.getElementById('key-anthropic').value.trim());
   localStorage.setItem('myai_key_openai', document.getElementById('key-openai').value.trim());
+  localStorage.setItem('myai_key_gemini', document.getElementById('key-gemini').value.trim());
   alert('Saved locally in this browser.');
 };
 
@@ -394,26 +406,50 @@ document.getElementById('chat-input').addEventListener('keydown', (e)=>{
 /* ---------- images ---------- */
 document.getElementById('img-generate').onclick = async () => {
   const prompt = document.getElementById('img-prompt').value.trim();
+  const provider = document.getElementById('img-provider').value;
   const errEl = document.getElementById('img-error');
   errEl.textContent = '';
   if(!prompt) return;
-  const key = localStorage.getItem('myai_key_openai');
-  if(!key){ errEl.textContent = 'Add your OpenAI API key in Settings first.'; return; }
 
+  if(provider === 'openai'){
+    const key = localStorage.getItem('myai_key_openai');
+    if(!key){ errEl.textContent = 'Add your OpenAI API key in Settings first.'; return; }
+    try{
+      const res = await fetch('https://api.openai.com/v1/images/generations', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+        body: JSON.stringify({ model:'dall-e-3', prompt, n:1, size:'1024x1024' })
+      });
+      const data = await res.json();
+      if(data.error){ errEl.textContent = data.error.message; return; }
+      const img = document.createElement('img');
+      img.src = data.data[0].url;
+      document.getElementById('img-grid').prepend(img);
+    }catch(err){
+      errEl.textContent = 'Request failed — check your API key and CORS settings.';
+    }
+    return;
+  }
+
+  // Google Gemini (Nano Banana) image generation
+  const key = localStorage.getItem('myai_key_gemini');
+  if(!key){ errEl.textContent = 'Add your Google Gemini API key in Settings first.'; return; }
   try{
-    const res = await fetch('https://api.openai.com/v1/images/generations', {
+    const res = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent', {
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer ' + key
-      },
-      body: JSON.stringify({ model:'dall-e-3', prompt, n:1, size:'1024x1024' })
+      headers:{ 'Content-Type':'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({
+        contents:[{ parts:[{ text: prompt }] }],
+        generationConfig:{ responseModalities:['TEXT','IMAGE'] }
+      })
     });
     const data = await res.json();
     if(data.error){ errEl.textContent = data.error.message; return; }
-    const url = data.data[0].url;
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const imgPart = parts.find(p => p.inlineData);
+    if(!imgPart){ errEl.textContent = 'No image came back — try rephrasing the prompt.'; return; }
     const img = document.createElement('img');
-    img.src = url;
+    img.src = 'data:' + imgPart.inlineData.mimeType + ';base64,' + imgPart.inlineData.data;
     document.getElementById('img-grid').prepend(img);
   }catch(err){
     errEl.textContent = 'Request failed — check your API key and CORS settings.';
