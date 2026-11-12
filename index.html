@@ -1,9 +1,9 @@
 // ==========================================
-// MAZEN AI - FINAL MASTER ENGINE SCRIPT
+// MAZEN AI - FINAL CLEAN MASTER SCRIPT
 // ==========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Mazen AI Final Engine Loaded Successfully.");
+    console.log("Mazen AI Engine Loaded Successfully.");
     
     // تفعيل التفاعل الأول تلقائياً لتجاوز قيود متصفحات الحماية على الصوت
     document.body.addEventListener('click', () => {
@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // 1. نظام القراءة الصوتية (Text-to-Speech)
 function speakResponse(text) {
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // توقيف أي صوت سابق منعاً للتداخل
+        window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ar-SA'; // لغة عربية
-        utterance.rate = 1.0;     // سرعة طبيعية
-        utterance.pitch = 1.0;    // طبقة صوت متوازنة
+        utterance.lang = 'ar-SA';
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
         
         window.speechSynthesis.speak(utterance);
     } else {
@@ -57,7 +57,6 @@ async function generateAIImage(promptText) {
         imageContainer = document.body;
     }
     
-    // إظهار مؤشر التحميل للمستخدم
     const loadingMsg = document.createElement('div');
     loadingMsg.className = 'ai-loading-message';
     loadingMsg.style.color = '#00ffff';
