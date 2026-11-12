@@ -183,6 +183,12 @@
 
   <!-- CHAT VIEW -->
   <section id="view-chat" class="view">
+    <div class="img-row" style="margin-bottom:10px;">
+      <select id="chat-provider" style="flex:1; padding:10px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">
+        <option value="groq">Groq (free — Llama 3.3)</option>
+        <option value="anthropic">Claude (Anthropic)</option>
+      </select>
+    </div>
     <div id="chat-log"></div>
   </section>
 
@@ -215,9 +221,13 @@
   <section id="view-settings" class="view">
     <div class="settings-box">
       <h3 style="margin-top:0;">API Keys</h3>
-      <label>Anthropic (Claude) API Key — powers the chatbot</label>
+      <label>Anthropic (Claude) API Key — powers the chatbot (paid after free credits run out)</label>
       <input id="key-anthropic" type="password" placeholder="sk-ant-..." />
       <small>Get one at console.anthropic.com. Stored only in your browser.</small>
+
+      <label>Groq API Key — free chatbot alternative (Llama 3.3)</label>
+      <input id="key-groq" type="password" placeholder="gsk_..." />
+      <small>Get one free, no card needed, at console.groq.com. Stored only in your browser.</small>
 
       <label>Image generation API Key (OpenAI DALL·E)</label>
       <input id="key-openai" type="password" placeholder="sk-..." />
@@ -332,11 +342,13 @@ document.getElementById('tabs').addEventListener('click', (e)=>{
 /* ---------- API keys (stored locally) ---------- */
 function loadKeys(){
   document.getElementById('key-anthropic').value = localStorage.getItem('myai_key_anthropic') || '';
+  document.getElementById('key-groq').value = localStorage.getItem('myai_key_groq') || '';
   document.getElementById('key-openai').value = localStorage.getItem('myai_key_openai') || '';
   document.getElementById('key-gemini').value = localStorage.getItem('myai_key_gemini') || '';
 }
 document.getElementById('save-keys').onclick = () => {
   localStorage.setItem('myai_key_anthropic', document.getElementById('key-anthropic').value.trim());
+  localStorage.setItem('myai_key_groq', document.getElementById('key-groq').value.trim());
   localStorage.setItem('myai_key_openai', document.getElementById('key-openai').value.trim());
   localStorage.setItem('myai_key_gemini', document.getElementById('key-gemini').value.trim());
   alert('Saved locally in this browser.');
@@ -355,6 +367,8 @@ function addMsg(text, who){
 
 let chatHistory = [];
 
+const SYSTEM_PROMPT = "You are 'Mazen AI', an assistant created by Mazen Rihani (مازن الريحاني). If anyone asks who made you, who you are, or who is behind you, always answer that you were created by Mazen Rihani. Always reply in the same language the user writes in, whatever language that is (Arabic, Darija, French, English, Spanish, or any other language) — match their language and dialect naturally.";
+
 async function sendChat(){
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
@@ -363,13 +377,35 @@ async function sendChat(){
   addMsg(text, 'user');
   chatHistory.push({role:'user', content:text});
 
-  const key = localStorage.getItem('myai_key_anthropic');
-  if(!key){
-    addMsg('⚠️ Add your Anthropic API key in Settings first.', 'bot');
+  const provider = document.getElementById('chat-provider').value;
+  const botEl = addMsg('...', 'bot');
+
+  if(provider === 'groq'){
+    const key = localStorage.getItem('myai_key_groq');
+    if(!key){ botEl.textContent = '⚠️ Add your free Groq API key in Settings first.'; return; }
+    try{
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + key },
+        body: JSON.stringify({
+          model:'llama-3.3-70b-versatile',
+          messages:[{role:'system', content:SYSTEM_PROMPT}, ...chatHistory]
+        })
+      });
+      const data = await res.json();
+      if(data.error){ botEl.textContent = 'Error: ' + data.error.message; return; }
+      const reply = data.choices[0].message.content;
+      botEl.textContent = reply;
+      chatHistory.push({role:'assistant', content:reply});
+    }catch(err){
+      botEl.textContent = 'Request failed — check your API key and CORS settings.';
+    }
     return;
   }
 
-  const botEl = addMsg('...', 'bot');
+  // Anthropic Claude
+  const key = localStorage.getItem('myai_key_anthropic');
+  if(!key){ botEl.textContent = '⚠️ Add your Anthropic API key in Settings first.'; return; }
   try{
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
@@ -381,7 +417,7 @@ async function sendChat(){
       body: JSON.stringify({
         model:'claude-sonnet-4-6',
         max_tokens:1000,
-        system: "You are 'Mazen AI', an assistant created by Mazen Rihani (مازن الريحاني). If anyone asks who made you, who you are, or who is behind you, always answer that you were created by Mazen Rihani. Always reply in the same language the user writes in, whatever language that is (Arabic, Darija, French, English, Spanish, or any other language) — match their language and dialect naturally.",
+        system: SYSTEM_PROMPT,
         messages: chatHistory
       })
     });
