@@ -465,7 +465,6 @@
             width: 100%;
         }
 
-        /* تأثير ظهور النص التدريجي */
         .fade-word {
             display: inline-block;
             opacity: 0;
@@ -474,10 +473,7 @@
         }
 
         @keyframes wordReveal {
-            to {
-                opacity: 1;
-                filter: blur(0);
-            }
+            to { opacity: 1; filter: blur(0); }
         }
 
         .msg-actions {
@@ -500,16 +496,6 @@
         .msg-action-btn:hover {
             color: white;
             background: var(--bg-card);
-        }
-
-        .generated-img {
-            max-width: 100%;
-            width: 420px;
-            border-radius: 18px;
-            margin-top: 10px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            animation: fadeIn 0.8s ease;
         }
 
         /* شريط الكتابة السفلي */
@@ -582,7 +568,7 @@
             transform: scale(1.08);
         }
 
-        /* نافذة المكالمة الصوتية المباشرة */
+        /* نافذة المكالمة الصوتية */
         #voice-call-modal {
             position: fixed;
             inset: 0;
@@ -735,9 +721,8 @@
         <div class="login-box">
             <div class="brand-logo"><i class="fa-solid fa-sparkles"></i></div>
             <h2>مرحباً بك في <span class="gradient-text">Mazen AI</span></h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin: 8px 0 20px;">مساعدك الذكي للدردشة، المكالمات الصوتية، وتوليد الصور</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin: 8px 0 20px;">مساعدك الذكي للدردشة والمكالمات والتحليل</p>
             <input type="text" id="login-name" placeholder="أدخل اسمك (مثلاً: مازن)" required>
-            <input type="email" id="login-email" placeholder="البريد الإلكتروني (اختياري)">
             <button class="btn-primary" onclick="handleLogin()">دخول إلى المنصة <i class="fa-solid fa-arrow-left"></i></button>
         </div>
     </div>
@@ -755,7 +740,7 @@
         <div class="sidebar-footer">
             <div class="nav-action" onclick="openSettings()">
                 <i class="fa-solid fa-key" style="color: #a8c7fa;"></i>
-                <span>إعدادات API والموديل</span>
+                <span>الإعدادات والمفاتيح</span>
             </div>
             <div class="nav-action" onclick="logout()">
                 <i class="fa-solid fa-right-from-bracket" style="color: #ff6b6b;"></i>
@@ -776,8 +761,8 @@
             </div>
 
             <div class="mode-tabs">
-                <button class="mode-tab active" id="tab-chat" onclick="switchMode('chat')"><i class="fa-solid fa-message"></i> محادثة</button>
-                <button class="mode-tab" id="tab-image" onclick="switchMode('image')"><i class="fa-solid fa-image"></i> تحليل وصصف بـ Gemini</button>
+                <button class="mode-tab active" id="tab-chat" onclick="switchMode('chat')"><i class="fa-solid fa-message"></i> محادثة (Groq)</button>
+                <button class="mode-tab" id="tab-image" onclick="switchMode('image')"><i class="fa-solid fa-brain"></i> تحليل وأفكار (Gemini)</button>
             </div>
 
             <div class="user-pill">
@@ -800,7 +785,7 @@
                         <i class="fa-solid fa-rocket" style="color:#d96570; margin-bottom:8px; display:block;"></i>
                         نصائح لتطوير مهارات العمل الحر
                     </div>
-                    <div class="suggestion-card" onclick="switchMode('image'); useSuggestion('اكتب لي فكرة سينمائية لثلاث ثواني 3D')">
+                    <div class="suggestion-card" onclick="switchMode('image'); useSuggestion('عطني أفكار إبداعية لفيديوهات ريلز وثائقية مدتها 3 ثواني')">
                         <i class="fa-solid fa-palette" style="color:#9b72cb; margin-bottom:8px; display:block;"></i>
                         أفكار فيديوهات ريلز وثائقية 3D
                     </div>
@@ -846,24 +831,17 @@
     <!-- نافذة الإعدادات -->
     <div class="modal" id="settings-modal">
         <div class="modal-card">
-            <h2><i class="fa-solid fa-sliders"></i> إعدادات Mazen AI</h2>
+            <h2><i class="fa-solid fa-sliders"></i> إعدادات المفاتيح</h2>
             <div class="form-group">
-                <label>مفتاح Groq API (يبدأ بـ gsk_)</label>
+                <label>مفتاح Groq API</label>
                 <input type="password" id="groq-key-input" placeholder="gsk_...">
             </div>
             <div class="form-group">
-                <label>اختيار موديل المحادثة (Groq)</label>
-                <select id="groq-model-select">
-                    <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (سريع ومضمون)</option>
-                    <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>مفتاح Google Gemini API (يبدأ بـ AIzaSy)</label>
-                <input type="password" id="gemini-key-input" placeholder="AIzaSy...">
+                <label>مفتاح Gemini API</label>
+                <input type="password" id="gemini-key-input" placeholder="AQ...">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn-primary" style="margin:0;" onclick="saveSettings()">حفظ الإعدادات</button>
+                <button class="btn-primary" style="margin:0;" onclick="saveCustomKeys()">حفظ المفاتيح</button>
                 <button class="btn-primary" style="margin:0; background: var(--bg-card);" onclick="closeSettings()">إغلاق</button>
             </div>
         </div>
@@ -883,14 +861,12 @@
                 document.getElementById('login-screen').classList.add('hidden');
             }
             renderHistory();
-            loadSavedKeys();
         };
 
         function handleLogin() {
             const name = document.getElementById('login-name').value.trim();
-            const email = document.getElementById('login-email').value.trim();
             if (!name) return alert('المرجو إدخال اسمك أولاً!');
-            const user = { name, email };
+            const user = { name };
             localStorage.setItem('mazen_ai_user', JSON.stringify(user));
             applyUserUI(user);
             document.getElementById('login-screen').classList.add('hidden');
@@ -924,7 +900,7 @@
             renderHistory();
         }
 
-        function saveMessageToHistory(role, text, isImage = false) {
+        function saveMessageToHistory(role, text) {
             if (!currentChatId) {
                 currentChatId = Date.now().toString();
                 chats.unshift({
@@ -935,7 +911,7 @@
             }
             const chat = chats.find(c => c.id === currentChatId);
             if (chat) {
-                chat.messages.push({ role, text, isImage });
+                chat.messages.push({ role, text });
                 localStorage.setItem('mazen_ai_chats', JSON.stringify(chats));
                 renderHistory();
             }
@@ -962,7 +938,7 @@
             const container = document.getElementById('chat-container');
             container.innerHTML = '';
             chat.messages.forEach(msg => {
-                appendMessageUI(msg.role, msg.text, false, msg.isImage);
+                appendMessageUI(msg.role, msg.text, false);
             });
             renderHistory();
         }
@@ -981,7 +957,7 @@
             document.getElementById('tab-image').classList.toggle('active', mode === 'image');
             document.getElementById('prompt-input').placeholder = mode === 'chat'
                 ? 'اسأل Mazen AI أي شيء...'
-                : 'اكتب موضوعاً ليقوم Gemini بتحليله وتقديم أفكار دقيقة...';
+                : 'اكتب طلباً ليقوم Gemini بتحليله وتقديم الأفكار...';
         }
 
         function useSuggestion(text) {
@@ -1009,7 +985,7 @@
             saveMessageToHistory('user', text);
 
             if (currentMode === 'image') {
-                await generateGeminiImage(text);
+                await generateGeminiAnalysis(text);
             } else {
                 await fetchGroqReply(text);
             }
@@ -1017,10 +993,8 @@
 
         async function fetchGroqReply(prompt, isVoice = false) {
             const apiKey = localStorage.getItem('mazen_groq_key');
-            const model = localStorage.getItem('mazen_groq_model') || 'llama-3.1-8b-instant';
-
             if (!apiKey) {
-                const err = 'المرجو إدخال مفتاح Groq API في الإعدادات أولاً.';
+                const err = 'المرجو إدخال مفتاح Groq API في الإعدادات (من القائمة الجانبية).';
                 if (!isVoice) appendMessageUI('ai', err, true);
                 return err;
             }
@@ -1036,7 +1010,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: model,
+                        model: 'llama-3.1-8b-instant',
                         messages: [
                             { role: 'system', content: 'أنت مساعد ذكي اسمك Mazen AI، تجيب بأسلوب احترافي، ودود، ومفيد باللغة العربية.' },
                             { role: 'user', content: prompt }
@@ -1057,16 +1031,16 @@
                 return reply;
             } catch (error) {
                 if (loaderId) document.getElementById(loaderId)?.remove();
-                const errMsg = 'خطأ: ' + error.message;
+                const errMsg = 'خطأ Groq: ' + error.message;
                 if (!isVoice) appendMessageUI('ai', errMsg, true);
                 return errMsg;
             }
         }
 
-        async function generateGeminiImage(prompt) {
+        async function generateGeminiAnalysis(prompt) {
             const geminiKey = localStorage.getItem('mazen_gemini_key');
             if (!geminiKey) {
-                appendMessageUI('ai', 'المرجو إدخال مفتاح Google Gemini API في الإعدادات.', true);
+                appendMessageUI('ai', 'المرجو إدخال مفتاح Gemini API في الإعدادات أولاً.', true);
                 return;
             }
 
@@ -1078,7 +1052,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
-                            parts: [{ text: "قدم أفكاراً واقتراحات مفصلة واحترافية حول الطلب التالي: " + prompt }]
+                            parts: [{ text: "قدم أفكاراً واقتراحات إبداعية دقيقة حول: " + prompt }]
                         }]
                     })
                 });
@@ -1093,11 +1067,11 @@
                 saveMessageToHistory('ai', replyText);
             } catch (error) {
                 document.getElementById(loaderId)?.remove();
-                appendMessageUI('ai', 'تعذر جلب الرد من Gemini: ' + error.message, true);
+                appendMessageUI('ai', 'خطأ Gemini: ' + error.message, true);
             }
         }
 
-        function appendMessageUI(role, content, animateText = false, isImage = false) {
+        function appendMessageUI(role, content, animateText = false) {
             const container = document.getElementById('chat-container');
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${role}`;
@@ -1108,7 +1082,7 @@
                 <div class="msg-avatar">${avatarIcon}</div>
                 <div class="msg-bubble">
                     <div class="msg-text"></div>
-                    ${role === 'ai' && !isImage ? `
+                    ${role === 'ai' ? `
                     <div class="msg-actions">
                         <button class="msg-action-btn" onclick="copyText(this)"><i class="fa-regular fa-copy"></i> نسخ</button>
                     </div>` : ''}
@@ -1217,24 +1191,21 @@
 
         function openSettings() {
             document.getElementById('settings-modal').style.display = 'flex';
+            document.getElementById('groq-key-input').value = localStorage.getItem('mazen_groq_key') || '';
+            document.getElementById('gemini-key-input').value = localStorage.getItem('mazen_gemini_key') || '';
         }
 
         function closeSettings() {
             document.getElementById('settings-modal').style.display = 'none';
         }
 
-        function loadSavedKeys() {
-            document.getElementById('groq-key-input').value = localStorage.getItem('mazen_groq_key') || '';
-            document.getElementById('gemini-key-input').value = localStorage.getItem('mazen_gemini_key') || '';
-            document.getElementById('groq-model-select').value = localStorage.getItem('mazen_groq_model') || 'llama-3.1-8b-instant';
-        }
-
-        function saveSettings() {
-            localStorage.setItem('mazen_groq_key', document.getElementById('groq-key-input').value.trim());
-            localStorage.setItem('mazen_gemini_key', document.getElementById('gemini-key-input').value.trim());
-            localStorage.setItem('mazen_groq_model', document.getElementById('groq-model-select').value);
+        function saveCustomKeys() {
+            const gKey = document.getElementById('groq-key-input').value.trim();
+            const gemKey = document.getElementById('gemini-key-input').value.trim();
+            if(gKey) localStorage.setItem('mazen_groq_key', gKey);
+            if(gemKey) localStorage.setItem('mazen_gemini_key', gemKey);
             closeSettings();
-            alert('تم حفظ الإعدادات بنجاح!');
+            alert('تم حفظ المفاتيح بنجاح!');
         }
     </script>
 </body>
