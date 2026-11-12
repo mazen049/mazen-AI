@@ -777,7 +777,7 @@
 
             <div class="mode-tabs">
                 <button class="mode-tab active" id="tab-chat" onclick="switchMode('chat')"><i class="fa-solid fa-message"></i> محادثة</button>
-                <button class="mode-tab" id="tab-image" onclick="switchMode('image')"><i class="fa-solid fa-image"></i> توليد صور Gemini</button>
+                <button class="mode-tab" id="tab-image" onclick="switchMode('image')"><i class="fa-solid fa-image"></i> تحليل وصصف بـ Gemini</button>
             </div>
 
             <div class="user-pill">
@@ -800,9 +800,9 @@
                         <i class="fa-solid fa-rocket" style="color:#d96570; margin-bottom:8px; display:block;"></i>
                         نصائح لتطوير مهارات العمل الحر
                     </div>
-                    <div class="suggestion-card" onclick="switchMode('image'); useSuggestion('مدينة مستقبلية مضيئة ليلاً بأسلوب سينمائي واقعي 8k')">
+                    <div class="suggestion-card" onclick="switchMode('image'); useSuggestion('اكتب لي فكرة سينمائية لثلاث ثواني 3D')">
                         <i class="fa-solid fa-palette" style="color:#9b72cb; margin-bottom:8px; display:block;"></i>
-                        صمم صورة مدينة مستقبلية بالذكاء الاصطناعي
+                        أفكار فيديوهات ريلز وثائقية 3D
                     </div>
                 </div>
             </div>
@@ -848,19 +848,18 @@
         <div class="modal-card">
             <h2><i class="fa-solid fa-sliders"></i> إعدادات Mazen AI</h2>
             <div class="form-group">
-                <label>مفتاح Groq API (للمحادثة والمكالمة الصوتية - مجاني)</label>
+                <label>مفتاح Groq API (يبدأ بـ gsk_)</label>
                 <input type="password" id="groq-key-input" placeholder="gsk_...">
             </div>
             <div class="form-group">
                 <label>اختيار موديل المحادثة (Groq)</label>
                 <select id="groq-model-select">
                     <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (سريع ومضمون)</option>
-                    <option value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile</option>
-                    <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                    <option value="llama-3.1-70b-versatile">Llama 3.1 70B Versatile</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>مفتاح Google Gemini API (لتوليد الصور)</label>
+                <label>مفتاح Google Gemini API (يبدأ بـ AIzaSy)</label>
                 <input type="password" id="gemini-key-input" placeholder="AIzaSy...">
             </div>
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -877,7 +876,6 @@
         let recognition = null;
         let isCallActive = false;
 
-        // تهيئة التطبيق عند الفتح
         window.onload = () => {
             const savedUser = JSON.parse(localStorage.getItem('mazen_ai_user'));
             if (savedUser) {
@@ -888,7 +886,6 @@
             loadSavedKeys();
         };
 
-        // تسجيل الدخول
         function handleLogin() {
             const name = document.getElementById('login-name').value.trim();
             const email = document.getElementById('login-email').value.trim();
@@ -910,7 +907,6 @@
             location.reload();
         }
 
-        // القائمة الجانبية وإدارة المحادثات
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('collapsed');
         }
@@ -979,14 +975,13 @@
             else renderHistory();
         }
 
-        // التبديل بين الشات وتوليد الصور
         function switchMode(mode) {
             currentMode = mode;
             document.getElementById('tab-chat').classList.toggle('active', mode === 'chat');
             document.getElementById('tab-image').classList.toggle('active', mode === 'image');
             document.getElementById('prompt-input').placeholder = mode === 'chat'
                 ? 'اسأل Mazen AI أي شيء...'
-                : 'صف الصورة التي تريد توليدها عبر Gemini...';
+                : 'اكتب موضوعاً ليقوم Gemini بتحليله وتقديم أفكار دقيقة...';
         }
 
         function useSuggestion(text) {
@@ -1001,7 +996,6 @@
             }
         }
 
-        // إرسال الرسائل
         async function handleSend() {
             const input = document.getElementById('prompt-input');
             const text = input.value.trim();
@@ -1021,7 +1015,6 @@
             }
         }
 
-        // الاتصال بـ Groq
         async function fetchGroqReply(prompt, isVoice = false) {
             const apiKey = localStorage.getItem('mazen_groq_key');
             const model = localStorage.getItem('mazen_groq_model') || 'llama-3.1-8b-instant';
@@ -1070,23 +1063,23 @@
             }
         }
 
-        // توليد الصور عبر Gemini (Imagen 3)
         async function generateGeminiImage(prompt) {
             const geminiKey = localStorage.getItem('mazen_gemini_key');
             if (!geminiKey) {
-                appendMessageUI('ai', 'المرجو إدخال مفتاح Google Gemini API في الإعدادات لتوليد الصور.', true);
+                appendMessageUI('ai', 'المرجو إدخال مفتاح Google Gemini API في الإعدادات.', true);
                 return;
             }
 
             const loaderId = showTypingIndicator();
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${geminiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        instances: [{ prompt: prompt }],
-                        parameters: { sampleCount: 1 }
+                        contents: [{
+                            parts: [{ text: "قدم أفكاراً واقتراحات مفصلة واحترافية حول الطلب التالي: " + prompt }]
+                        }]
                     })
                 });
 
@@ -1095,17 +1088,15 @@
 
                 if (data.error) throw new Error(data.error.message);
 
-                const base64Img = data.predictions[0].bytesBase64Encoded;
-                const imgSrc = `data:image/png;base64,${base64Img}`;
-                appendMessageUI('ai', imgSrc, false, true);
-                saveMessageToHistory('ai', imgSrc, true);
+                const replyText = data.candidates[0].content.parts[0].text;
+                appendMessageUI('ai', replyText, true);
+                saveMessageToHistory('ai', replyText);
             } catch (error) {
                 document.getElementById(loaderId)?.remove();
-                appendMessageUI('ai', 'تعذر توليد الصورة عبر Gemini: ' + error.message, true);
+                appendMessageUI('ai', 'تعذر جلب الرد من Gemini: ' + error.message, true);
             }
         }
 
-        // عرض الرسائل مع تأثير Fade-in للكلمات
         function appendMessageUI(role, content, animateText = false, isImage = false) {
             const container = document.getElementById('chat-container');
             const msgDiv = document.createElement('div');
@@ -1127,14 +1118,7 @@
             container.appendChild(msgDiv);
             const textContainer = msgDiv.querySelector('.msg-text');
 
-            if (isImage) {
-                textContainer.innerHTML = `
-                    <img src="${content}" class="generated-img" alt="Generated Image">
-                    <br><a href="${content}" download="mazen-ai-image.png" class="msg-action-btn" style="display:inline-block; margin-top:8px; text-decoration:none;">
-                        <i class="fa-solid fa-download"></i> تحميل الصورة
-                    </a>`;
-            } else if (animateText) {
-                // تأثير Fade-in تدريجي لكل كلمة
+            if (animateText) {
                 const words = content.split(' ');
                 words.forEach((word, index) => {
                     const span = document.createElement('span');
@@ -1172,7 +1156,6 @@
             setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> نسخ', 2000);
         }
 
-        // المكالمة الصوتية المباشرة
         function startVoiceCall() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
@@ -1232,7 +1215,6 @@
             document.getElementById('voice-call-modal').style.display = 'none';
         }
 
-        // الإعدادات
         function openSettings() {
             document.getElementById('settings-modal').style.display = 'flex';
         }
