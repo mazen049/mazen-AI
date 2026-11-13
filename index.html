@@ -1,319 +1,146 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#080b16" />
-<title>Mazen AI</title>
-<style>
-:root{--bg:#080b16;--panel:rgba(18,24,43,.72);--panel2:rgba(25,32,56,.72);--line:rgba(255,255,255,.1);--text:#f4f6ff;--muted:#9aa4c2;--purple:#9b7bff;--cyan:#55d9ef;--pink:#ed76c8;--green:#65e6b2}
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
-button,input,textarea{font:inherit}button{cursor:pointer;color:inherit}
-.bg{position:fixed;inset:0;overflow:hidden;z-index:-2;background:radial-gradient(ellipse at 50% 0%,#151a35 0%,#090d1b 45%,#070912 100%)}
-.blob{position:absolute;width:42vw;height:42vw;min-width:320px;min-height:320px;border-radius:50%;filter:blur(85px);opacity:.24;animation:float 18s ease-in-out infinite alternate}
-.blob.one{background:#6544e8;left:-10%;top:-20%}.blob.two{background:#087f9b;right:-13%;top:15%;animation-delay:-6s}.blob.three{background:#a32d88;left:35%;bottom:-35%;animation-delay:-11s}
-@keyframes float{0%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,5vh) scale(1.15)}100%{transform:translate(-5vw,10vh) scale(.9)}}
-.app{height:100%;display:flex;padding:16px;gap:16px;max-width:1800px;margin:auto}
-.glass{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 20px 70px rgba(0,0,0,.25)}
-.sidebar{width:280px;flex-shrink:0;border-radius:24px;padding:18px;display:flex;flex-direction:column;min-height:0;animation:fade .6s both}
-.brand{display:flex;align-items:center;gap:12px;padding:5px 4px 22px}.logo{width:39px;height:39px;border-radius:13px;background:linear-gradient(145deg,#a48aff,#4bdbed);display:grid;place-items:center;box-shadow:0 0 24px #8b70ff66;font-weight:900;color:#101427;position:relative}
-.logo:after{content:"";position:absolute;inset:-5px;border:1px solid #a48aff66;border-radius:16px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{transform:scale(.92);opacity:.45}50%{transform:scale(1.13);opacity:1}}
-.brand strong{font-size:17px;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-.primary,.ghost,.iconbtn{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:rgba(255,255,255,.055);transition:.2s}
-.primary{background:linear-gradient(110deg,#8265f5,#3aafc9);border:0;font-weight:700;box-shadow:0 8px 24px #5e64df35}
-.primary:hover,.ghost:hover,.iconbtn:hover{transform:translateY(-1px);filter:brightness(1.13)}
-.side-actions{display:grid;gap:9px}.side-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#7883a4;margin:25px 4px 10px}
-.history{overflow:auto;min-height:80px;display:grid;gap:6px}.history-item{border:1px solid transparent;background:transparent;color:#bdc5dc;text-align:left;border-radius:10px;padding:10px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.history-item:hover,.history-item.active{background:#ffffff0c;border-color:var(--line);color:white}
-.side-bottom{margin-top:auto;display:grid;gap:10px}.profile{display:flex;align-items:center;gap:10px;padding:12px 4px 2px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}.avatar-mini{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(140deg,#9b7bff,#48cfe0);color:#11172a;font-weight:800}
-.main{flex:1;min-width:0;display:flex;flex-direction:column;border-radius:24px;overflow:hidden;animation:fade .7s both}
-.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);gap:12px}
-.top-left{display:flex;align-items:center;gap:12px}.top-left h1{font-size:15px;margin:0}.status{font-size:11px;color:var(--green);display:flex;align-items:center;gap:6px}.status:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
-.top-actions{display:flex;gap:8px}.iconbtn{padding:9px 12px;font-size:13px}.callbtn{border-color:#9b7bff66;background:#9b7bff18}
-.chat{flex:1;overflow:auto;padding:30px clamp(16px,5vw,70px);scroll-behavior:smooth}
-.welcome{text-align:center;max-width:680px;margin:9vh auto 30px;animation:fade .8s both}.welcome-logo{width:62px;height:62px;border-radius:20px;margin:0 auto 20px;display:grid;place-items:center;background:linear-gradient(145deg,#a48aff,#4bdbed);color:#0b1020;font-size:25px;font-weight:900;box-shadow:0 0 50px #8265f555;position:relative}
-.welcome h2{font-size:clamp(27px,4vw,42px);margin:0 0 12px;letter-spacing:-1.4px}.gradient{background:linear-gradient(90deg,#c4b4ff,#69e3ed,#f3a2dc);-webkit-background-clip:text;background-clip:text;color:transparent}.welcome p{color:var(--muted);line-height:1.7;margin:0 auto;max-width:510px}
-.suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:620px;margin:28px auto}.suggestion{background:#ffffff08;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;color:#cbd2e8;font-size:13px}.suggestion:hover{background:#ffffff12;border-color:#9b7bff88}
-.messages{max-width:850px;margin:auto;display:grid;gap:18px}
-.message{display:flex;gap:10px;align-items:flex-start;animation:msgIn .3s ease both}.message.user{flex-direction:row}.message.ai{flex-direction:row-reverse}
-@keyframes msgIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.msg-avatar{width:30px;height:30px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;background:#ffffff12;border:1px solid var(--line);font-size:12px}
-.message.user .msg-avatar{background:#8265f533}.message.ai .msg-avatar{background:#3bc8d533}
-.bubble{max-width:min(78%,680px);padding:13px 16px;border:1px solid var(--line);border-radius:17px;line-height:1.65;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
-.message.user .bubble{background:linear-gradient(135deg,#765ce7aa,#456bba77);border-top-left-radius:5px}
-.message.ai .bubble{background:rgba(255,255,255,.065);border-top-right-radius:5px}
-.typing{display:flex;gap:5px;align-items:center;padding:17px 18px}.typing i{width:6px;height:6px;border-radius:50%;background:#b7a6ff;animation:dot 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes dot{0%,60%,100%{opacity:.35;transform:translateY(0)}30%{opacity:1;transform:translateY(-5px)}}
-.composer-wrap{padding:12px clamp(14px,5vw,70px) 20px}.composer{max-width:850px;margin:auto;border:1px solid #ffffff24;background:rgba(8,12,27,.75);border-radius:18px;padding:10px 12px;display:flex;align-items:flex-end;gap:10px;box-shadow:0 10px 40px #0004}
-.composer textarea{resize:none;max-height:150px;min-height:28px;flex:1;background:transparent;border:0;outline:0;color:white;padding:6px 4px;line-height:1.5;font-size:14px}.composer textarea::placeholder{color:#77819f}
-.send{width:39px;height:39px;border:0;border-radius:12px;background:linear-gradient(140deg,#9b7bff,#49c9df);color:#101426;font-size:17px;font-weight:900}
-.hint{text-align:center;color:#737e9e;font-size:10px;margin-top:9px}
-.modal-backdrop{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:18px;background:rgba(3,5,13,.78);backdrop-filter:blur(13px)}
-.modal{width:min(430px,100%);border-radius:24px;padding:28px;background:rgba(18,23,42,.96);border:1px solid #ffffff1c;box-shadow:0 30px 100px #0009;animation:fade .35s both}
-.modal h2{margin:0 0 8px;font-size:24px}.modal p{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 20px}
-.field{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:#080d1b;color:white;outline:0;margin:8px 0 14px}.field:focus{border-color:#9b7bff}
-.checkrow{display:flex;align-items:center;gap:10px;color:#c5cce0;font-size:13px;margin:2px 0 20px}.checkrow input{accent-color:#9b7bff;width:17px;height:17px}
-.full{width:100%}.fine{font-size:10px!important;color:#7883a1!important;margin:13px 0 0!important}
-.overlay{position:fixed;inset:0;z-index:8;background:#030610d9;backdrop-filter:blur(15px);display:none;place-items:center;padding:18px}.call-card{width:min(390px,100%);border:1px solid var(--line);border-radius:28px;background:rgba(20,26,48,.95);padding:34px 25px;text-align:center;box-shadow:0 30px 90px #0009}
-.call-avatar{width:100px;height:100px;border-radius:50%;margin:8px auto 22px;display:grid;place-items:center;font-size:34px;font-weight:900;color:#101427;background:linear-gradient(145deg,#b39bff,#58dbe7);box-shadow:0 0 0 10px #9b7bff16,0 0 50px #8a70ff77;animation:callPulse 2s infinite}
-@keyframes callPulse{50%{box-shadow:0 0 0 20px #9b7bff08,0 0 65px #8a70ff99;transform:scale(1.03)}}
-.call-card h2{margin:0 0 6px}.call-status{color:var(--green);font-size:12px;margin-bottom:28px}.call-controls{display:flex;justify-content:center;gap:14px}.round{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:#ffffff12;font-size:18px}.hang{background:#e34e69;border:0}
-.settings{display:none;position:fixed;z-index:9;inset:0;background:#030610bb;backdrop-filter:blur(8px);place-items:center;padding:18px}.settings-card{width:min(480px,100%);background:#141a30;border:1px solid var(--line);border-radius:22px;padding:24px}.settings-card h3{margin:0 0 8px}.settings-card p{color:var(--muted);font-size:12px;line-height:1.6}.row{display:flex;gap:8px}.row .field{margin-bottom:8px}.small{font-size:11px;color:#f1c77c}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 15px;border:1px solid var(--line);background:#1c2440;border-radius:12px;color:#dce3fa;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20}.toast.show{opacity:1}
-.mobile-menu{display:none}
-
-/* AI Studio */
-.studio{display:none;flex:1;overflow:auto;padding:clamp(18px,4vw,46px)}
-.studio-inner{max-width:980px;margin:0 auto;width:100%}.studio-head{margin-bottom:22px}.studio-head h2{font-size:clamp(25px,4vw,36px);margin:0 0 8px}.studio-head p{color:var(--muted);font-size:13px;line-height:1.6;margin:0}
-.studio-card{border:1px solid var(--line);background:#ffffff08;border-radius:20px;padding:20px;margin-bottom:18px}
-.studio-label{display:block;font-size:12px;color:#b9c4df;margin:0 0 9px}.studio-text{width:100%;min-height:110px;resize:vertical;border:1px solid var(--line);background:#080d1b;color:white;border-radius:13px;padding:13px;outline:0;line-height:1.5}.studio-text:focus{border-color:#9b7bff}
-.studio-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.studio-select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0c1224;color:#eef1ff}.studio-output{min-height:240px;border:1px dashed #ffffff30;border-radius:16px;display:grid;place-items:center;padding:14px;color:#8e9ab8;text-align:center;overflow:hidden}.studio-output img{max-width:100%;max-height:620px;border-radius:12px;display:block}.studio-output video{max-width:100%;border-radius:12px}.studio-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}.studio-actions button{min-width:130px}.studio-note{font-size:11px;color:#a6b0ca;line-height:1.6;margin:12px 0 0}.upload-box{border:1px dashed #9b7bff77;border-radius:14px;padding:18px;text-align:center;background:#9b7bff0a}.upload-box input{max-width:100%;color:#cbd3e8}.analysis-result{white-space:pre-wrap;line-height:1.65;color:#e2e8fb;font-size:13px;margin-top:14px}.studio-nav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}.studio-tab{border:1px solid var(--line);background:#ffffff08;border-radius:12px;padding:10px 14px;font-size:12px}.studio-tab.active{background:#9b7bff25;border-color:#9b7bff88}
-@media(max-width:760px){.studio{padding:18px 14px}.studio-controls{grid-template-columns:1fr}.studio-card{padding:15px}}
-@media(max-width:760px){.app{padding:8px;gap:8px}.sidebar{position:fixed;z-index:5;left:8px;top:8px;bottom:8px;width:min(285px,85vw);transform:translateX(-115%);transition:.25s}.sidebar.open{transform:translateX(0)}.main{border-radius:18px}.topbar{height:62px;padding:0 13px}.top-left h1{font-size:13px}.mobile-menu{display:inline-flex}.top-actions .iconbtn{padding:8px 9px;font-size:12px}.chat{padding:20px 12px}.welcome{margin:8vh auto 24px}.suggestions{grid-template-columns:1fr}.bubble{max-width:86%;font-size:13px}.composer-wrap{padding:10px 12px 15px}}
-</style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b14">
+<title>MAZEN AI</title>
 <script src="https://js.puter.com/v2/"></script>
+<style>
+:root{--bg:#090b14;--panel:rgba(19,23,39,.78);--line:rgba(255,255,255,.09);--text:#eef1ff;--muted:#9ba4bd;--accent:#8b7cff;--accent2:#42d6c5;--danger:#ff647c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% 12%,#25204a 0,transparent 32%),radial-gradient(circle at 12% 85%,#103a43 0,transparent 30%),var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit}.app{display:flex;min-height:100vh}.sidebar{width:280px;background:rgba(9,11,20,.88);backdrop-filter:blur(20px);border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px;transition:transform .25s,width .25s;z-index:20}.sidebar.collapsed{width:0;min-width:0;padding:0;border:0;overflow:hidden}.sidebar.collapsed>*{visibility:hidden}.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:.4px}.logo{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#090b14;font-weight:900;box-shadow:0 0 28px #8b7cff55}.sidebtn,.navbtn,.iconbtn{border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:12px;padding:11px 13px;text-align:left}.sidebtn:hover,.navbtn:hover,.iconbtn:hover{background:rgba(139,124,255,.16);border-color:#8b7cff77}.sidebtn.primary{background:linear-gradient(120deg,#7565ed,#4c9fba);border:0;color:white;font-weight:700}.navgroup{display:grid;gap:8px}.label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1.4px;margin:12px 4px 2px}.history{overflow:auto;display:grid;gap:6px}.historyitem{display:flex;align-items:center;gap:6px}.historyitem button:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:0;background:transparent;text-align:left;padding:9px;border-radius:9px;color:#dce0f2}.historyitem button:first-child:hover{background:#ffffff0d}.del{border:0;background:transparent;color:#9299ad;padding:6px}.del:hover{color:var(--danger)}.sidebottom{margin-top:auto;display:grid;gap:8px}.main{flex:1;min-width:0;display:flex;flex-direction:column}.topbar{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px;background:#090b1466;backdrop-filter:blur(16px)}.topbar strong{font-size:16px}.topbar .spacer{flex:1}.status{font-size:12px;color:var(--muted)}.content{width:min(980px,100%);margin:0 auto;padding:24px 22px 110px;flex:1}.welcome{text-align:center;padding:10vh 12px 25px}.welcome h1{font-size:clamp(32px,6vw,52px);margin:0 0 10px;background:linear-gradient(90deg,#fff,#a69aff,#72e4d5);background-clip:text;color:transparent}.welcome p{color:var(--muted)}.messages{display:grid;gap:18px}.msg{padding:15px 17px;border:1px solid var(--line);border-radius:17px;max-width:88%;white-space:pre-wrap;overflow-wrap:anywhere;animation:msgIn .32s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom}.msg.ai{line-height:1.72}.msg.typing{color:#cbd0e6}.typing-dots{display:inline-flex;gap:4px;margin-left:5px;vertical-align:middle}.typing-dots i{width:5px;height:5px;border-radius:50%;background:var(--accent2);animation:dotPulse 1s infinite ease-in-out}.typing-dots i:nth-child(2){animation-delay:.15s}.typing-dots i:nth-child(3){animation-delay:.3s}.type-cursor:after{content:"";display:inline-block;width:2px;height:1em;margin-left:3px;vertical-align:-2px;background:var(--accent2);animation:cursorBlink .8s steps(2,start) infinite}@keyframes msgIn{from{opacity:0;transform:translateY(12px) scale(.985);filter:blur(3px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}@keyframes dotPulse{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}@keyframes cursorBlink{to{opacity:0}}.msg.user{margin-left:auto;background:linear-gradient(135deg,#5449a5aa,#2b6d79aa)}.msg.ai{background:var(--panel)}.msghead{font-size:11px;color:var(--muted);margin-bottom:6px}.composer-wrap{position:fixed;bottom:0;left:280px;right:0;padding:18px 22px 22px;background:linear-gradient(transparent,#090b14 25%);transition:left .28s cubic-bezier(.2,.8,.2,1)}.app.sidebar-collapsed .composer-wrap{left:0}.composer{max-width:940px;margin:auto;display:flex;align-items:flex-end;gap:9px;background:rgba(25,29,48,.94);border:1px solid #ffffff20;border-radius:18px;padding:10px;box-shadow:0 12px 50px #0008}.composer textarea{flex:1;resize:none;max-height:160px;min-height:42px;background:transparent;border:0;outline:0;color:var(--text);padding:9px}.iconbtn{padding:10px;border-radius:12px;text-align:center}.send{background:linear-gradient(135deg,var(--accent),#4db9b0);border:0;color:#071018;font-weight:800}.panel{display:none}.panel.active{display:block}.sectionhead{margin:8px 0 20px}.sectionhead h2{margin:0 0 5px;font-size:27px}.muted{color:var(--muted)}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}.field{display:grid;gap:7px;margin:12px 0}.field label{color:#c5cbe0;font-size:13px}.field input,.field textarea,.field select{width:100%;background:#090d19;border:1px solid var(--line);border-radius:11px;padding:12px;color:var(--text);outline:none}.field textarea{min-height:110px;resize:vertical}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.primarybtn{border:0;border-radius:11px;padding:11px 16px;background:linear-gradient(120deg,var(--accent),#45bdb1);color:#071018;font-weight:800}.secondarybtn{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:#ffffff0a}.notice{font-size:12px;color:var(--muted);line-height:1.6}.imagegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}.imagegrid img{width:100%;border-radius:13px;border:1px solid var(--line)}.preview{max-width:100%;max-height:420px;object-fit:contain;border-radius:14px}.hidden{display:none!important}.callbox{text-align:center;padding:38px 15px}.callorb{width:140px;height:140px;border-radius:50%;margin:20px auto;background:radial-gradient(circle,#a69aff,#5548b7 60%,#211c4c);box-shadow:0 0 70px #8b7cff55;display:grid;place-items:center;font-size:42px}.callstatus{color:var(--accent2);font-weight:700;margin:14px}.calltranscript{white-space:pre-wrap;text-align:left;background:#090d19;border:1px solid var(--line);padding:14px;border-radius:12px;max-width:600px;margin:18px auto}.toast{position:fixed;top:82px;right:18px;z-index:60;background:#20253a;border:1px solid var(--line);padding:12px 16px;border-radius:12px;max-width:min(420px,90vw);box-shadow:0 10px 40px #0008}.small{font-size:12px}.overlay{display:none}
+@media(max-width:760px){.sidebar{position:fixed;inset:0 auto 0 0;width:280px;transform:translateX(-105%);box-shadow:20px 0 60px #0008}.sidebar.open{transform:translateX(0)}.overlay.show{display:block;position:fixed;inset:0;background:#0008;z-index:15}.composer-wrap{left:0;padding:12px}.content{padding:18px 14px 110px}.msg{max-width:96%}.topbar{padding:0 14px}}
+</style>
 </head>
 <body>
-<div class="bg"><div class="blob one"></div><div class="blob two"></div><div class="blob three"></div></div>
-<div class="app">
-  <aside class="sidebar glass" id="sidebar">
-    <div class="brand"><div class="logo">M</div><div><strong>Mazen AI</strong><small>Your intelligent space</small></div></div>
-    <div class="side-actions">
-      <button class="primary" id="newChat">＋ &nbsp; New chat</button>
-      <button class="ghost" id="clearHistory">⌫ &nbsp; Clear history</button>
-      <button class="ghost" id="studioBtn">✧ &nbsp; AI Studio</button>
-    </div>
-    <div class="side-label">Recent conversations</div>
-    <div class="history" id="history"></div>
-    <div class="side-bottom">
-      <button class="ghost" id="settingsBtn">⚙ &nbsp; API settings</button>
-      <div class="profile"><div class="avatar-mini" id="profileInitial">M</div><div><b id="profileName" style="color:#e6eaff">Guest</b><br><span>Personal workspace</span></div></div>
-    </div>
-  </aside>
-  <main class="main glass">
-    <header class="topbar">
-      <div class="top-left"><button class="iconbtn mobile-menu" id="menuBtn">☰</button><div><h1>Mazen AI</h1><div class="status">Ready to help</div></div></div>
-      <div class="top-actions"><button class="iconbtn callbtn" id="callBtn">◉ &nbsp; Voice call</button><button class="iconbtn" id="topSettings">⚙</button></div>
-    </header>
-    <section class="chat" id="chat">
-      <div class="welcome" id="welcome">
-        <div class="welcome-logo">M</div>
-        <h2>Meet your <span class="gradient">AI companion.</span></h2>
-        <p>Ask questions, explore ideas, write, learn, and create. Start a conversation in the language you prefer.</p>
-        <div class="suggestions">
-          <button class="suggestion">✦ Explain a difficult topic in simple words</button>
-          <button class="suggestion">✧ Help me brainstorm a creative project</button>
-          <button class="suggestion">⌘ Write or improve a piece of text</button>
-          <button class="suggestion">◈ Teach me something new today</button>
-        </div>
-      </div>
-      <div class="messages" id="messages"></div>
-    </section>
-    <div class="composer-wrap">
-      <form class="composer" id="chatForm"><textarea id="prompt" rows="1" placeholder="Message Mazen AI..." aria-label="Message"></textarea><button class="send" type="submit" aria-label="Send">➤</button></form>
-      <div class="hint">Mazen AI can make mistakes. Check important information.</div>
-    </div>
-  </main>
-  <section class="main glass studio" id="studioView">
-   <div class="studio-inner">
-    <div class="studio-head"><button class="ghost" id="backToChat" style="margin-bottom:16px">← Back to chat</button><h2>AI <span class="gradient">Studio</span></h2><p>Create images from text, edit an image with a prompt, or read text from an uploaded image. Works on phone and PC.</p></div>
-    <div class="studio-nav"><button class="studio-tab active" id="imageTab">✦ Image generator</button><button class="studio-tab" id="readerTab">▧ Image reader</button><button class="studio-tab" id="videoTab">▶ Video (beta)</button></div>
-    <div id="imagePanel" class="studio-card">
-     <label class="studio-label" for="imagePrompt">Describe the image you want</label>
-     <textarea class="studio-text" id="imagePrompt" placeholder="A cinematic photograph of Jeddah at sunrise, soft golden light, realistic details, 35mm film..." maxlength="1800"></textarea>
-     <div class="studio-controls"><div><label class="studio-label" for="imageModel">AI model</label><select class="studio-select" id="imageModel"><option value="black-forest-labs/flux-2-klein-4b">FLUX 2 Klein 4B — fast</option><option value="openai/gpt-image-2.5-flare">GPT Image 2.5 Flare</option><option value="google/gemini-3.1-flash-image">Gemini Flash Image</option><option value="stabilityai/stable-diffusion-xl-base-1.0">Stable Diffusion XL</option></select></div><div><label class="studio-label" for="imageStyle">Style hint</label><select class="studio-select" id="imageStyle"><option value="">No extra style</option><option value="photorealistic, cinematic lighting, highly detailed">Cinematic realistic</option><option value="3D animated, charming characters, polished render">3D animation</option><option value="minimal vector illustration, clean shapes">Vector illustration</option><option value="anime illustration, detailed background">Anime</option><option value="professional product photography, studio lighting">Product photography</option></select></div></div>
-     <button class="primary full" id="generateImage">✦ Generate image</button>
-     <p class="studio-note">Puter.js handles image generation. You may be asked to sign in to Puter. It uses a user-pays system: any free allowance or charges depend on Puter's current account rules, so this is not guaranteed unlimited free generation.</p>
-     <div class="studio-output" id="imageOutput" style="margin-top:16px">Your generated image will appear here.</div>
-     <div class="studio-actions"><button class="ghost" id="downloadImage" disabled>↓ Download image</button><button class="ghost" id="clearImage">Clear</button></div>
-     <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
-     <label class="studio-label">Edit an existing image</label><div class="upload-box"><input id="editFile" type="file" accept="image/png,image/jpeg,image/webp"></div>
-     <div id="editPreview" class="studio-output" style="margin-top:12px;min-height:120px">Upload an image to edit it.</div>
-     <label class="studio-label" for="editPrompt" style="margin-top:14px">How should AI change it?</label><textarea class="studio-text" id="editPrompt" style="min-height:76px" placeholder="Turn this into a cinematic rainy night scene, keep the main subject..." maxlength="1200"></textarea>
-     <button class="primary full" id="editImage" style="margin-top:12px">✧ Edit uploaded image</button>
-     <div class="studio-output" id="editOutput" style="margin-top:14px">Your edited image will appear here.</div>
-     <div class="studio-actions"><button class="ghost" id="downloadEdited" disabled>↓ Download edited image</button></div>
-    </div>
-    <div id="readerPanel" class="studio-card" style="display:none">
-     <label class="studio-label">Upload an image (JPG, PNG or WebP)</label><div class="upload-box"><input id="readerFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"></div>
-     <div id="readerPreview" class="studio-output" style="margin-top:12px">Choose an image to preview it here.</div>
-     <button class="primary full" id="analyzeImage" style="margin-top:13px">▧ Read text in image</button>
-     <div class="analysis-result" id="analysisResult"></div>
-     <p class="studio-note">This reader extracts visible text (OCR). It is not a full visual understanding tool.</p>
-    </div>
-    <div id="videoPanel" class="studio-card" style="display:none">
-     <label class="studio-label">AI video generation</label><p style="color:var(--muted);font-size:13px;line-height:1.6">Video models can consume more credits than images. This feature is not activated in this version, so you won't accidentally start a paid generation.</p>
-     <textarea class="studio-text" id="videoPrompt" placeholder="A cinematic drone shot over the sea at golden hour..." maxlength="900"></textarea>
-     <button class="ghost full" id="videoPreview" style="margin-top:12px">▶ Preview demo (test mode)</button>
-     <div class="studio-output" id="videoOutput" style="margin-top:12px">Video preview appears here.</div>
-     <p class="studio-note">Test mode only returns a sample clip. Real video generation is not enabled here because it may use paid credits.</p>
-     <button class="ghost full" onclick="window.open('https://docs.puter.com/AI/txt2vid/','_blank')" style="margin-top:10px">View video API documentation ↗</button>
-    </div>
-   </div>
-  </section>
-</div>
-
-<div class="modal-backdrop" id="loginModal">
-  <div class="modal">
-    <div class="brand" style="padding:0 0 18px"><div class="logo">M</div><div><strong>Mazen AI</strong><small>Welcome to your workspace</small></div></div>
-    <h2>Let's get started.</h2><p>Enter a display name or email to personalize this workspace.</p>
-    <input class="field" id="loginName" placeholder="Username or email" autocomplete="username" maxlength="70">
-    <label class="checkrow"><input type="checkbox" id="robotCheck"><span>I'm not a robot</span></label>
-    <button class="primary full" id="loginBtn">Continue →</button>
-    <p class="fine">This is a local profile prompt, not secure account authentication. Your profile stays in this browser.</p>
-  </div>
-</div>
-
-<div class="overlay" id="callOverlay">
-  <div class="call-card">
-    <div class="call-avatar">M</div><h2>Mazen AI</h2><div class="call-status" id="callStatus">Voice session ready</div>
-    <p style="color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 24px">Speak naturally. Your browser's speech recognition and speech synthesis capabilities are used when available.</p>
-    <div class="call-controls"><button class="round" id="micBtn" title="Start listening">🎙</button><button class="round hang" id="hangBtn" title="End call">✕</button></div>
-  </div>
-</div>
-
-<div class="settings" id="settingsModal">
- <div class="settings-card">
-  <h3>API settings</h3>
-  <p>Add your Groq API key to enable live AI replies. The key is stored in this browser's LocalStorage for this personal demo.</p>
-  <input class="field" id="apiKeyInput" type="password" placeholder="gsk_..." autocomplete="off">
-  <label style="display:flex;gap:9px;align-items:center;font-size:12px;color:#c7cfe4;margin:3px 0 12px"><input type="checkbox" id="showKey"> Show API key</label>
-  <label style="font-size:12px;color:#aeb8d2">Model</label>
-  <select class="field" id="modelSelect">
-   <option value="openai/gpt-oss-120b">openai/gpt-oss-120b (recommended)</option>
-   <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (legacy)</option>
-   <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
-  </select>
-  <p class="small">Security: LocalStorage is not secure secret storage. Anyone with access to this browser profile or its developer tools can inspect the key. Do not use this setup for a public/production website; use a server-side proxy and environment variable instead.</p>
-  <div class="row"><button class="primary" id="saveSettings" style="flex:1">Save settings</button><button class="ghost" id="closeSettings">Close</button></div>
-  <button class="ghost" id="removeKey" style="width:100%;margin-top:9px">Remove saved API key</button>
+<div class="app" id="appRoot">
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><div class="logo">M</div><span>MAZEN AI</span></div>
+ <button class="sidebtn primary" id="newChat">＋ New chat</button>
+ <div class="navgroup">
+  <button class="navbtn" data-panel="chat">💬 Chat</button>
+  <button class="navbtn" data-panel="studio">🎨 AI Studio</button>
+  <button class="navbtn" data-panel="voice">🎙️ Voice call</button>
  </div>
+ <div class="label">Recent conversations</div><div class="history" id="history"></div>
+ <div class="sidebottom">
+  <button class="navbtn" data-panel="settings">⚙️ Settings</button>
+  <div class="notice">Created by Mazen Rihani<br>MAZEN AI · V3</div>
+ </div>
+</aside>
+<div class="overlay" id="overlay"></div>
+<main class="main">
+ <header class="topbar"><button class="iconbtn" id="menu" aria-label="Open menu">☰</button><button class="secondarybtn" id="backBtn" type="button">← رجوع</button><strong id="pageTitle">MAZEN AI</strong><span class="spacer"></span><span class="status" id="connection">Backend not configured</span></header>
+ <section class="content">
+  <div class="panel active" id="chatPanel">
+   <div class="welcome" id="welcome"><h1>Meet MAZEN AI</h1><p>Your AI assistant, created by Mazen Rihani.</p></div>
+   <div class="messages" id="messages"></div>
+  </div>
+  <div class="panel" id="studioPanel">
+   <div class="sectionhead"><h2>AI Studio</h2><div class="muted">Create images with an available image provider.</div></div>
+   <div class="card">
+    <h3>🎨 Image Generator</h3>
+    <div class="field"><label for="imagePrompt">Describe the image</label><textarea id="imagePrompt" placeholder="A cinematic rainy street in Jeddah at dawn, realistic photography..."></textarea></div>
+    <div class="row"><button class="primarybtn" id="generateImage">Generate image</button><span class="muted small" id="imageStatus">Puter sign-in may be required.</span></div>
+    <div id="imageResult" class="imagegrid" style="margin-top:18px"></div>
+    <p class="notice">Image generation uses Puter.js. Availability, sign-in and usage limits are controlled by Puter. This app does not promise unlimited free generations.</p>
+   </div>
+   <div class="card">
+    <h3>🖌️ Image upload / preview</h3>
+    <div class="field"><label for="imageUpload">Choose an image</label><input id="imageUpload" type="file" accept="image/*"></div>
+    <img id="uploadPreview" class="preview hidden" alt="Uploaded preview">
+    <p class="notice">Image editing by text instructions requires an image-editing provider. This version previews uploads but will not pretend an edit happened without a connected provider.</p>
+   </div>
+   <div class="card"><h3>🎬 Video Generator</h3><p class="muted">Video generation provider is not connected yet. This section is intentionally marked unavailable rather than showing fake results.</p></div>
+  </div>
+  <div class="panel" id="voicePanel">
+   <div class="sectionhead"><h2>Voice call</h2><div class="muted">Speak, let MAZEN AI process your words, then hear its reply.</div></div>
+   <div class="card callbox">
+    <div class="callorb">🎙️</div><div class="callstatus" id="callStatus">Call is not active</div>
+    <div class="row" style="justify-content:center">
+     <button class="primarybtn" id="startCall">Start call</button>
+     <button class="secondarybtn" id="muteCall" disabled>Mute mic</button>
+     <button class="secondarybtn" id="stopCall" disabled>End call</button>
+    </div>
+    <div class="field" style="max-width:300px;margin:18px auto"><label for="voiceLanguage">Recognition language</label><select id="voiceLanguage"><option value="ar-SA">Arabic</option><option value="en-US">English</option><option value="fr-FR">French</option></select></div>
+    <div class="calltranscript" id="transcript">Your recognized speech and AI replies will appear here.</div>
+    <p class="notice">Voice recognition depends on browser support and may require internet. Chrome on HTTPS is recommended. Arabic dialect recognition can vary by device.</p>
+   </div>
+  </div>
+  <div class="panel" id="settingsPanel">
+   <div class="sectionhead"><h2>Settings</h2><div class="muted">Connect the secure backend and customize MAZEN AI.</div></div>
+   <div class="card">
+    <div class="field"><label for="backendUrl">Cloudflare Worker backend URL</label><input id="backendUrl" placeholder="https://your-worker.your-subdomain.workers.dev"></div>
+    <button class="primarybtn" id="saveSettings">Save settings</button>
+    <p class="notice">The Groq API key belongs in Cloudflare Worker Secrets, never in this page, LocalStorage or GitHub. The browser only stores your backend URL.</p>
+   </div>
+   <div class="card">
+    <h3>About</h3><p>MAZEN AI was created and developed by <b>Mazen Rihani</b>.</p>
+    <p class="notice">Conversation history is stored in this browser's LocalStorage. Clearing browser data may remove it. Do not use this as production authentication.</p>
+   </div>
+  </div>
+ </section>
+ <div class="composer-wrap" id="composerWrap">
+  <div class="composer"><textarea id="prompt" rows="1" placeholder="Message MAZEN AI..."></textarea><button class="iconbtn" id="clearChat" title="Clear current chat">⌫</button><button class="iconbtn send" id="send">➤</button></div>
+  <div class="notice" style="text-align:center;margin-top:7px">MAZEN AI can make mistakes. Check important information.</div>
+ </div>
+</main>
 </div>
-<div class="toast" id="toast"></div>
-
+<div id="toast" class="toast hidden"></div>
 <script>
 const $=id=>document.getElementById(id);
-const STORE={profile:"mazen_profile_v1",history:"mazen_history_v1",key:"mazen_groq_key_v1",model:"mazen_model_v1"};
-let chats=JSON.parse(localStorage.getItem(STORE.history)||"[]");
-let activeId=null, busy=false, recognition=null, listening=false;
-const MODEL_DEFAULT="openai/gpt-oss-120b";
-function persist(){localStorage.setItem(STORE.history,JSON.stringify(chats))}
+const KEYS={backend:'mazen_backend_url',chats:'mazen_chats_v3',active:'mazen_active_chat'};
+let chats=JSON.parse(localStorage.getItem(KEYS.chats)||'[]'), activeId=localStorage.getItem(KEYS.active)||null;
+let callActive=false, muted=false, recognition=null, speaking=false;
+let panelStack=['chat'];
+const systemPrompt=`You are MAZEN AI, an intelligent AI assistant created and developed by Mazen Rihani. If asked who created, developed, built, or made you, answer that Mazen Rihani is your creator. Apply this in every language. Respond in the same language as the user, including natural Moroccan Darija, Arabic, English and French. Be helpful, honest, and clear. Never claim to have capabilities or completed actions that you do not have.`;
+function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),4200)}
+function backend(){return localStorage.getItem(KEYS.backend)||''}
+function updateConnection(){$('connection').textContent=backend()?'Backend configured':'Backend not configured'}
+function saveChats(){localStorage.setItem(KEYS.chats,JSON.stringify(chats));localStorage.setItem(KEYS.active,activeId||'');renderHistory()}
 function current(){return chats.find(c=>c.id===activeId)}
-function makeChat(){const c={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),title:"New conversation",messages:[],updated:Date.now()};chats.unshift(c);activeId=c.id;persist();renderHistory();renderMessages()}
-function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2600)}
-function renderHistory(){
- const box=$("history");box.innerHTML="";
- chats.slice(0,40).forEach(c=>{const b=document.createElement("button");b.className="history-item"+(c.id===activeId?" active":"");b.textContent="◦  "+c.title;b.title=c.title;b.onclick=()=>{activeId=c.id;renderHistory();renderMessages();$("sidebar").classList.remove("open")};box.appendChild(b)});
+function newChat(){const c={id:crypto.randomUUID(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);activeId=c.id;saveChats();renderMessages();showPanel('chat')}
+function renderHistory(){$('history').innerHTML='';chats.slice(0,60).forEach(c=>{const row=document.createElement('div');row.className='historyitem';const b=document.createElement('button');b.textContent=c.title||'New conversation';b.onclick=()=>{activeId=c.id;saveChats();renderMessages();showPanel('chat');closeSidebar()};const d=document.createElement('button');d.className='del';d.textContent='×';d.title='Delete conversation';d.onclick=()=>{if(confirm('Delete this conversation?')){chats=chats.filter(x=>x.id!==c.id);if(activeId===c.id)activeId=chats[0]?.id||null;saveChats();renderMessages()}};row.append(b,d);$('history').append(row)})}
+function renderMessages(){const c=current();$('messages').innerHTML='';$('welcome').classList.toggle('hidden',!!(c&&c.messages.length));if(!c)return;c.messages.forEach(m=>addMessage(m.role,m.content,false))}
+function addMessage(role,content,save=true){const box=document.createElement('div');box.className='msg '+(role==='user'?'user':'ai');const head=document.createElement('div');head.className='msghead';head.textContent=role==='user'?'You':'MAZEN AI';const body=document.createElement('div');body.textContent=content;box.append(head,body);$('messages').append(box);if(save){let c=current();if(!c){newChat();c=current()}c.messages.push({role,content});if(c.messages.length===1&&role==='user')c.title=content.slice(0,36);c.updated=Date.now();chats.sort((a,b)=>b.updated-a.updated);saveChats();$('welcome').classList.add('hidden')}box.scrollIntoView({block:'end',behavior:'smooth'});return body}
+async function askAI(text,voice=false){const url=backend().replace(/\/$/,'');if(!url){throw new Error('Backend URL is missing. Open Settings and add your Cloudflare Worker URL.')}let c=current();if(!c){newChat();c=current()}let prior=c.messages.slice(-20).map(m=>({role:m.role,content:m.content}));if(prior.length&&prior[prior.length-1].role==='user'&&prior[prior.length-1].content===text){}else{prior.push({role:'user',content:text})}const res=await fetch(url+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:systemPrompt},...prior]})});let data={};try{data=await res.json()}catch{}if(!res.ok)throw new Error(data.error||('Backend error '+res.status));const answer=data.reply||data.choices?.[0]?.message?.content;if(!answer)throw new Error('The AI returned an empty response.');return answer}
+async function sendMessage(text){text=text.trim();if(!text)return;if(!backend()){toast('Add your Cloudflare Worker URL in Settings first.');showPanel('settings');return}addMessage('user',text);$('prompt').value='';const wait=showTyping();try{const reply=await askAI(text);const body=document.createElement('div');wait.classList.remove('typing');wait.innerHTML='<div class="msghead">MAZEN AI</div>';wait.append(body);await typeReply(body,reply);const c=current();c.messages.push({role:'assistant',content:reply});c.updated=Date.now();saveChats()}catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MAZEN AI: '+e.message;toast(e.message)}}
+$('send').onclick=()=>sendMessage($('prompt').value);$('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage($('prompt').value)}});
+$('newChat').onclick=newChat;$('clearChat').onclick=()=>{const c=current();if(c&&confirm('Clear messages in this conversation?')){c.messages=[];c.title='New conversation';saveChats();renderMessages()}};
+function showPanel(name, remember=true){
+ if(!$(name+'Panel')) name='chat';
+ const currentPanel=document.querySelector('.panel.active')?.id?.replace('Panel','')||'chat';
+ if(remember && currentPanel!==name) panelStack.push(currentPanel);
+ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+ $(name+'Panel').classList.add('active');
+ $('composerWrap').classList.toggle('hidden',name!=='chat');
+ $('pageTitle').textContent=({chat:'MAZEN AI',studio:'AI Studio',voice:'Voice call',settings:'Settings'})[name]||'MAZEN AI';
+ $('backBtn').classList.toggle('hidden',name==='chat');
 }
-function addMessage(role,content){
- const c=current();if(!c)return;c.messages.push({role,content});c.updated=Date.now();
- if(c.messages.filter(m=>m.role==="user").length===1)c.title=content.slice(0,38)+(content.length>38?"…":"");
- chats.sort((a,b)=>b.updated-a.updated);persist();renderHistory();appendMessage(role,content);
+function goBack(){
+ const currentPanel=document.querySelector('.panel.active')?.id?.replace('Panel','')||'chat';
+ if(currentPanel!=='chat'){panelStack.pop();showPanel('chat',false);closeSidebar();return;}
+ if($('sidebar').classList.contains('open')){closeSidebar();return;}
+ if(innerWidth>760 && !$('sidebar').classList.contains('collapsed')){$('sidebar').classList.add('collapsed');$('appRoot').classList.add('sidebar-collapsed');return;}
 }
-function appendMessage(role,content){
- $("welcome").style.display="none";
- const el=document.createElement("div");el.className="message "+(role==="user"?"user":"ai");
- const av=document.createElement("div");av.className="msg-avatar";av.textContent=role==="user"?"You":"M";
- const bubble=document.createElement("div");bubble.className="bubble";bubble.textContent=content;
- el.append(av,bubble);$("messages").appendChild(el);$("chat").scrollTop=$("chat").scrollHeight;
-}
-function renderMessages(){
- $("messages").innerHTML="";const c=current();
- if(!c||!c.messages.length){$("welcome").style.display="block";return}
- $("welcome").style.display="none";c.messages.forEach(m=>appendMessage(m.role,m.content));
-}
-function showTyping(){const el=document.createElement("div");el.id="typing";el.className="message ai";el.innerHTML='<div class="msg-avatar">M</div><div class="bubble typing"><i></i><i></i><i></i></div>';$("messages").appendChild(el);$("chat").scrollTop=$("chat").scrollHeight}
-async function askAI(text){
- const key=localStorage.getItem(STORE.key);if(!key){toast("Add your Groq API key in API settings first.");openSettings();return}
- const c=current();const history=c.messages.slice(-18).map(m=>({role:m.role==="ai"?"assistant":"user",content:m.content}));
- showTyping();busy=true;
- try{
-  const model=localStorage.getItem(STORE.model)||MODEL_DEFAULT;
-  const response=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},body:JSON.stringify({model,messages:[{role:"system",content:"You are Mazen AI, a helpful, respectful multilingual assistant. Reply in the language used by the user unless asked otherwise. Keep responses clear and age-appropriate."},...history],temperature:.7,max_completion_tokens:1800})});
-  const data=await response.json();if(!response.ok)throw new Error(data.error?.message||"Groq API request failed ("+response.status+")");
-  const answer=data.choices?.[0]?.message?.content?.trim()||"I couldn't generate a response.";
-  $("typing")?.remove();addMessage("ai",answer);
- }catch(e){$("typing")?.remove();appendMessage("ai","I couldn't reach the AI service. "+e.message+"\n\nCheck your API key, model access, internet connection, and Groq usage limits.");}
- finally{busy=false}
-}
-function send(text){
- text=(text||"").trim();if(!text||busy)return;if(!current())makeChat();
- addMessage("user",text);$("prompt").value="";$("prompt").style.height="auto";askAI(text);
-}
-$("chatForm").addEventListener("submit",e=>{e.preventDefault();send($("prompt").value)});
-$("prompt").addEventListener("input",e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,150)+"px"});
-$("prompt").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("chatForm").requestSubmit()}});
-document.querySelectorAll(".suggestion").forEach(b=>b.addEventListener("click",()=>send(b.textContent.replace(/^[✦✧⌘◈]\s*/,""))));
-$("newChat").onclick=()=>{makeChat();$("sidebar").classList.remove("open")};
-$("clearHistory").onclick=()=>{if(confirm("Delete all saved conversations from this browser?")){chats=[];activeId=null;persist();makeChat();toast("Conversation history cleared.")}};
-$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
-function openSettings(){$("apiKeyInput").value=localStorage.getItem(STORE.key)||"";$("modelSelect").value=localStorage.getItem(STORE.model)||MODEL_DEFAULT;$("settingsModal").style.display="grid"}
-$("settingsBtn").onclick=openSettings;$("topSettings").onclick=openSettings;
-$("closeSettings").onclick=()=>$("settingsModal").style.display="none";
-$("saveSettings").onclick=()=>{const key=$("apiKeyInput").value.trim();if(key)localStorage.setItem(STORE.key,key);else localStorage.removeItem(STORE.key);localStorage.setItem(STORE.model,$("modelSelect").value);$("settingsModal").style.display="none";toast("Settings saved in this browser.")};
-$("removeKey").onclick=()=>{localStorage.removeItem(STORE.key);$("apiKeyInput").value="";toast("Saved API key removed.")};
-$("showKey").onchange=()=>{$("apiKeyInput").type=$("showKey").checked?"text":"password"};
-$("loginBtn").onclick=()=>{const name=$("loginName").value.trim();if(!name){toast("Please enter a username or email.");return}if(!$("robotCheck").checked){toast("Please complete the verification checkbox.");return}localStorage.setItem(STORE.profile,name);$("loginModal").style.display="none";setupProfile()};
-function setupProfile(){const name=localStorage.getItem(STORE.profile)||"Guest";$("profileName").textContent=name;$("profileInitial").textContent=name.charAt(0).toUpperCase()}
-const savedProfile=localStorage.getItem(STORE.profile);if(savedProfile){$("loginModal").style.display="none";setupProfile()}else{$("loginModal").style.display="grid"}
-if(!chats.length)makeChat();else{activeId=chats[0].id;renderHistory();renderMessages()}
+$('backBtn').onclick=goBack;
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSidebar();if(document.querySelector('.panel.active')?.id!=='chatPanel')goBack();}});
 
-
-// AI Studio uses Puter.js; generation is user-pays and may require Puter sign-in.
-function showStudio(tab='image'){
- $('main')?.style?.setProperty('display','none');
- document.querySelector('.main.glass:not(.studio)').style.display='none';
- $('studioView').style.display='block';$('studioView').style.flex='1';$('studioView').style.overflow='auto';
- $('studioBtn').classList.add('active');$('sidebar').classList.remove('open');selectStudioTab(tab);
-}
-function showChatView(){document.querySelector('.main.glass:not(.studio)').style.display='flex';$('studioView').style.display='none';$('studioBtn').classList.remove('active');$('sidebar').classList.remove('open')}
-function selectStudioTab(tab){
- const map={image:['imagePanel','imageTab'],reader:['readerPanel','readerTab'],video:['videoPanel','videoTab']};
- Object.entries(map).forEach(([k,[panel,btn]])=>{$(panel).style.display=k===tab?'block':'none';$(btn).classList.toggle('active',k===tab)});
-}
-$('studioBtn').onclick=()=>{if($('studioView').style.display==='block')showChatView();else showStudio()};
-$('backToChat').onclick=showChatView;
-$('imageTab').onclick=()=>selectStudioTab('image');$('readerTab').onclick=()=>selectStudioTab('reader');$('videoTab').onclick=()=>selectStudioTab('video');
-let lastGeneratedImage=null, readerImage=null;
-$('generateImage').onclick=async()=>{
- const prompt=$('imagePrompt').value.trim();if(!prompt){toast('Write a description first.');return}
- if(!window.puter?.ai?.txt2img){toast('Puter service did not load. Check your internet and refresh.');return}
- const btn=$('generateImage'),out=$('imageOutput');btn.disabled=true;btn.textContent='Generating…';out.textContent='Creating your image. This may take a little while…';$('downloadImage').disabled=true;
- try{
-  const style=$('imageStyle').value;const fullPrompt=style?prompt+', '+style:prompt;
-  const img=await puter.ai.txt2img(fullPrompt,{model:$('imageModel').value});
-  img.alt=prompt;img.style.maxWidth='100%';img.style.maxHeight='620px';img.style.objectFit='contain';
-  out.innerHTML='';out.appendChild(img);lastGeneratedImage=img;$('downloadImage').disabled=false;toast('Image generated.');
- }catch(e){out.textContent='Could not generate image: '+(e?.message||String(e))+'\n\nCheck Puter sign-in, account allowance, and model availability.'}
- finally{btn.disabled=false;btn.textContent='✦ Generate image'}
-};
-$('downloadImage').onclick=()=>{if(!lastGeneratedImage?.src)return;const a=document.createElement('a');a.href=lastGeneratedImage.src;a.download='mazen-ai-image.png';a.target='_blank';document.body.appendChild(a);a.click();a.remove()};
-let editSourceFile=null,lastEditedImage=null;
-$('editFile').onchange=()=>{editSourceFile=$('editFile').files?.[0]||null;const box=$('editPreview');box.innerHTML='';if(!editSourceFile){box.textContent='Upload an image to edit it.';return}if(!editSourceFile.type.startsWith('image/')){box.textContent='Please choose an image file.';editSourceFile=null;return}const img=document.createElement('img');img.src=URL.createObjectURL(editSourceFile);img.alt='Image to edit';box.appendChild(img)};
-$('editImage').onclick=async()=>{const prompt=$('editPrompt').value.trim();if(!editSourceFile){toast('Upload an image first.');return}if(!prompt){toast('Describe the changes you want.');return}if(!window.puter?.ai?.txt2img){toast('Puter service did not load.');return}const btn=$('editImage');btn.disabled=true;btn.textContent='Editing…';$('editOutput').textContent='Applying your changes…';$('downloadEdited').disabled=true;try{const img=await puter.ai.txt2img(prompt,{model:$('imageModel').value,input_image:editSourceFile});img.alt='AI edited image';img.style.maxWidth='100%';img.style.maxHeight='620px';img.style.objectFit='contain';$('editOutput').innerHTML='';$('editOutput').appendChild(img);lastEditedImage=img;$('downloadEdited').disabled=false;toast('Image edit complete.')}catch(e){$('editOutput').textContent='Could not edit image: '+(e?.message||String(e))+'\nCheck model support, Puter sign-in, and account allowance.'}finally{btn.disabled=false;btn.textContent='✧ Edit uploaded image'}};
-$('downloadEdited').onclick=()=>{if(!lastEditedImage?.src)return;const a=document.createElement('a');a.href=lastEditedImage.src;a.download='mazen-ai-edited.png';a.target='_blank';document.body.appendChild(a);a.click();a.remove()};
-$('videoPreview').onclick=async()=>{const prompt=$('videoPrompt').value.trim();if(!prompt){toast('Write a video description first.');return}if(!window.puter?.ai?.txt2vid){toast('Puter service did not load.');return}const btn=$('videoPreview');btn.disabled=true;btn.textContent='Loading sample…';$('videoOutput').textContent='Loading a sample clip…';try{const v=await puter.ai.txt2vid(prompt,true);v.controls=true;v.style.maxWidth='100%';$('videoOutput').innerHTML='';$('videoOutput').appendChild(v)}catch(e){$('videoOutput').textContent='Sample unavailable: '+(e?.message||String(e))}finally{btn.disabled=false;btn.textContent='▶ Preview demo (test mode)'}};
-$('clearImage').onclick=()=>{lastGeneratedImage=null;$('imageOutput').textContent='Your generated image will appear here.';$('downloadImage').disabled=true};
-$('readerFile').onchange=()=>{const f=$('readerFile').files?.[0];readerImage=f;$('analysisResult').textContent='';const box=$('readerPreview');box.innerHTML='';if(!f){box.textContent='Choose an image to preview it here.';return}if(!f.type.startsWith('image/')){box.textContent='Please choose an image file.';readerImage=null;return}const img=document.createElement('img');img.src=URL.createObjectURL(f);img.alt='Uploaded preview';box.appendChild(img)};
-$('analyzeImage').onclick=async()=>{if(!readerImage){toast('Choose an image first.');return}if(!window.puter?.ai?.img2txt){toast('Puter service did not load.');return}const btn=$('analyzeImage');btn.disabled=true;btn.textContent='Reading image…';$('analysisResult').textContent='Extracting visible text…';try{const result=await puter.ai.img2txt(readerImage);$('analysisResult').textContent=result||'No readable text found.'}catch(e){$('analysisResult').textContent='Could not read this image: '+(e?.message||String(e))}finally{btn.disabled=false;btn.textContent='▧ Read text in image'}};
-
-// Voice interface: browser speech APIs where supported. This is not a telephone/network call.
-$("callBtn").onclick=()=>{$("callOverlay").style.display="grid";$("callStatus").textContent="Voice session ready"};
-function stopListening(){if(recognition){try{recognition.stop()}catch(e){}}listening=false;$("micBtn").textContent="🎙";$("callStatus").textContent="Voice session ready"}
-$("micBtn").onclick=()=>{
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(listening){stopListening();return}
- if(!SR){$("callStatus").textContent="Speech recognition isn't supported in this browser.";return}
- recognition=new SR();recognition.lang="";recognition.interimResults=false;recognition.continuous=false;
- recognition.onstart=()=>{listening=true;$("micBtn").textContent="⏹";$("callStatus").textContent="Listening…"};
- recognition.onerror=()=>{$("callStatus").textContent="Microphone unavailable or permission denied.";stopListening()};
- recognition.onend=()=>{listening=false;$("micBtn").textContent="🎙"};
- recognition.onresult=e=>{const spoken=e.results[0][0].transcript;$("callStatus").textContent="Thinking…";send(spoken);};
- try{recognition.start()}catch(e){$("callStatus").textContent="Couldn't start microphone."}
-};
-$("hangBtn").onclick=()=>{stopListening();$("callOverlay").style.display="none";if("speechSynthesis"in window)speechSynthesis.cancel()};
-
-// Double-click an AI response to read it aloud.
-$("messages").addEventListener("dblclick",e=>{const bubble=e.target.closest(".message.ai .bubble");if(!bubble||!("speechSynthesis"in window))return;const u=new SpeechSynthesisUtterance(bubble.textContent);speechSynthesis.speak(u)});
+document.querySelectorAll('[data-panel]').forEach(b=>b.onclick=()=>{showPanel(b.dataset.panel);closeSidebar()});
+function openSidebar(){$('sidebar').classList.add('open');$('overlay').classList.add('show')}function closeSidebar(){$('sidebar').classList.remove('open');$('overlay').classList.remove('show')}
+$('menu').onclick=()=>{if(innerWidth<=760){$('sidebar').classList.contains('open')?closeSidebar():openSidebar()}else{const isCollapsed=$('sidebar').classList.toggle('collapsed');$('appRoot').classList.toggle('sidebar-collapsed',isCollapsed)}};$('overlay').onclick=closeSidebar;
+$('saveSettings').onclick=()=>{const v=$('backendUrl').value.trim();if(v&&!/^https:\/\/.+/.test(v)){toast('Use your HTTPS Worker URL.');return}localStorage.setItem(KEYS.backend,v);updateConnection();toast('Backend URL saved in this browser.')};
+$('backendUrl').value=backend();updateConnection();$('backBtn').classList.add('hidden');
+$('generateImage').onclick=async()=>{const p=$('imagePrompt').value.trim();if(!p)return toast('Write an image prompt first.');$('imageStatus').textContent='Connecting to image provider…';$('generateImage').disabled=true;try{if(!window.puter?.ai?.txt2img)throw new Error('Puter image generation SDK is unavailable. Refresh and try again.');const result=await puter.ai.txt2img(p);let img;if(result instanceof HTMLImageElement)img=result;else if(result?.querySelector)img=result.querySelector('img');else if(typeof result==='string'){img=document.createElement('img');img.src=result}if(!img||!img.src)throw new Error('The provider returned no usable image.');img.className='preview';img.alt='Generated image';const wrap=document.createElement('div');wrap.append(img);const a=document.createElement('a');a.className='secondarybtn';a.textContent='Download image';a.download='mazen-ai-image.png';a.href=img.src;a.style.display='inline-block';a.style.marginTop='8px';wrap.append(a);$('imageResult').prepend(wrap);$('imageStatus').textContent='Image generated.'}catch(e){const detail=typeof e==='string'?e:(e?.message||JSON.stringify(e));$('imageStatus').textContent='Generation failed: '+detail;toast('Image generation failed: '+detail)}finally{$('generateImage').disabled=false}};
+$('imageUpload').onchange=e=>{const f=e.target.files?.[0];if(!f)return;const img=$('uploadPreview');img.src=URL.createObjectURL(f);img.classList.remove('hidden')};
+function setCallStatus(s){$('callStatus').textContent=s}
+function appendTranscript(s){const t=$('transcript');if(t.textContent==='Your recognized speech and AI replies will appear here.')t.textContent='';t.textContent+=(t.textContent?'\n\n':'')+s}
+function stopSpeech(){if('speechSynthesis'in window)speechSynthesis.cancel();speaking=false}
+function speak(text){if(!('speechSynthesis'in window)){setCallStatus('Speech playback is not supported in this browser.');return}stopSpeech();const u=new SpeechSynthesisUtterance(text);u.lang=$('voiceLanguage').value;u.onstart=()=>{speaking=true;setCallStatus('Speaking…')};u.onend=()=>{speaking=false;if(callActive&&!muted)startRecognition()};u.onerror=()=>{speaking=false;if(callActive&&!muted)startRecognition()};speechSynthesis.speak(u)}
+function startRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){setCallStatus('Speech recognition is not supported. Try Chrome.');return}if(!callActive||muted||speaking)return;try{recognition=new SR();recognition.lang=$('voiceLanguage').value;recognition.continuous=false;recognition.interimResults=false;recognition.onstart=()=>setCallStatus('Listening…');recognition.onerror=e=>{setCallStatus('Microphone: '+e.error);if(e.error==='not-allowed')toast('Allow microphone access in browser settings.')};recognition.onend=()=>{if(callActive&&!muted&&!speaking&&$('callStatus').textContent==='Listening…')setTimeout(startRecognition,350)};recognition.onresult=async e=>{const spoken=e.results[0][0].transcript;appendTranscript('You: '+spoken);setCallStatus('Thinking…');try{const answer=await askAI(spoken);const c=current();if(c){c.messages.push({role:'user',content:spoken},{role:'assistant',content:answer});if(c.messages.length<=2)c.title=spoken.slice(0,36);saveChats()}appendTranscript('MAZEN AI: '+answer);speak(answer)}catch(err){appendTranscript('Error: '+err.message);setCallStatus('Could not reach AI');toast(err.message);if(callActive)setTimeout(startRecognition,900)}};recognition.start()}catch(e){setCallStatus('Could not start microphone: '+e.message)}}
+$('startCall').onclick=()=>{if(!backend()){toast('Add your backend URL in Settings first.');showPanel('settings');return}callActive=true;muted=false;$('startCall').disabled=true;$('muteCall').disabled=false;$('stopCall').disabled=false;$('muteCall').textContent='Mute mic';startRecognition()};
+$('muteCall').onclick=()=>{muted=!muted;if(muted){try{recognition?.stop()}catch{}setCallStatus('Microphone muted')}else startRecognition();$('muteCall').textContent=muted?'Unmute mic':'Mute mic'};
+$('stopCall').onclick=()=>{callActive=false;muted=false;try{recognition?.stop()}catch{}stopSpeech();$('startCall').disabled=false;$('muteCall').disabled=true;$('stopCall').disabled=true;setCallStatus('Call ended')};
+if(!activeId&&chats.length)activeId=chats[0].id;if(!activeId)newChat();else{saveChats();renderMessages()}
 </script>
-</body>
-</html>
+</body></html>
