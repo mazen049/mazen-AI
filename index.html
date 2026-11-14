@@ -92,7 +92,7 @@ button:active,.btn:active{transform:scale(.97)}
 <header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> MAZEN AI · Beta</span><button class="btn secondary" id="installApp" type="button">⬇ Install app</button><button class="iconbtn" id="topSettings">⚙</button></div></header>
 
 <section class="view active" id="home">
-  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Make ideas <span class="gradient">happen.</span></h1><p>One workspace for conversations, image creation, voice tools and video projects. Built to grow with you.</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
+  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Welcome, <span class="gradient" id="welcomeName">there</span>!</h1><p>I’m MAZEN AI — your creative intelligence workspace. What would you like to make today?</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
   <div class="grid">
     <div class="card toolcard" data-go="chat"><div class="toolicon">✧</div><h3>AI Chat</h3><p>Ask questions, write, learn and brainstorm in multiple languages.</p></div>
     <div class="card toolcard" data-go="image"><div class="toolicon">▧</div><h3>Image Studio</h3><p>Generate images from text prompts with the connected image service.</p></div>
@@ -250,13 +250,19 @@ function exportHistory(){
   document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Backup downloaded');
 }
 function clearHistory(){if(!chats.length){toast('History is already empty');return}if(confirm('Delete local conversation history from this browser? Export a backup first if you want to keep it.')){chats=[];active='';save();renderHistory();renderChat();toast('History cleared')}}
+function getDisplayNameFromEmail(email){
+  const local=String(email||'').split('@')[0].split('+')[0];
+  const cleaned=local.replace(/[._-]+/g,' ').replace(/\d+/g,' ').replace(/\s+/g,' ').trim();
+  if(!cleaned)return 'there';
+  return cleaned.split(' ').slice(0,3).map(part=>part.charAt(0).toUpperCase()+part.slice(1)).join(' ');
+}
 function setAuthUI(session){
   const user=session?.user||null;
   authenticatedUser=user;
   $('authGate').classList.toggle('hidden',!!user);
   document.querySelector('.shell').classList.toggle('hidden',!user);
   if(user){
-    $('profileName').textContent=user.email?.split('@')[0]||'MAZEN AI user';
+    const displayName=getDisplayNameFromEmail(user.email);$('profileName').textContent=displayName;$('welcomeName').textContent=displayName;
     $('profileEmail').textContent=user.email||'Signed in';
     $('accountEmail').textContent=user.email||'Signed-in account';
     $('accountConfigStatus').textContent='Your account is active. Your MAZEN AI session is secured by Supabase.';
