@@ -16,6 +16,34 @@
 #mazenSplash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#242047 0,#080914 58%);transition:opacity .75s ease,visibility .75s ease}#mazenSplash.hide{opacity:0;visibility:hidden;pointer-events:none}#mazenSplash .splashMark{width:104px;height:104px;border-radius:30px;display:grid;place-items:center;color:#080914;font:800 48px 'Space Grotesk';background:linear-gradient(135deg,#8d73ff,#35e0c1);box-shadow:0 0 70px #8d73ff88;animation:mazenIn 1s ease both}#mazenSplash .splashName{margin-top:18px;text-align:center;font:700 20px 'Space Grotesk';letter-spacing:4px;color:#f4f5ff;animation:mazenIn 1.25s ease both}#mazenSplash .splashSub{margin-top:7px;text-align:center;color:#9da5c2;font-size:10px;letter-spacing:3px}@keyframes mazenIn{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
 @media(max-width:900px){.side{width:225px}.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.side{position:fixed;left:0;top:0;bottom:0;width:270px;transform:translateX(-105%);box-shadow:var(--shadow)}.side.open{transform:none}.hamb{display:inline-block}.main{padding:15px}.top{margin-bottom:18px}.hero{padding:22px}.grid,.two{grid-template-columns:1fr}.chatbox{min-height:300px}.msg{max-width:94%}.topright .pill{display:none}.composer{gap:6px}.composer .btn{padding:10px}.attachmenu{left:-4px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* MAZEN AI motion system */
+:root{scroll-behavior:smooth}
+body:after{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 18% 25%,#8d73ff16,transparent 28%),radial-gradient(circle at 82% 72%,#35e0c116,transparent 30%);animation:ambientDrift 18s ease-in-out infinite alternate}
+@keyframes ambientDrift{0%{transform:translate3d(-1.5%,0,0) scale(1)}100%{transform:translate3d(1.5%,-1%,0) scale(1.04)}}
+.view.active{animation:viewEnter .48s cubic-bezier(.2,.75,.25,1) both}
+@keyframes viewEnter{from{opacity:0;transform:translateY(14px);filter:blur(3px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.view.active .hero{animation:heroEnter .65s .06s both}
+@keyframes heroEnter{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:none}}
+.view.active .toolcard{animation:cardEnter .5s both}
+.view.active .toolcard:nth-child(1){animation-delay:.04s}.view.active .toolcard:nth-child(2){animation-delay:.09s}.view.active .toolcard:nth-child(3){animation-delay:.14s}.view.active .toolcard:nth-child(4){animation-delay:.19s}.view.active .toolcard:nth-child(5){animation-delay:.24s}.view.active .toolcard:nth-child(6){animation-delay:.29s}
+@keyframes cardEnter{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+button,.btn,.iconbtn,.nav button{transition:transform .2s ease,filter .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+button:active,.btn:active{transform:scale(.97)}
+.btn:hover{filter:brightness(1.12);box-shadow:0 10px 30px #765eff55}
+.iconbtn:hover{border-color:#9b87ff88;background:#8d73ff20}
+.logo{animation:logoGlow 4s ease-in-out infinite alternate}
+@keyframes logoGlow{from{box-shadow:0 0 18px #8d73ff44}to{box-shadow:0 0 32px #35e0c177}}
+.hero .eyebrow{animation:eyebrowIn .8s .12s both}
+@keyframes eyebrowIn{from{opacity:0;letter-spacing:5px}to{opacity:1;letter-spacing:2.5px}}
+.chatbox .msg{animation:messageIn .25s ease both}
+@keyframes messageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.input:focus,textarea:focus,select:focus{transition:box-shadow .2s,border-color .2s}
+#mazenSplash .splashMark{animation:mazenIn 1s ease both,logoGlow 2s 1s ease-in-out infinite alternate}
+#mazenSplash .splashName{animation:mazenIn 1.25s ease both}
+#mazenSplash .splashSub{animation:mazenIn 1.5s ease both}
+@media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}body:after,.logo,#mazenSplash .splashMark{animation:none!important}.view.active,.view.active .hero,.view.active .toolcard,.chatbox .msg{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -38,7 +66,7 @@
   <div class="sidebottom"><div class="profile"><div class="avatar">M</div><div><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small></div></div></div>
 </aside>
 <main class="main">
-<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> Studio ready</span><button class="iconbtn" id="topSettings">⚙</button></div></header>
+<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> MAZEN AI · Beta</span><button class="iconbtn" id="topSettings">⚙</button></div></header>
 
 <section class="view active" id="home">
   <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Make ideas <span class="gradient">happen.</span></h1><p>One workspace for conversations, image creation, voice tools and video projects. Built to grow with you.</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
@@ -99,7 +127,7 @@
 
 <section class="view" id="account">
   <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Connect Supabase for real sign-in. Bot verification requires server-side setup.</p></div></div>
-  <div class="card authgrid"><div class="status">Sign-in is inactive until you add your Supabase project URL and public anon/publishable key in Settings. Never use a service_role key in this page.</div>
+  <div class="card authgrid"><div class="status" id="accountConfigStatus">Checking account configuration… Never use a service_role key in this page.</div>
     <div class="field"><label>Email</label><input class="input" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
     <div class="field"><label>Password</label><input class="input" id="authPassword" type="password" autocomplete="current-password" placeholder="At least 8 characters"></div>
     <div class="row"><button class="btn" id="signIn">Sign in</button><button class="btn secondary" id="signUp">Create account</button><button class="btn secondary" id="signOut">Sign out</button></div>
@@ -187,9 +215,9 @@ function renderHistory(){
 }
 function clearHistory(){if(!chats.length){toast('History is already empty');return}if(confirm('Delete local conversation history from this browser?')){chats=[];active='';save();renderHistory();renderChat();toast('History cleared')}}
 function setupSupabase(){
-  const u=localStorage.getItem(K.sburl),k=localStorage.getItem(K.sbkey);
-  if(u&&k&&window.supabase){try{sb=window.supabase.createClient(u,k);$('authStatus').textContent='Supabase connected. You can sign in or create an account.';sb.auth.getSession().then(({data})=>updateProfile(data?.session?.user||null));sb.auth.onAuthStateChange((_event,session)=>updateProfile(session?.user||null))}catch(e){sb=null;$('authStatus').textContent='Could not initialize Supabase: '+e.message}}
-  else{$('authStatus').textContent='Supabase not configured. Add project URL and public anon key in Settings.';sb=null}
+  const u=localStorage.getItem(K.sburl),k=localStorage.getItem(K.sbkey),note=$('accountConfigStatus');
+  if(u&&k&&window.supabase){try{sb=window.supabase.createClient(u,k);$('authStatus').textContent='Supabase client initialized. Try signing in or creating an account.';if(note){note.textContent='Supabase settings are present in this browser. Sign-in still needs a successful test.';note.className='status success'}sb.auth.getSession().then(({data})=>updateProfile(data?.session?.user||null));sb.auth.onAuthStateChange((_event,session)=>updateProfile(session?.user||null))}catch(e){sb=null;$('authStatus').textContent='Could not initialize Supabase: '+e.message;if(note){note.textContent='Supabase setup error: '+e.message;note.className='status'}}}
+  else{$('authStatus').textContent='Supabase not configured. Add project URL and public anon key in Settings.';sb=null;if(note){note.textContent='Sign-in is not configured in this browser yet. Add the Project URL and public publishable key in Settings.';note.className='status'}}
 }
 function updateProfile(user){$('profileName').textContent=user?'Signed in':'Guest mode';$('profileEmail').textContent=user?.email||'Local session'}
 function validAuthFields(){const e=$('authEmail').value.trim(),p=$('authPassword').value;if(!e||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ $('authStatus').textContent='Enter a valid email address.';$('authEmail').focus();return false}if(p.length<8){$('authStatus').textContent='Password must be at least 8 characters.';$('authPassword').focus();return false}return true}
