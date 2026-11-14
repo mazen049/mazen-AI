@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080914">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MAZEN AI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MAZEN AI — Studio</title>
 <script src="https://js.puter.com/v2/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -66,7 +71,7 @@ button:active,.btn:active{transform:scale(.97)}
   <div class="sidebottom"><div class="profile"><div class="avatar">M</div><div><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small></div></div></div>
 </aside>
 <main class="main">
-<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> MAZEN AI · Beta</span><button class="iconbtn" id="topSettings">⚙</button></div></header>
+<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> MAZEN AI · Beta</span><button class="btn secondary" id="installApp" type="button">⬇ Install app</button><button class="iconbtn" id="topSettings">⚙</button></div></header>
 
 <section class="view active" id="home">
   <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Make ideas <span class="gradient">happen.</span></h1><p>One workspace for conversations, image creation, voice tools and video projects. Built to grow with you.</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
@@ -90,10 +95,13 @@ button:active,.btn:active{transform:scale(.97)}
 </section>
 
 <section class="view" id="image">
-  <div class="sectionhead"><div><h2>Image Studio</h2><p>Turn a detailed prompt into an image.</p></div><span class="pill">Puter image engine</span></div>
-  <div class="card"><div class="field"><label>Describe your image</label><textarea id="imagePrompt" placeholder="A cinematic futuristic city at blue hour, rain reflections, ultra detailed…"></textarea></div>
-  <div class="row"><label class="muted">Aspect ratio</label><select id="imageRatio" style="width:auto"><option value="1:1">Square 1:1</option><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option></select><button class="btn" id="makeImage">Generate image ✨</button></div>
-  <p class="muted">Puter may ask you to sign in and may apply usage limits. It is not an unlimited free service.</p><div id="imageResult"></div></div>
+  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create a new image or upload one and tell MAZEN AI what to change.</p></div><span class="pill">Puter image engine</span></div>
+  <div class="card">
+    <div class="field"><label>Describe your image</label><textarea id="imagePrompt" placeholder="Describe the image you want to create, or explain what should change in your uploaded photo…"></textarea></div>
+    <div class="field"><label>＋ Add a photo to edit (optional)</label><input id="editImageInput" class="input" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><div id="editImagePreview" class="hidden"></div><button class="btn secondary" id="clearEditImage" type="button" style="display:none">Remove photo</button><p class="muted">Upload one image (up to 8 MB). Example: “Change the background to a beach while keeping the person unchanged.”</p></div>
+    <div class="row"><label class="muted">Aspect ratio</label><select id="imageRatio" style="width:auto"><option value="1:1">Square 1:1</option><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option></select><button class="btn" id="makeImage">Generate image ✨</button><button class="btn secondary" id="editImage" type="button">Edit uploaded photo ✨</button></div>
+    <p class="muted">Image generation/editing runs through Puter. It may ask users to sign in and usage may have limits or costs charged to the user's Puter account. Check the confirmation before proceeding.</p><div id="imageResult"></div>
+  </div>
 </section>
 
 <section class="view" id="video">
@@ -268,18 +276,55 @@ $('cameraInput').addEventListener('change',e=>{addImages([...e.target.files]);e.
 $('docInput').addEventListener('change',async e=>{for(const f of e.target.files){try{const t=await extractDoc(f);if(!t.trim())throw Error('No selectable text found in '+f.name);pendingDocs.push({name:f.name,text:t.slice(0,65000)});toast(f.name+' added')}catch(err){toast(err.message)}}renderPending();e.target.value=''});
 document.addEventListener('click',e=>{if(!$('attachMenu').contains(e.target)&&e.target!==$('attachBtn'))$('attachMenu').classList.add('hidden')});
 
-/* Image generation */
-$('makeImage').addEventListener('click',async()=>{
-  const p=$('imagePrompt').value.trim();if(!p){toast('Write an image prompt first');return}
-  const b=$('makeImage');b.disabled=true;b.textContent='Creating…';$('imageResult').innerHTML='<p class="muted">Generating image. Please wait…</p>';
+/* Image generation and image-to-image editing */
+let imageToEditFile=null,imageToEditData=null;
+$('editImageInput').addEventListener('change',async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(!file.type.startsWith('image/')){toast('Choose an image file');e.target.value='';return}
+  if(file.size>8*1024*1024){toast('Image must be 8 MB or smaller');e.target.value='';return}
+  try{
+    imageToEditFile=file;imageToEditData=await readData(file);
+    const img=document.createElement('img');img.src=imageToEditData;img.alt='Photo selected for editing';img.className='result';img.style.maxWidth='240px';img.style.maxHeight='220px';
+    const label=document.createElement('p');label.className='muted';label.textContent=file.name;
+    $('editImagePreview').replaceChildren(img,label);$('editImagePreview').classList.remove('hidden');$('clearEditImage').style.display='inline-block';toast('Photo added');
+  }catch(err){imageToEditFile=null;imageToEditData=null;toast('Could not read this image')}
+});
+$('clearEditImage').addEventListener('click',()=>{imageToEditFile=null;imageToEditData=null;$('editImageInput').value='';$('editImagePreview').replaceChildren();$('editImagePreview').classList.add('hidden');$('clearEditImage').style.display='none'});
+async function runImageTask(editMode){
+  const p=$('imagePrompt').value.trim();if(!p){toast(editMode?'Describe what you want to change first':'Write an image prompt first');$('imagePrompt').focus();return}
+  if(editMode&&!imageToEditData){toast('Add a photo first');$('editImageInput').click();return}
+  const b=editMode?$('editImage'):$('makeImage'),other=editMode?$('makeImage'):$('editImage');
+  b.disabled=true;other.disabled=true;b.textContent=editMode?'Editing…':'Creating…';$('imageResult').innerHTML='<p class="muted">'+(editMode?'Editing your photo. Please wait…':'Generating image. Please wait…')+'</p>';
   try{
     if(!window.puter?.ai?.txt2img)throw Error('Puter image service did not load');
-    const [w,h]=$('imageRatio').value.split(':').map(Number),img=await puter.ai.txt2img(p,{ratio:{w,h}});
+    const [w,h]=$('imageRatio').value.split(':').map(Number),opts={ratio:{w,h}};
+    if(editMode)opts.input_image=imageToEditData;
+    const img=await puter.ai.txt2img(p,opts);
     $('imageResult').innerHTML='';img.classList.add('result');$('imageResult').append(img);
-    const a=document.createElement('a');a.href=img.src;a.download='mazen-ai-image.png';a.textContent='Open / save generated image';a.className='btn secondary';a.style.display='inline-block';a.style.marginTop='10px';$('imageResult').append(a);toast('Image generated');
-  }catch(e){$('imageResult').innerHTML='';const d=document.createElement('div');d.className='status';d.textContent='Image generation could not start: '+(e.message||e)+'. Puter may require sign-in or may have usage limits.';$('imageResult').append(d)}
-  finally{b.disabled=false;b.textContent='Generate image ✨'}
+    const a=document.createElement('a');a.href=img.src;a.download=editMode?'mazen-ai-edited-image.png':'mazen-ai-image.png';a.textContent='Download / save image';a.className='btn secondary';a.style.display='inline-block';a.style.marginTop='10px';$('imageResult').append(a);toast(editMode?'Edited image is ready':'Image generated');
+  }catch(e){$('imageResult').innerHTML='';const d=document.createElement('div');d.className='status';d.textContent='Image task could not start: '+(e.message||e)+'. Puter may require sign-in or have usage limits.';$('imageResult').append(d)}
+  finally{b.disabled=false;other.disabled=false;b.textContent=editMode?'Edit uploaded photo ✨':'Generate image ✨'}
+}
+$('makeImage').addEventListener('click',()=>runImageTask(false));
+$('editImage').addEventListener('click',()=>runImageTask(true));
+
+/* Installable web app (PWA) */
+let installPromptEvent=null;
+const installButton=$('installApp');
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install MAZEN AI';installButton.classList.remove('hidden')});
+installButton.addEventListener('click',async()=>{
+  if(installPromptEvent){
+    installPromptEvent.prompt();const choice=await installPromptEvent.userChoice;
+    if(choice?.outcome==='accepted')toast('MAZEN AI installation started');
+    installPromptEvent=null;
+  }else{
+    toast(/iphone|ipad|ipod/i.test(navigator.userAgent)?'On iPhone/iPad: tap Share, then Add to Home Screen.':'Open your browser menu and choose Install app or Add to Home Screen.');
+  }
 });
+window.addEventListener('appinstalled',()=>{installButton.textContent='✓ App installed';installButton.disabled=true});
+if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
 
 /* Video prompt helpers and external provider hand-off */
 $('videoPromptHelp').addEventListener('click',async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write your idea first');return}const b=$('videoPromptHelp');b.disabled=true;try{const r=await ask('Improve this into a detailed image-animation video prompt. Include subject, scene, camera movement, lighting, style, duration and aspect ratio. Return only the prompt.\n\n'+p,[],[]);$('videoPrompt').value=r;toast('Prompt improved')}catch(e){toast(e.message)}finally{b.disabled=false}});
