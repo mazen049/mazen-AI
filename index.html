@@ -14,6 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad" defer></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 :root{--bg:#080914;--panel:rgba(18,21,39,.82);--line:rgba(255,255,255,.09);--text:#f4f5ff;--muted:#9da5c2;--a:#8d73ff;--b:#35e0c1;--pink:#ff6ab5;--shadow:0 24px 80px #0008}
@@ -49,9 +50,17 @@ button:active,.btn:active{transform:scale(.97)}
 #mazenSplash .splashSub{animation:mazenIn 1.5s ease both}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}body:after,.logo,#mazenSplash .splashMark{animation:none!important}.view.active,.view.active .hero,.view.active .toolcard,.chatbox .msg{animation:none!important}}
 
+#turnstileGate{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 50% 35%,#242047 0,#080914 65%);color:#f4f5ff}
+#turnstileGate.hidden{display:none!important}.gateCard{width:min(100%,430px);padding:28px 22px;text-align:center;border:1px solid #ffffff20;border-radius:22px;background:#15182beF;box-shadow:0 24px 80px #0009}
+.gateLogo{width:58px;height:58px;margin:0 auto 15px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#8d73ff,#35e0c1);color:#080914;font:800 27px 'Space Grotesk'}
+.gateCard h1{font:700 24px 'Space Grotesk';margin:0 0 9px}.gateCard p{color:#aeb6d0;line-height:1.6;font-size:13px;margin:0 0 18px}
+#turnstileWidget{display:flex;justify-content:center;min-height:66px}#turnstileMessage{min-height:20px;margin-top:13px;color:#e9d49d;font-size:12px;line-height:1.5}
 </style>
 </head>
 <body>
+<div id="turnstileGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+ <div class="gateCard"><div class="gateLogo">M</div><h1 id="gateTitle">MAZEN AI Protection</h1><p>Complete the security check below to enter MAZEN AI.</p><div id="turnstileWidget"></div><div id="turnstileMessage" role="status">Loading security verification…</div></div>
+</div>
 <div class="shell">
 <aside class="side" id="sidebar">
   <div class="brand"><div class="logo">M</div><div><strong>MAZEN AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
@@ -148,7 +157,7 @@ button:active,.btn:active{transform:scale(.97)}
   <div class="sectionhead"><div><h2>Settings</h2><p>Backend address is built into this version. Server API secrets stay on Cloudflare.</p></div></div>
   <div class="two"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in and does not need manual entry on your phone or PC.</div><p class="muted">Never paste your Groq API key here. Keep it as a Cloudflare Worker Secret named GROQ_API_KEY.</p></div>
   <div class="card"><h3>Access</h3><div class="status success">Guest access is enabled. Visitors can use MAZEN AI without creating an account.</div></div></div>
-  <div class="card" style="margin-top:15px"><h3>Bot protection</h3><div class="status">Real Turnstile verification is not active yet. Do not treat a visual checkbox as bot protection.</div></div><div class="footer">MAZEN AI · Developed by Mazen Rihani</div>
+  <div class="card" style="margin-top:15px"><h3>Bot protection</h3><div class="status">Cloudflare Turnstile is enabled. A verified session is required before chat requests are accepted.</div></div><div class="footer">MAZEN AI · Developed by Mazen Rihani</div>
 </section>
 </main></div>
 <div class="toast" id="toast" role="status"></div>
@@ -157,6 +166,52 @@ button:active,.btn:active{transform:scale(.97)}
 'use strict';
 const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
 const $=id=>document.getElementById(id);
+const TURNSTILE_SITE_KEY='0x4AAAAAAGA2i6UXwohS5YbE';
+const SESSION_KEY='mazen_ai_verified_session_v1';
+let sessionToken='',sessionExpiry=0,turnstileWidgetId=null,turnstileStarted=false,gateExpiryTimer=null;
+function readVerifiedSession(){
+  try{const x=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');if(x&&x.token&&Number(x.expiresAt)>Date.now()){sessionToken=x.token;sessionExpiry=Number(x.expiresAt);return true}}catch(e){}
+  sessionToken='';sessionExpiry=0;sessionStorage.removeItem(SESSION_KEY);return false;
+}
+function showTurnstileGate(message='Complete the security check below to enter MAZEN AI.'){
+  sessionToken='';sessionExpiry=0;sessionStorage.removeItem(SESSION_KEY);clearTimeout(gateExpiryTimer);
+  $('turnstileGate').classList.remove('hidden');$('turnstileMessage').textContent=message;
+  if(window.turnstile&&turnstileWidgetId!==null){try{window.turnstile.reset(turnstileWidgetId)}catch(e){}}
+}
+function hideTurnstileGate(){
+  $('turnstileGate').classList.add('hidden');clearTimeout(gateExpiryTimer);
+  gateExpiryTimer=setTimeout(()=>showTurnstileGate('Your verification session expired. Please verify again.'),Math.max(0,sessionExpiry-Date.now()));
+}
+async function verifyTurnstile(token){
+  $('turnstileMessage').textContent='Checking your verification…';
+  try{
+    const response=await fetch(BACKEND_URL+'/verify-turnstile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});
+    let data={};try{data=await response.json()}catch(e){}
+    if(!response.ok||!data.sessionToken)throw new Error(data.error||'Verification failed. Please try again.');
+    const seconds=Math.max(60,Number(data.expiresIn)||7200);
+    sessionToken=data.sessionToken;sessionExpiry=Date.now()+seconds*1000;
+    sessionStorage.setItem(SESSION_KEY,JSON.stringify({token:sessionToken,expiresAt:sessionExpiry}));
+    hideTurnstileGate();
+  }catch(e){
+    $('turnstileMessage').textContent=e.message||'Verification failed. Please try again.';
+    if(window.turnstile&&turnstileWidgetId!==null){try{window.turnstile.reset(turnstileWidgetId)}catch(err){}}
+  }
+}
+function onTurnstileLoad(){
+  if(readVerifiedSession()){hideTurnstileGate();return}
+  if(!window.turnstile){$('turnstileMessage').textContent='Security verification could not load. Enable internet access and refresh.';return}
+  if(turnstileStarted)return;turnstileStarted=true;
+  try{
+    turnstileWidgetId=window.turnstile.render('#turnstileWidget',{
+      sitekey:TURNSTILE_SITE_KEY,theme:'dark',size:'normal',
+      callback:verifyTurnstile,
+      'expired-callback':()=>{$('turnstileMessage').textContent='Verification expired. Please complete it again.'},
+      'error-callback':()=>{$('turnstileMessage').textContent='Verification could not complete. Check your connection and try again.'}
+    });
+    $('turnstileMessage').textContent='Complete the Cloudflare security check.';
+  }catch(e){$('turnstileMessage').textContent='Security verification failed to start. Refresh and try again.'}
+}
+window.onTurnstileLoad=onTurnstileLoad;
 const SUPABASE_URL='https://rqrmfzctfgufqztdqhpa.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_QyBO3_LIIBbgt0DBtvzq7w_zFFKorV3';
 const K={chats:'mazen_v5_chats',active:'mazen_v5_active',sburl:'mazen_v4_sburl',sbkey:'mazen_v4_sbkey'};
@@ -184,9 +239,11 @@ function renderChat(){
 }
 function animateText(el,text){el.textContent='';let i=0;const step=()=>{i=Math.min(i+4,text.length);el.textContent=text.slice(0,i);$('messages').scrollTop=$('messages').scrollHeight;if(i<text.length)requestAnimationFrame(step)};step()}
 async function ask(text,images=[],history=[]){
+  if(!readVerifiedSession()){showTurnstileGate('Please complete the security check before using MAZEN AI.');throw Error('Complete the security check to continue.')}
   const messages=[{role:'system',content:'You are MAZEN AI, a helpful multilingual assistant. Reply in the language used by the user. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
-  const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,images})});
+  const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+sessionToken},body:JSON.stringify({messages,images})});
   let data={};try{data=await r.json()}catch(e){}
+  if(r.status===401){showTurnstileGate('Your verification session expired. Please verify again.');throw Error('Security session expired. Verify again to continue.')}
   if(!r.ok)throw Error(data.error||'Backend error '+r.status);
   if(!data.reply)throw Error('Empty AI response');return data.reply;
 }
@@ -387,6 +444,9 @@ $('signOut').addEventListener('click',async()=>{if(!sb){toast('Supabase is not c
 
 /* Start-up: open guest access; no sign-in required. */
 setupSupabase();
+if(readVerifiedSession())hideTurnstileGate();
+else $('turnstileMessage').textContent='Loading security verification…';
+setTimeout(()=>{if(!turnstileStarted&&!window.turnstile&&!readVerifiedSession())$('turnstileMessage').textContent='Security verification did not load. Check your connection and refresh. Access remains locked.'},10000);
 if(!current()){
   if(chats.length){active=chats[0].id}
   else{const first={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(first);active=first.id}
