@@ -131,7 +131,7 @@ button:active,.btn:active{transform:scale(.97)}
   </div>
 </section>
 
-<section class="view" id="history"><div class="sectionhead"><div><h2>History</h2><p>Your conversations saved in this browser.</p></div><button class="btn secondary" id="clearHistoryBtn">Clear history</button></div><div class="card" id="historyList"></div></section>
+<section class="view" id="history"><div class="sectionhead"><div><h2>History</h2><p>Your conversations are saved only in this browser on this device.</p></div><div class="row"><button class="btn secondary" id="exportHistoryBtn">Export data ↓</button><button class="btn secondary" id="clearHistoryBtn">Clear history</button></div></div><div class="status" style="margin-bottom:14px">Privacy note: signing in with Supabase currently verifies your account only. Your chats are not synced to the cloud and may not appear on another device. Export a backup before clearing browser data.</div><div class="card" id="historyList"></div></section>
 
 <section class="view" id="account">
   <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Connect Supabase for real sign-in. Bot verification requires server-side setup.</p></div></div>
@@ -221,7 +221,15 @@ function renderHistory(){
   $('historyList').innerHTML='';if(!chats.length){$('historyList').textContent='No conversations yet.';return}
   chats.forEach(c=>{const d=document.createElement('div');d.className='historyitem';const a=document.createElement('button');a.className='btn secondary';a.textContent=c.title||'Conversation';a.onclick=()=>{active=c.id;save();renderChat();go('chat')};const s=document.createElement('span');s.className='muted';s.textContent=new Date(c.updated||Date.now()).toLocaleString();d.append(a,s);$('historyList').append(d)})
 }
-function clearHistory(){if(!chats.length){toast('History is already empty');return}if(confirm('Delete local conversation history from this browser?')){chats=[];active='';save();renderHistory();renderChat();toast('History cleared')}}
+function exportHistory(){
+  if(!chats.length){toast('There is no conversation history to export');return}
+  const backup={app:'MAZEN AI',formatVersion:1,exportedAt:new Date().toISOString(),storage:'This export contains local conversation history only.',conversations:chats};
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='mazen-ai-conversations-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Backup downloaded');
+}
+function clearHistory(){if(!chats.length){toast('History is already empty');return}if(confirm('Delete local conversation history from this browser? Export a backup first if you want to keep it.')){chats=[];active='';save();renderHistory();renderChat();toast('History cleared')}}
 function setupSupabase(){
   if(sbAuthSubscription?.unsubscribe){try{sbAuthSubscription.unsubscribe()}catch(e){}}
   sbAuthSubscription=null;sb=null;
@@ -265,7 +273,7 @@ function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel
 /* Navigation and buttons */
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
-$('newChatBtn').addEventListener('click',newChat);$('newChatMain').addEventListener('click',newChat);$('clearHistoryBtn').addEventListener('click',clearHistory);
+$('newChatBtn').addEventListener('click',newChat);$('newChatMain').addEventListener('click',newChat);$('clearHistoryBtn').addEventListener('click',clearHistory);$('exportHistoryBtn').addEventListener('click',exportHistory);
 $('topSettings').addEventListener('click',()=>go('settings'));$('hamb').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 $('send').addEventListener('click',()=>{const t=$('prompt').value;$('prompt').value='';send(t)});
 $('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
