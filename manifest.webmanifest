@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "MAZEN AI",
+  "short_name": "MAZEN AI",
+  "description": "MAZEN AI Intelligence Studio",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080914",
+  "theme_color": "#080914",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
