@@ -1,218 +1,313 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080914">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080914">
 <title>MAZEN AI — Studio</title>
 <script src="https://js.puter.com/v2/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-:root{--bg:#080914;--panel:rgba(18,21,39,.78);--line:rgba(255,255,255,.09);--text:#f4f5ff;--muted:#9da5c2;--a:#8d73ff;--b:#35e0c1;--pink:#ff6ab5;--shadow:0 24px 80px #0008}
-*{box-sizing:border-box}body{margin:0;color:var(--text);font:14px 'DM Sans',sans-serif;background:radial-gradient(ellipse at 75% 0%,#29204b 0,transparent 35%),radial-gradient(ellipse at 0% 85%,#103b45 0,transparent 32%),var(--bg);min-height:100vh;overflow-x:hidden}body:before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(#fff1 1px,transparent 1px),linear-gradient(90deg,#fff1 1px,transparent 1px);background-size:46px 46px;mask-image:linear-gradient(to bottom,#000,transparent 75%)}button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit}.shell{display:flex;min-height:100vh;position:relative}.side{width:258px;flex:none;padding:22px 16px;border-right:1px solid var(--line);background:#090b17d9;backdrop-filter:blur(24px);display:flex;flex-direction:column;gap:22px;z-index:5;transition:.25s}.brand{display:flex;align-items:center;gap:11px;padding:4px 8px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font:800 17px 'Space Grotesk';color:#080914;box-shadow:0 0 28px #8d73ff66}.brand strong{font:700 18px 'Space Grotesk';letter-spacing:.4px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:2px}.navlabel{color:#68718f;font-size:10px;font-weight:800;letter-spacing:1.8px;padding:0 10px}.nav{display:grid;gap:6px}.nav button,.newchat{width:100%;border:1px solid transparent;background:transparent;border-radius:12px;padding:12px;text-align:left;color:#aab1ca;display:flex;gap:12px;align-items:center;transition:.2s}.nav button:hover,.nav button.active{background:linear-gradient(100deg,#8d73ff22,#35e0c111);border-color:#8d73ff44;color:white;transform:translateX(2px)}.ico{width:20px;text-align:center;font-size:17px}.newchat{justify-content:center;background:linear-gradient(100deg,#8d73ff,#5d9cff);color:white;font-weight:700;box-shadow:0 10px 28px #765eff38}.sidebottom{margin-top:auto}.profile{border:1px solid var(--line);background:#ffffff08;padding:12px;border-radius:15px;display:flex;align-items:center;gap:10px}.avatar{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#ff77bd,#8d73ff);display:grid;place-items:center;font-weight:800;color:#130d25}.profile small{display:block;color:var(--muted);font-size:11px}.main{flex:1;min-width:0;padding:24px clamp(16px,3vw,42px) 36px;max-width:1600px;margin:auto;width:100%}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}.crumb{color:var(--muted);font-size:12px}.crumb b{color:white}.topright{display:flex;align-items:center;gap:9px}.pill{border:1px solid var(--line);background:#ffffff08;padding:8px 12px;border-radius:99px;color:#cbd0e3;font-size:11px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--b);box-shadow:0 0 10px var(--b);margin-right:6px}.iconbtn{border:1px solid var(--line);background:#ffffff0a;border-radius:11px;padding:9px 12px}.view{display:none;animation:rise .35s ease}.view.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}.hero{padding:30px;border:1px solid #ffffff15;border-radius:24px;background:linear-gradient(115deg,#17172dce,#111a2bd9);box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:'';position:absolute;width:320px;height:320px;right:-90px;top:-170px;border-radius:50%;background:conic-gradient(from 90deg,var(--a),var(--b),var(--pink),var(--a));filter:blur(55px);opacity:.25;animation:spin 16s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.eyebrow{color:var(--b);font-size:10px;letter-spacing:2.5px;font-weight:800}.hero h1{font:700 clamp(30px,5vw,54px)/1.08 'Space Grotesk';margin:13px 0 10px;max-width:750px}.gradient{background:linear-gradient(90deg,#fff,var(--b),#ad98ff,var(--pink));background-size:220%;color:transparent;background-clip:text;animation:flow 6s linear infinite}@keyframes flow{to{background-position:220%}}.hero p{color:var(--muted);max-width:650px;line-height:1.7;margin:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.card{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(18px);border-radius:18px;padding:19px;box-shadow:0 12px 35px #0002}.toolcard{cursor:pointer;transition:.22s;min-height:135px}.toolcard:hover{transform:translateY(-4px);border-color:#a18dff77;box-shadow:0 15px 40px #6b52ff20}.toolicon{font-size:22px;width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#8d73ff2c,#35e0c125);margin-bottom:12px}.toolcard h3{margin:0 0 5px;font:600 15px 'Space Grotesk'}.toolcard p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.sectionhead{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin:8px 0 18px}.sectionhead h2{font:700 27px 'Space Grotesk';margin:0}.sectionhead p{color:var(--muted);margin:5px 0 0}.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:700;background:linear-gradient(100deg,var(--a),#5b9cff);box-shadow:0 8px 25px #765eff35}.btn.secondary{background:#ffffff0b;border:1px solid var(--line);box-shadow:none}.btn:disabled{opacity:.5;cursor:not-allowed}.field{display:grid;gap:8px;margin:13px 0}.field label{color:#b8bfd5;font-size:12px;font-weight:700}.input,textarea,select{width:100%;background:#090c19;border:1px solid #ffffff18;border-radius:12px;color:white;padding:13px;outline:none}.input:focus,textarea:focus,select:focus{border-color:#9b87ff;box-shadow:0 0 0 3px #8d73ff1b}textarea{resize:vertical;min-height:110px}.muted{color:var(--muted);font-size:12px;line-height:1.6}.chatbox{margin-top:15px;min-height:390px;max-height:55vh;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px}.msg{max-width:min(82%,760px);padding:13px 15px;border-radius:16px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}.msg.user{align-self:flex-end;background:linear-gradient(120deg,#6552c9,#4c71c7);border-bottom-right-radius:5px}.msg.ai{align-self:flex-start;background:#ffffff0b;border:1px solid var(--line);border-bottom-left-radius:5px}.composer{display:flex;gap:9px;align-items:flex-end;margin-top:12px}.composer textarea{min-height:52px;max-height:130px;resize:vertical}.composer .btn{height:50px}.minirow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{padding:12px;border:1px solid #f6c76a44;background:#f6c76a0d;border-radius:12px;color:#e9d49d;font-size:12px;line-height:1.6}.success{border-color:#35e0c155;background:#35e0c10d;color:#a9f5e6}.result{margin-top:16px;max-width:100%;border-radius:16px;border:1px solid var(--line)}.result img,.result video{max-width:100%;max-height:520px;display:block;border-radius:15px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.historyitem{display:flex;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--line);color:#dfe2f2}.hidden{display:none!important}.authgrid{max-width:560px}.footer{text-align:center;color:#66708d;font-size:11px;margin:30px 0 4px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#20243a;border:1px solid var(--line);padding:12px 17px;border-radius:12px;z-index:99;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}.hamb{display:none}.typing:after{content:' ';display:inline-block;width:6px;height:14px;background:var(--b);margin-left:4px;vertical-align:-2px;animation:blink .8s steps(2) infinite}@keyframes blink{50%{opacity:0}}.attachwrap{position:relative}.attachmenu{position:absolute;bottom:58px;left:0;min-width:190px;background:#171a30;border:1px solid var(--line);border-radius:13px;padding:7px;display:grid;gap:5px;z-index:10;box-shadow:var(--shadow)}.attachmenu button{border:0;background:transparent;text-align:left;padding:10px;border-radius:9px}.attachmenu button:hover{background:#ffffff12}.filetag{font-size:11px;color:#cdd3ed;background:#ffffff12;border:1px solid var(--line);border-radius:9px;padding:7px 10px;margin:8px 5px 0 0;display:inline-block}.filebar{margin-top:7px}.msg img{max-width:180px;max-height:140px;display:block;border-radius:9px;margin-top:8px}
+:root{--bg:#080914;--panel:rgba(18,21,39,.82);--line:rgba(255,255,255,.09);--text:#f4f5ff;--muted:#9da5c2;--a:#8d73ff;--b:#35e0c1;--pink:#ff6ab5;--shadow:0 24px 80px #0008}
+*{box-sizing:border-box}body{margin:0;color:var(--text);font:14px 'DM Sans',sans-serif;background:radial-gradient(ellipse at 75% 0%,#29204b 0,transparent 35%),radial-gradient(ellipse at 0% 85%,#103b45 0,transparent 32%),var(--bg);min-height:100vh;overflow-x:hidden}body:before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(#fff1 1px,transparent 1px),linear-gradient(90deg,#fff1 1px,transparent 1px);background-size:46px 46px;mask-image:linear-gradient(to bottom,#000,transparent 75%)}button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit}.shell{display:flex;min-height:100vh;position:relative}.side{width:258px;flex:none;padding:22px 16px;border-right:1px solid var(--line);background:#090b17eF;backdrop-filter:blur(24px);display:flex;flex-direction:column;gap:22px;z-index:5;transition:.25s}.brand{display:flex;align-items:center;gap:11px;padding:4px 8px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font:800 17px 'Space Grotesk';color:#080914;box-shadow:0 0 28px #8d73ff66}.brand strong{font:700 18px 'Space Grotesk';letter-spacing:.4px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px;margin-top:2px}.navlabel{color:#68718f;font-size:10px;font-weight:800;letter-spacing:1.8px;padding:0 10px}.nav{display:grid;gap:6px}.nav button,.newchat{width:100%;border:1px solid transparent;background:transparent;border-radius:12px;padding:12px;text-align:left;color:#aab1ca;display:flex;gap:12px;align-items:center;transition:.2s}.nav button:hover,.nav button.active{background:linear-gradient(100deg,#8d73ff22,#35e0c111);border-color:#8d73ff44;color:white;transform:translateX(2px)}.ico{width:20px;text-align:center;font-size:17px}.newchat{justify-content:center;background:linear-gradient(100deg,#8d73ff,#5d9cff);color:white;font-weight:700;box-shadow:0 10px 28px #765eff38}.sidebottom{margin-top:auto}.profile{border:1px solid var(--line);background:#ffffff08;padding:12px;border-radius:15px;display:flex;align-items:center;gap:10px}.avatar{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#ff77bd,#8d73ff);display:grid;place-items:center;font-weight:800;color:#130d25}.profile small{display:block;color:var(--muted);font-size:11px}.main{flex:1;min-width:0;padding:24px clamp(16px,3vw,42px) 36px;max-width:1600px;margin:auto;width:100%}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:26px}.crumb{color:var(--muted);font-size:12px}.crumb b{color:white}.topright{display:flex;align-items:center;gap:9px}.pill{border:1px solid var(--line);background:#ffffff08;padding:8px 12px;border-radius:99px;color:#cbd0e3;font-size:11px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--b);box-shadow:0 0 10px var(--b);margin-right:6px}.iconbtn{border:1px solid var(--line);background:#ffffff0a;border-radius:11px;padding:9px 12px}.view{display:none;animation:rise .35s ease}.view.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}.hero{padding:30px;border:1px solid #ffffff15;border-radius:24px;background:linear-gradient(115deg,#17172dce,#111a2bd9);box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:'';position:absolute;width:320px;height:320px;right:-90px;top:-170px;border-radius:50%;background:conic-gradient(from 90deg,var(--a),var(--b),var(--pink),var(--a));filter:blur(55px);opacity:.25;animation:spin 16s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.eyebrow{color:var(--b);font-size:10px;letter-spacing:2.5px;font-weight:800}.hero h1{font:700 clamp(30px,5vw,54px)/1.08 'Space Grotesk';margin:13px 0 10px;max-width:750px}.gradient{background:linear-gradient(90deg,#fff,var(--b),#ad98ff,var(--pink));background-size:220%;color:transparent;background-clip:text;animation:flow 6s linear infinite}@keyframes flow{to{background-position:220%}}.hero p{color:var(--muted);max-width:650px;line-height:1.7;margin:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.card{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(18px);border-radius:18px;padding:19px;box-shadow:0 12px 35px #0002}.toolcard{cursor:pointer;transition:.22s;min-height:135px}.toolcard:hover{transform:translateY(-4px);border-color:#a18dff77;box-shadow:0 15px 40px #6b52ff20}.toolicon{font-size:22px;width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#8d73ff2c,#35e0c125);margin-bottom:12px}.toolcard h3{margin:0 0 5px;font:600 15px 'Space Grotesk'}.toolcard p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}.sectionhead{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;margin:8px 0 18px}.sectionhead h2{font:700 27px 'Space Grotesk';margin:0}.sectionhead p{color:var(--muted);margin:5px 0 0}.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:700;background:linear-gradient(100deg,var(--a),#5b9cff);box-shadow:0 8px 25px #765eff35}.btn.secondary{background:#ffffff0b;border:1px solid var(--line);box-shadow:none}.btn:disabled{opacity:.5;cursor:not-allowed}.field{display:grid;gap:8px;margin:13px 0}.field label{color:#b8bfd5;font-size:12px;font-weight:700}.input,textarea,select{width:100%;background:#090c19;border:1px solid #ffffff18;border-radius:12px;color:white;padding:13px;outline:none}.input:focus,textarea:focus,select:focus{border-color:#9b87ff;box-shadow:0 0 0 3px #8d73ff1b}textarea{resize:vertical;min-height:110px}.muted{color:var(--muted);font-size:12px;line-height:1.6}.chatbox{margin-top:15px;min-height:390px;max-height:55vh;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:14px}.msg{max-width:min(82%,760px);padding:13px 15px;border-radius:16px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}.msg.user{align-self:flex-end;background:linear-gradient(120deg,#6552c9,#4c71c7);border-bottom-right-radius:5px}.msg.ai{align-self:flex-start;background:#ffffff0b;border:1px solid var(--line);border-bottom-left-radius:5px}.composer{display:flex;gap:9px;align-items:flex-end;margin-top:12px}.composer textarea{min-height:52px;max-height:130px;resize:vertical}.composer .btn{height:50px}.minirow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.status{padding:12px;border:1px solid #f6c76a44;background:#f6c76a0d;border-radius:12px;color:#e9d49d;font-size:12px;line-height:1.6}.success{border-color:#35e0c155;background:#35e0c10d;color:#a9f5e6}.result{margin-top:16px;max-width:100%;border-radius:16px;border:1px solid var(--line)}.result img,.result video{max-width:100%;max-height:520px;display:block;border-radius:15px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.historyitem{display:flex;justify-content:space-between;gap:10px;padding:12px;border-bottom:1px solid var(--line);color:#dfe2f2}.hidden{display:none!important}.authgrid{max-width:560px}.footer{text-align:center;color:#66708d;font-size:11px;margin:30px 0 4px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#20243a;border:1px solid var(--line);padding:12px 17px;border-radius:12px;z-index:10000;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}.hamb{display:none}.typing:after{content:' ';display:inline-block;width:6px;height:14px;background:var(--b);margin-left:4px;vertical-align:-2px;animation:blink .8s steps(2) infinite}@keyframes blink{50%{opacity:0}}.attachwrap{position:relative}.attachmenu{position:absolute;bottom:58px;left:0;min-width:190px;background:#171a30;border:1px solid var(--line);border-radius:13px;padding:7px;display:grid;gap:5px;z-index:10;box-shadow:var(--shadow)}.attachmenu button{border:0;background:transparent;text-align:left;padding:10px;border-radius:9px}.attachmenu button:hover{background:#ffffff12}.filetag{font-size:11px;color:#cdd3ed;background:#ffffff12;border:1px solid var(--line);border-radius:9px;padding:7px 10px;margin:8px 5px 0 0;display:inline-block}.filebar{margin-top:7px}.msg img{max-width:180px;max-height:140px;display:block;border-radius:9px;margin-top:8px}.vaideoPanel{margin-top:18px;border:1px solid #8d73ff55;border-radius:17px;padding:17px;background:linear-gradient(120deg,#8d73ff18,#35e0c10c)}.vaideoPanel h3{margin:0 0 7px;font:600 17px 'Space Grotesk'}.vaideoPanel p{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 12px}.authNote{margin-top:12px;padding:11px;border:1px solid #f6c76a44;border-radius:11px;color:#e9d49d;background:#f6c76a0d;font-size:12px;line-height:1.6}
+#mazenSplash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#242047 0,#080914 58%);transition:opacity .75s ease,visibility .75s ease}#mazenSplash.hide{opacity:0;visibility:hidden;pointer-events:none}#mazenSplash .splashMark{width:104px;height:104px;border-radius:30px;display:grid;place-items:center;color:#080914;font:800 48px 'Space Grotesk';background:linear-gradient(135deg,#8d73ff,#35e0c1);box-shadow:0 0 70px #8d73ff88;animation:mazenIn 1s ease both}#mazenSplash .splashName{margin-top:18px;text-align:center;font:700 20px 'Space Grotesk';letter-spacing:4px;color:#f4f5ff;animation:mazenIn 1.25s ease both}#mazenSplash .splashSub{margin-top:7px;text-align:center;color:#9da5c2;font-size:10px;letter-spacing:3px}@keyframes mazenIn{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
 @media(max-width:900px){.side{width:225px}.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.side{position:fixed;left:0;top:0;bottom:0;width:270px;transform:translateX(-105%);box-shadow:var(--shadow)}.side.open{transform:none}.hamb{display:inline-block}.main{padding:15px}.top{margin-bottom:18px}.hero{padding:22px}.grid,.two{grid-template-columns:1fr}.chatbox{min-height:300px}.msg{max-width:94%}.topright .pill{display:none}.composer{gap:6px}.composer .btn{padding:10px}.attachmenu{left:-4px}}
-</style></head>
-<body><div class="shell">
-<aside class="side" id="sidebar"><div class="brand"><div class="logo">M</div><div><strong>MAZEN AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
-<button class="newchat" onclick="newChat()">＋ &nbsp; New conversation</button><div><div class="navlabel">WORKSPACE</div><nav class="nav">
-<button class="active" data-view="home"><span class="ico">⌂</span> Overview</button><button data-view="chat"><span class="ico">✧</span> AI Chat</button><button data-view="image"><span class="ico">▧</span> Image Studio</button><button data-view="video"><span class="ico">▶</span> Video Studio</button><button data-view="voice"><span class="ico">◉</span> Voice Room</button><button data-view="history"><span class="ico">◷</span> History</button></nav></div>
-<div><div class="navlabel">PREFERENCES</div><nav class="nav"><button data-view="account"><span class="ico">♙</span> Account & Security</button><button data-view="settings"><span class="ico">⚙</span> Settings</button></nav></div>
-<div class="sidebottom"><div class="profile"><div class="avatar">M</div><div><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small></div></div></div></aside>
-<main class="main"><header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> Studio ready</span><button class="iconbtn" onclick="go('settings')">⚙</button></div></header>
-<section class="view active" id="home"><div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Make ideas <span class="gradient">happen.</span></h1><p>One workspace for conversations, image creation, voice tools and video projects. Built to grow with you.</p><div class="minirow"><button class="btn" onclick="go('chat')">Start chatting ↗</button><button class="btn secondary" onclick="go('image')">Create an image</button></div></div>
-<div class="grid"><div class="card toolcard" onclick="go('chat')"><div class="toolicon">✧</div><h3>AI Chat</h3><p>Ask questions, write, learn and brainstorm in multiple languages.</p></div><div class="card toolcard" onclick="go('image')"><div class="toolicon">▧</div><h3>Image Studio</h3><p>Generate images from text prompts with the connected image service.</p></div><div class="card toolcard" onclick="go('video')"><div class="toolicon">▶</div><h3>Video Studio</h3><p>Prepare video prompts, preview uploads and connect a generation provider.</p></div><div class="card toolcard" onclick="go('voice')"><div class="toolicon">◉</div><h3>Voice Room</h3><p>Speak your message and listen to AI replies where your browser supports it.</p></div><div class="card toolcard" onclick="go('history')"><div class="toolicon">◷</div><h3>History</h3><p>Find your recent local conversations.</p></div><div class="card toolcard" onclick="go('account')"><div class="toolicon">♙</div><h3>Account & Security</h3><p>Configure real sign-in and bot verification.</p></div></div><div class="footer">MAZEN AI · Created by Mazen Rihani</div></section>
-<section class="view" id="chat"><div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to MAZEN AI in your preferred language.</p></div><button class="btn secondary" onclick="newChat()">＋ New chat</button></div><div class="card chatbox" id="messages"></div><div id="pendingFiles" class="filebar"></div><div class="composer"><div class="attachwrap"><button class="iconbtn" id="attachBtn" title="Attach file">＋</button><div class="attachmenu hidden" id="attachMenu"><button data-pick="image">🖼️ Choose image</button><button data-pick="camera">📷 Take photo</button><button data-pick="file">📄 PDF / Word / Excel</button></div></div><input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden><textarea id="prompt" placeholder="Message MAZEN AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div><div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and their extracted text is sent for analysis.</div></section>
-<section class="view" id="image"><div class="sectionhead"><div><h2>Image Studio</h2><p>Turn a detailed prompt into an image.</p></div><span class="pill">Puter image engine</span></div><div class="card"><div class="field"><label>Describe your image</label><textarea id="imagePrompt" placeholder="A cinematic futuristic city at blue hour, rain reflections, ultra detailed…"></textarea></div><div class="row"><label class="muted">Aspect ratio</label><select id="imageRatio" style="width:auto"><option value="1:1">Square 1:1</option><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option></select><button class="btn" id="makeImage">Generate image ✨</button></div><p class="muted">Puter may ask you to sign in and may apply usage limits. It is not an unlimited free service.</p><div id="imageResult"></div></div></section>
-<section class="view" id="video"><div class="sectionhead"><div><h2>Video Studio</h2><p>Turn a still image into a moving cinematic clip, then export it.</p></div><span class="pill">Free motion studio</span></div><div class="card"><div class="status success">Free mode: animate one image with cinematic camera movement and export a WebM video. This is image animation, not AI text-to-video generation.</div><div class="field"><label>1. Video concept / prompt (optional)</label><textarea id="videoPrompt" placeholder="A cinematic slow camera push toward a futuristic city at sunset…"></textarea></div><div class="row"><button class="btn secondary" id="videoPromptHelp">Improve prompt with MAZEN AI</button><button class="btn secondary" id="copyVideoPrompt">Copy prompt</button></div><div class="field"><label>2. Choose an image to animate</label><input class="input" id="motionImage" type="file" accept="image/*"></div><div class="two"><div class="field"><label>Camera motion</label><select id="motionStyle"><option value="zoom">Cinematic zoom in</option><option value="out">Slow zoom out</option><option value="pan">Pan left to right</option><option value="float">Floating camera</option></select></div><div class="field"><label>Aspect ratio</label><select id="motionRatio"><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option><option value="1:1">Square 1:1</option></select></div></div><div class="field"><label>Duration</label><select id="motionDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select></div><div class="row"><button class="btn" id="makeMotionVideo">Create moving video ✨</button><button class="btn secondary" id="stopMotionVideo" disabled>Stop</button></div><div id="motionStatus" class="muted" style="margin-top:12px">Choose an image to begin.</div><canvas id="motionCanvas" class="result hidden" style="width:100%;max-width:720px;background:#080914"></canvas><div id="motionOutput"></div><div class="field" style="margin-top:24px"><label>Or preview a video from your device</label><input class="input" id="videoFile" type="file" accept="video/*"></div><div id="videoPreview"></div></div></section>
-<section class="view" id="voice"><div class="sectionhead"><div><h2>Voice Room</h2><p>Speech input and spoken AI responses.</p></div><span class="pill">Browser voice</span></div><div class="card"><div class="toolicon" style="width:58px;height:58px;font-size:28px">◉</div><h3>Talk to MAZEN AI</h3><p class="muted">Turn-based speech chat. Recognition availability depends on browser/device support.</p><div class="row" style="margin:18px 0"><button class="btn" id="startVoice">🎙 Start speaking</button><button class="btn secondary" id="stopVoice">Stop</button><label class="muted"><input type="checkbox" id="speakReplies" checked> Speak AI replies</label></div><div class="field"><label>Recognition language</label><select id="voiceLanguage"><option value="ar-SA">Arabic (usually broader browser support)</option><option value="ar-MA">Arabic (Morocco / Darija - if supported)</option><option value="en-US">English</option><option value="fr-FR">French</option></select></div><label class="muted"><input type="checkbox" id="voiceDarija" checked> When I speak Arabic, reply in Moroccan Darija</label><p class="muted">Note: speech recognition is provided by your browser. If Darija recognition is unavailable, choose Arabic (Saudi) and speak naturally; MAZEN AI will still be instructed to answer in Darija.</p><div class="field"><label>Recognized speech / message</label><textarea id="voiceText" placeholder="Your recognized speech appears here…"></textarea></div><button class="btn" id="sendVoice">Send to MAZEN AI ↗</button><div id="voiceStatus" class="muted" style="margin-top:12px"></div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div></div></section>
-<section class="view" id="history"><div class="sectionhead"><div><h2>History</h2><p>Your conversations saved in this browser.</p></div><button class="btn secondary" onclick="clearHistory()">Clear history</button></div><div class="card" id="historyList"></div></section>
-<section class="view" id="account"><div class="sectionhead"><div><h2>Account & Security</h2><p>Connect Supabase and Cloudflare Turnstile to activate real account security.</p></div></div><div class="card authgrid"><div class="status">Account sign-in is inactive until you add your own Supabase project URL and public anon key in Settings. Turnstile needs server-side verification to provide bot protection.</div><div class="field"><label>Email</label><input class="input" id="authEmail" type="email" placeholder="you@example.com"></div><div class="field"><label>Password</label><input class="input" id="authPassword" type="password" placeholder="At least 8 characters"></div><div class="row"><button class="btn" id="signIn">Sign in</button><button class="btn secondary" id="signUp">Create account</button><button class="btn secondary" id="signOut">Sign out</button></div><div id="authStatus" class="muted" style="margin-top:12px">Supabase not configured.</div></div></section>
-<section class="view" id="settings"><div class="sectionhead"><div><h2>Settings</h2><p>Backend address is built into this version. Server API secrets stay on Cloudflare.</p></div></div><div class="two"><div class="card"><h3>AI Backend</h3><div class="status success">Connected endpoint is built in: mazen-ai-backend. No manual URL entry needed on your phone or PC.</div><p class="muted">Never paste your Groq API key here. Keep it as a Cloudflare Worker Secret named GROQ_API_KEY.</p></div><div class="card"><h3>Authentication</h3><div class="field"><label>Supabase Project URL</label><input class="input" id="supabaseUrl" placeholder="https://xxxx.supabase.co"></div><div class="field"><label>Supabase anon / publishable key</label><input class="input" id="supabaseKey" placeholder="Public anon key (not service_role)"></div><button class="btn" id="saveSupabase">Save auth settings</button><p class="muted">Enable email authentication and Row Level Security in Supabase before using this publicly.</p></div></div><div class="card" style="margin-top:15px"><h3>Bot protection</h3><div class="status">Turnstile is not active yet. A site key alone does not verify visitors; server-side verification must be added to the Worker.</div></div><div class="footer">MAZEN AI · Developed by Mazen Rihani</div></section>
-</main></div><div class="toast" id="toast"></div>
-<script type="module">
-const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
-const $=id=>document.getElementById(id), K={chats:'mazen_v5_chats',active:'mazen_v5_active',sburl:'mazen_v4_sburl',sbkey:'mazen_v4_sbkey'};
-let chats=JSON.parse(localStorage.getItem(K.chats)||'[]'),active=localStorage.getItem(K.active)||'',sb=null,recognition=null,pendingImages=[],pendingDocs=[];
-function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)}
-function save(){localStorage.setItem(K.chats,JSON.stringify(chats));localStorage.setItem(K.active,active)}
-function current(){return chats.find(c=>c.id===active)}
-function newChat(){const c={id:Date.now().toString(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id;save();renderChat();go('chat')}
-function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('crumb').textContent=({home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',account:'Account & Security',settings:'Settings'})[v]||v;$('sidebar').classList.remove('open');if(v==='history')renderHistory()}
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view));$('hamb').onclick=()=>$('sidebar').classList.toggle('open');
-function renderChat(){const c=current();$('messages').innerHTML='';if(!c||!c.messages.length){$('messages').innerHTML='<div class="msg ai">Hello! I am MAZEN AI. What would you like to create or explore today?</div>';return}c.messages.forEach(m=>{const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content;$('messages').append(d)});$('messages').scrollTop=$('messages').scrollHeight}
-async function ask(text,images=[]){const c=current();const prior=(c?.messages||[]).slice(-18);const messages=[{role:'system',content:'You are MAZEN AI, a helpful multilingual assistant. Reply in the language used by the user. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...prior,{role:'user',content:text}];const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,images})});let data={};try{data=await r.json()}catch{}if(!r.ok)throw Error(data.error||'Backend error '+r.status);if(!data.reply)throw Error('Empty AI response');return data.reply}
-function animateText(el,text){el.textContent='';let i=0;const step=()=>{i=Math.min(i+4,text.length);el.textContent=text.slice(0,i);$('messages').scrollTop=$('messages').scrollHeight;if(i<text.length)requestAnimationFrame(step)};step()}
-async function send(text){text=text.trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;let c=current();if(!c){c={id:Date.now().toString(),title:(text||'Attachment').slice(0,35),messages:[],updated:Date.now()};chats.unshift(c);active=c.id}let fullText=text;for(const d of pendingDocs)fullText+='\n\n[Extracted document: '+d.name+']\n'+d.text;const imgs=pendingImages.slice();const fileNames=[...imgs.map(x=>x.name),...pendingDocs.map(x=>x.name)];const shown=(text||'Please analyse the attached file(s).')+(fileNames.length?'\n📎 '+fileNames.join(', '):'');c.messages.push({role:'user',content:shown});if(c.messages.length===1)c.title=(text||fileNames[0]||'New conversation').slice(0,35);save();renderChat();pendingImages=[];pendingDocs=[];renderPending();const wait=document.createElement('div');wait.className='msg ai typing';wait.textContent='Thinking';$('messages').append(wait);$('messages').scrollTop=$('messages').scrollHeight;try{const reply=await ask(fullText,imgs.map(x=>x.data));wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save();if($('speakReplies')?.checked&&$('voice').classList.contains('active'))speak(reply)}catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MAZEN AI: '+e.message;toast(e.message)}}
-$('send').onclick=()=>{const t=$('prompt').value;$('prompt').value='';send(t)};$('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
-$('attachBtn').onclick=()=>$('attachMenu').classList.toggle('hidden');document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{$('attachMenu').classList.add('hidden');({image:'imageInput',camera:'cameraInput',file:'docInput'})[b.dataset.pick]&&$( ({image:'imageInput',camera:'cameraInput',file:'docInput'})[b.dataset.pick] ).click()});
-function readData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
-async function extractDoc(file){const ext=file.name.split('.').pop().toLowerCase();if(file.size>12*1024*1024)throw Error(file.name+' is larger than 12 MB');if(ext==='txt'||ext==='csv')return await file.text();if(ext==='docx'){if(!window.mammoth)throw Error('Word reader did not load');const a=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});return a.value}if(ext==='xlsx'||ext==='xls'){if(!window.XLSX)throw Error('Excel reader did not load');const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});return wb.SheetNames.map(n=>'Sheet: '+n+'\n'+XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n\n')}if(ext==='pdf'){const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs');pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;let all='';for(let p=1;p<=Math.min(pdf.numPages,35);p++){const page=await pdf.getPage(p),content=await page.getTextContent();all+=content.items.map(x=>x.str).join(' ')+'\n'}return all}throw Error('Unsupported document type: '+ext)}
-function renderPending(){$('pendingFiles').innerHTML='';[...pendingImages,...pendingDocs].forEach(f=>{const s=document.createElement('span');s.className='filetag';s.textContent='📎 '+f.name;$('pendingFiles').append(s)})}
-async function addImages(files){for(const f of files){if(!f.type.startsWith('image/'))continue;if(f.size>8*1024*1024){toast(f.name+' is over 8 MB');continue}pendingImages.push({name:f.name,data:await readData(f)})}renderPending()}
-$('imageInput').onchange=e=>addImages([...e.target.files]);$('cameraInput').onchange=e=>addImages([...e.target.files]);$('docInput').onchange=async e=>{for(const f of e.target.files){try{const text=await extractDoc(f);if(!text.trim())throw Error('No selectable text found in '+f.name);pendingDocs.push({name:f.name,text:text.slice(0,65000)});toast(f.name+' added')}catch(err){toast(err.message)}}renderPending();e.target.value=''};
-$('makeImage').onclick=async()=>{const p=$('imagePrompt').value.trim();if(!p){toast('Write an image prompt first');return}const b=$('makeImage');b.disabled=true;b.textContent='Creating…';$('imageResult').innerHTML='<p class="muted">Generating image. Please wait…</p>';try{if(!window.puter)throw Error('Puter image service did not load');const [w,h]=$('imageRatio').value.split(':').map(Number);const img=await puter.ai.txt2img(p,{ratio:{w,h}});$('imageResult').innerHTML='';img.classList.add('result');$('imageResult').append(img);const a=document.createElement('a');a.href=img.src;a.download='mazen-ai-image.png';a.textContent='Open / save generated image';a.className='btn secondary';a.style.display='inline-block';a.style.marginTop='10px';$('imageResult').append(a);toast('Image generated')}catch(e){$('imageResult').innerHTML='';const d=document.createElement('div');d.className='status';d.textContent='Image generation could not start: '+(e.message||e)+'. Puter may require sign-in or may have usage limits.';$('imageResult').append(d)}finally{b.disabled=false;b.textContent='Generate image ✨'}};
-$('videoPromptHelp').onclick=async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write your idea first');return}try{const r=await ask('Improve this into a detailed image-animation video prompt. Include subject, scene, camera movement, lighting, style, duration and aspect ratio. Return only the prompt.\n\n'+p);$('videoPrompt').value=r;toast('Prompt improved')}catch(e){toast(e.message)}};$('copyVideoPrompt').onclick=async()=>{try{await navigator.clipboard.writeText($('videoPrompt').value);toast('Prompt copied')}catch{toast('Copy not available')}};$('videoFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f);$('videoPreview').innerHTML='';const v=document.createElement('video');v.src=u;v.controls=true;v.className='result';$('videoPreview').append(v)};
-let motionSource=null,motionRecorder=null,motionChunks=[];
-$('motionImage').onchange=()=>{const f=$('motionImage').files[0];if(!f)return;if(motionSource)URL.revokeObjectURL(motionSource);motionSource=URL.createObjectURL(f);$('motionStatus').textContent='Image ready. Press Create moving video.'};
-$('stopMotionVideo').onclick=()=>{if(motionRecorder&&motionRecorder.state!=='inactive')motionRecorder.stop()};
-$('makeMotionVideo').onclick=async()=>{const f=$('motionImage').files[0];if(!f){toast('Choose an image first');return}if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){$('motionStatus').textContent='Video export is not supported by this browser. Try Chrome on a computer.';return}const btn=$('makeMotionVideo');btn.disabled=true;$('stopMotionVideo').disabled=false;$('motionOutput').innerHTML='';$('motionStatus').textContent='Preparing your clip…';try{const img=new Image();img.src=motionSource||URL.createObjectURL(f);await img.decode();const ratio=$('motionRatio').value.split(':').map(Number),w=ratio[0]===9?720:ratio[0]===1?720:1280,h=ratio[1]===16?1280:ratio[0]===1?720:720;const c=$('motionCanvas');c.width=w;c.height=h;c.classList.remove('hidden');const ctx=c.getContext('2d');const duration=Number($('motionDuration').value)*1000,start=performance.now(),style=$('motionStyle').value;const stream=c.captureStream(30);let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';motionChunks=[];motionRecorder=new MediaRecorder(stream,{mimeType:mime});motionRecorder.ondataavailable=e=>{if(e.data.size)motionChunks.push(e.data)};motionRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(motionChunks,{type:'video/webm'}),url=URL.createObjectURL(blob);const v=document.createElement('video');v.src=url;v.controls=true;v.className='result';v.autoplay=true;v.loop=true;const a=document.createElement('a');a.href=url;a.download='mazen-ai-motion-video.webm';a.className='btn';a.style.display='inline-block';a.style.marginTop='10px';a.textContent='Download video (WebM)';$('motionOutput').append(v,a);$('motionStatus').textContent='Your moving video is ready. It is an image animation, not generated new AI footage.';btn.disabled=false;$('stopMotionVideo').disabled=true};motionRecorder.start();const draw=now=>{if(!motionRecorder||motionRecorder.state==='inactive')return;const p=Math.min(1,(now-start)/duration);ctx.fillStyle='#080914';ctx.fillRect(0,0,w,h);const scaleBase=Math.max(w/img.width,h/img.height),baseW=img.width*scaleBase,baseH=img.height*scaleBase;let zoom=1+0.10*p,dx=0,dy=0;if(style==='out')zoom=1.10-0.10*p;if(style==='pan'){zoom=1.12;dx=(p-.5)*w*.09}if(style==='float'){zoom=1.06+Math.sin(p*Math.PI*2)*.018;dy=Math.sin(p*Math.PI*2)*h*.012}const dw=baseW*zoom,dh=baseH*zoom;ctx.drawImage(img,(w-dw)/2+dx,(h-dh)/2+dy,dw,dh);$('motionStatus').textContent='Rendering video… '+Math.round(p*100)+'%';if(p<1)requestAnimationFrame(draw);else setTimeout(()=>{if(motionRecorder&&motionRecorder.state!=='inactive')motionRecorder.stop()},180)};requestAnimationFrame(draw)}catch(e){$('motionStatus').textContent='Could not create video: '+e.message;btn.disabled=false;$('stopMotionVideo').disabled=true}};
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);const lang=$('voiceLanguage').value;u.lang=(lang==='ar-MA'?'ar-MA':lang);u.rate=.94;const voices=speechSynthesis.getVoices();const prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||voices.find(v=>v.lang.toLowerCase().startsWith('ar'))||null;speechSynthesis.speak(u)}
-$('startVoice').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('voiceStatus').textContent='Speech recognition is not supported in this browser. Try Chrome, or type your message below.';return}try{recognition?.stop();recognition=new SR();recognition.lang=$('voiceLanguage').value;recognition.interimResults=true;recognition.continuous=true;recognition.onresult=e=>{let finalText='';for(let i=0;i<e.results.length;i++)finalText+=e.results[i][0].transcript+' ';$('voiceText').value=finalText.trim()};recognition.onerror=e=>{$('voiceStatus').textContent='Voice error: '+e.error+'. If Darija is not recognized, choose Arabic (Saudi).'};recognition.onend=()=>$('voiceStatus').textContent='Listening stopped. You can edit the recognized text before sending.';recognition.start();$('voiceStatus').textContent='Listening… speak now.'}catch(e){$('voiceStatus').textContent='Could not start microphone: '+e.message}};$('stopVoice').onclick=()=>recognition?.stop();$('sendVoice').onclick=async()=>{const t=$('voiceText').value.trim();if(!t)return;const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';try{const instruction=$('voiceDarija').checked&&$('voiceLanguage').value.startsWith('ar')?'The user is speaking Arabic. Reply naturally in Moroccan Darija (الدارجة المغربية), using clear Arabic script. Do not reply in English or Modern Standard Arabic unless asked.\n\n':'Reply in the same language as the user.\n\n';const r=await ask(instruction+t);box.textContent=r;if($('speakReplies').checked)speak(r)}catch(e){box.textContent=e.message}};
-function renderHistory(){$('historyList').innerHTML='';if(!chats.length){$('historyList').textContent='No conversations yet.';return}chats.forEach(c=>{const d=document.createElement('div');d.className='historyitem';const a=document.createElement('button');a.className='btn secondary';a.textContent=c.title||'Conversation';a.onclick=()=>{active=c.id;save();renderChat();go('chat')};const s=document.createElement('span');s.className='muted';s.textContent=new Date(c.updated).toLocaleString();d.append(a,s);$('historyList').append(d)})}function clearHistory(){if(confirm('Delete local conversation history from this browser?')){chats=[];active='';save();renderHistory();renderChat()}}
-function setupSupabase(){const u=localStorage.getItem(K.sburl),k=localStorage.getItem(K.sbkey);if(u&&k&&window.supabase){sb=window.supabase.createClient(u,k);$('authStatus').textContent='Supabase connected. You can sign in or create an account.'}else{$('authStatus').textContent='Supabase not configured. Add project URL and public anon key in Settings.'}}
-$('saveSupabase').onclick=()=>{localStorage.setItem(K.sburl,$('supabaseUrl').value.trim());localStorage.setItem(K.sbkey,$('supabaseKey').value.trim());setupSupabase();toast('Supabase settings saved')};$('supabaseUrl').value=localStorage.getItem(K.sburl)||'';$('supabaseKey').value=localStorage.getItem(K.sbkey)||'';
-$('signUp').onclick=async()=>{if(!sb)return toast('Configure Supabase first');const {error}=await sb.auth.signUp({email:$('authEmail').value,password:$('authPassword').value});$('authStatus').textContent=error?error.message:'Account created. Check your email if confirmation is enabled.'};$('signIn').onclick=async()=>{if(!sb)return toast('Configure Supabase first');const {data,error}=await sb.auth.signInWithPassword({email:$('authEmail').value,password:$('authPassword').value});$('authStatus').textContent=error?error.message:'Signed in successfully.';if(data.user){$('profileName').textContent='Signed in';$('profileEmail').textContent=data.user.email}};$('signOut').onclick=async()=>{if(sb)await sb.auth.signOut();$('profileName').textContent='Guest mode';$('profileEmail').textContent='Local session';$('authStatus').textContent='Signed out.'};
-setupSupabase();if(!current()&&!chats.length)newChat();else renderChat();
-</script><!-- MAZEN AI enhancement patch: paste this entire block immediately before </body> -->
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="side" id="sidebar">
+  <div class="brand"><div class="logo">M</div><div><strong>MAZEN AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
+  <button class="newchat" id="newChatBtn">＋ &nbsp; New conversation</button>
+  <div><div class="navlabel">WORKSPACE</div><nav class="nav">
+    <button class="active" data-view="home"><span class="ico">⌂</span> Overview</button>
+    <button data-view="chat"><span class="ico">✧</span> AI Chat</button>
+    <button data-view="image"><span class="ico">▧</span> Image Studio</button>
+    <button data-view="video"><span class="ico">▶</span> Video Studio</button>
+    <button data-view="voice"><span class="ico">◉</span> Voice Room</button>
+    <button data-view="history"><span class="ico">◷</span> History</button>
+  </nav></div>
+  <div><div class="navlabel">PREFERENCES</div><nav class="nav">
+    <button data-view="account"><span class="ico">♙</span> Account &amp; Security</button>
+    <button data-view="settings"><span class="ico">⚙</span> Settings</button>
+  </nav></div>
+  <div class="sidebottom"><div class="profile"><div class="avatar">M</div><div><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small></div></div></div>
+</aside>
+<main class="main">
+<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> Studio ready</span><button class="iconbtn" id="topSettings">⚙</button></div></header>
+
+<section class="view active" id="home">
+  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Make ideas <span class="gradient">happen.</span></h1><p>One workspace for conversations, image creation, voice tools and video projects. Built to grow with you.</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
+  <div class="grid">
+    <div class="card toolcard" data-go="chat"><div class="toolicon">✧</div><h3>AI Chat</h3><p>Ask questions, write, learn and brainstorm in multiple languages.</p></div>
+    <div class="card toolcard" data-go="image"><div class="toolicon">▧</div><h3>Image Studio</h3><p>Generate images from text prompts with the connected image service.</p></div>
+    <div class="card toolcard" data-go="video"><div class="toolicon">▶</div><h3>Video Studio</h3><p>Animate an image, prepare video prompts and open an external video provider.</p></div>
+    <div class="card toolcard" data-go="voice"><div class="toolicon">◉</div><h3>Voice Room</h3><p>Speak your message and listen to AI replies where your browser supports it.</p></div>
+    <div class="card toolcard" data-go="history"><div class="toolicon">◷</div><h3>History</h3><p>Find your recent local conversations.</p></div>
+    <div class="card toolcard" data-go="account"><div class="toolicon">♙</div><h3>Account &amp; Security</h3><p>Configure real sign-in and review bot-protection status.</p></div>
+  </div><div class="footer">MAZEN AI · Created by Mazen Rihani</div>
+</section>
+
+<section class="view" id="chat">
+  <div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to MAZEN AI in your preferred language.</p></div><button class="btn secondary" id="newChatMain">＋ New chat</button></div>
+  <div class="card chatbox" id="messages" aria-live="polite"></div><div id="pendingFiles" class="filebar"></div>
+  <div class="composer"><div class="attachwrap"><button class="iconbtn" id="attachBtn" title="Attach file">＋</button><div class="attachmenu hidden" id="attachMenu"><button data-pick="image">🖼️ Choose image</button><button data-pick="camera">📷 Take photo</button><button data-pick="file">📄 PDF / Word / Excel / text</button></div></div>
+  <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
+  <textarea id="prompt" placeholder="Message MAZEN AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
+  <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div>
+</section>
+
+<section class="view" id="image">
+  <div class="sectionhead"><div><h2>Image Studio</h2><p>Turn a detailed prompt into an image.</p></div><span class="pill">Puter image engine</span></div>
+  <div class="card"><div class="field"><label>Describe your image</label><textarea id="imagePrompt" placeholder="A cinematic futuristic city at blue hour, rain reflections, ultra detailed…"></textarea></div>
+  <div class="row"><label class="muted">Aspect ratio</label><select id="imageRatio" style="width:auto"><option value="1:1">Square 1:1</option><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option></select><button class="btn" id="makeImage">Generate image ✨</button></div>
+  <p class="muted">Puter may ask you to sign in and may apply usage limits. It is not an unlimited free service.</p><div id="imageResult"></div></div>
+</section>
+
+<section class="view" id="video">
+  <div class="sectionhead"><div><h2>Video Studio</h2><p>Animate a still image and prepare prompts for external video tools.</p></div><span class="pill">Free motion studio</span></div>
+  <div class="card">
+    <div class="vaideoPanel"><h3>🎬 MAZEN VIDEO AI</h3><p>جهّز وصف الفيديو هنا، ثم افتح Vaideo والصق الوصف هناك. هذا انتقال إلى خدمة خارجية وليس اتصال API مباشر.</p><div class="row"><button class="btn" id="openVaideo">Open Vaideo ↗</button><button class="btn secondary" id="copyAndOpenVaideo">Copy prompt &amp; open</button></div></div>
+    <div class="status success" style="margin-top:16px">Free mode: animate one image with camera movement and export a WebM video. This is image animation, not AI text-to-video generation.</div>
+    <div class="field"><label>1. Video concept / prompt (optional)</label><textarea id="videoPrompt" placeholder="A cinematic slow camera push toward a futuristic city at sunset…"></textarea></div>
+    <div class="row"><button class="btn secondary" id="videoPromptHelp">Improve prompt with MAZEN AI</button><button class="btn secondary" id="copyVideoPrompt">Copy prompt</button></div>
+    <div class="field"><label>2. Choose an image to animate</label><input class="input" id="motionImage" type="file" accept="image/*"></div>
+    <div class="two"><div class="field"><label>Camera motion</label><select id="motionStyle"><option value="zoom">Cinematic zoom in</option><option value="out">Slow zoom out</option><option value="pan">Pan left to right</option><option value="float">Floating camera</option></select></div><div class="field"><label>Aspect ratio</label><select id="motionRatio"><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option><option value="1:1">Square 1:1</option></select></div></div>
+    <div class="field"><label>Duration</label><select id="motionDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select></div>
+    <div class="row"><button class="btn" id="makeMotionVideo">Create moving video ✨</button><button class="btn secondary" id="stopMotionVideo" disabled>Stop</button></div>
+    <div id="motionStatus" class="muted" style="margin-top:12px">Choose an image to begin.</div><canvas id="motionCanvas" class="result hidden" style="width:100%;max-width:720px;background:#080914"></canvas><div id="motionOutput"></div>
+    <div class="field" style="margin-top:24px"><label>Or preview a video from your device</label><input class="input" id="videoFile" type="file" accept="video/*"></div><div id="videoPreview"></div>
+  </div>
+</section>
+
+<section class="view" id="voice">
+  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speech input and spoken AI responses.</p></div><span class="pill">Browser voice</span></div>
+  <div class="card"><div class="toolicon" style="width:58px;height:58px;font-size:28px">◉</div><h3>Talk to MAZEN AI</h3><p class="muted">Turn-based speech chat. Recognition availability depends on browser/device support.</p>
+    <div class="row" style="margin:18px 0"><button class="btn" id="startVoice">🎙 Start speaking</button><button class="btn secondary" id="stopVoice">Stop</button><label class="muted"><input type="checkbox" id="speakReplies" checked> Speak AI replies</label></div>
+    <div class="field"><label>Recognition language</label><select id="voiceLanguage"><option value="ar-SA">Arabic (usually broader browser support)</option><option value="ar-MA">Arabic (Morocco / Darija - if supported)</option><option value="en-US">English</option><option value="fr-FR">French</option></select></div>
+    <label class="muted"><input type="checkbox" id="voiceDarija" checked> When I speak Arabic, reply in Moroccan Darija</label>
+    <p class="muted">If Darija recognition is unavailable, choose Arabic (Saudi) and speak naturally; MAZEN AI will still be instructed to answer in Darija.</p>
+    <div class="field"><label>Recognized speech / message</label><textarea id="voiceText" placeholder="Your recognized speech appears here…"></textarea></div><button class="btn" id="sendVoice">Send to MAZEN AI ↗</button><div id="voiceStatus" class="muted" style="margin-top:12px"></div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
+  </div>
+</section>
+
+<section class="view" id="history"><div class="sectionhead"><div><h2>History</h2><p>Your conversations saved in this browser.</p></div><button class="btn secondary" id="clearHistoryBtn">Clear history</button></div><div class="card" id="historyList"></div></section>
+
+<section class="view" id="account">
+  <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Connect Supabase for real sign-in. Bot verification requires server-side setup.</p></div></div>
+  <div class="card authgrid"><div class="status">Sign-in is inactive until you add your Supabase project URL and public anon/publishable key in Settings. Never use a service_role key in this page.</div>
+    <div class="field"><label>Email</label><input class="input" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+    <div class="field"><label>Password</label><input class="input" id="authPassword" type="password" autocomplete="current-password" placeholder="At least 8 characters"></div>
+    <div class="row"><button class="btn" id="signIn">Sign in</button><button class="btn secondary" id="signUp">Create account</button><button class="btn secondary" id="signOut">Sign out</button></div>
+    <div id="authStatus" class="muted" style="margin-top:12px">Supabase not configured.</div>
+    <div class="authNote">حماية الروبوتات غير مفعّلة حالياً. لتفعيلها فعلاً، يلزم إنشاء Turnstile Site Key وSecret Key وربط التحقق من جهة Cloudflare Worker. لا تضع Secret Key داخل هذا الملف.</div>
+  </div>
+</section>
+
+<section class="view" id="settings">
+  <div class="sectionhead"><div><h2>Settings</h2><p>Backend address is built into this version. Server API secrets stay on Cloudflare.</p></div></div>
+  <div class="two"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in and does not need manual entry on your phone or PC.</div><p class="muted">Never paste your Groq API key here. Keep it as a Cloudflare Worker Secret named GROQ_API_KEY.</p></div>
+  <div class="card"><h3>Authentication</h3><div class="field"><label>Supabase Project URL</label><input class="input" id="supabaseUrl" placeholder="https://xxxx.supabase.co"></div><div class="field"><label>Supabase anon / publishable key</label><input class="input" id="supabaseKey" placeholder="Public anon key (not service_role)"></div><button class="btn" id="saveSupabase">Save auth settings</button><p class="muted">Enable email authentication and Row Level Security in Supabase before using this publicly.</p></div></div>
+  <div class="card" style="margin-top:15px"><h3>Bot protection</h3><div class="status">Turnstile is not active yet. A site key alone does not verify visitors; server-side verification must be added to the Worker.</div></div><div class="footer">MAZEN AI · Developed by Mazen Rihani</div>
+</section>
+</main></div>
+<div class="toast" id="toast" role="status"></div>
+
 <script>
-(() => {
-  const $ = id => document.getElementById(id);
+'use strict';
+const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
+const $=id=>document.getElementById(id);
+const K={chats:'mazen_v5_chats',active:'mazen_v5_active',sburl:'mazen_v4_sburl',sbkey:'mazen_v4_sbkey'};
+let chats=[],active='',sb=null,recognition=null,pendingImages=[],pendingDocs=[],motionSource=null,motionRecorder=null,motionChunks=[];
+try{chats=JSON.parse(localStorage.getItem(K.chats)||'[]');if(!Array.isArray(chats))chats=[]}catch(e){chats=[]}
+active=localStorage.getItem(K.active)||'';
 
-  // Inject styles without needing to find the existing <style> element.
-  const style = document.createElement('style');
-  style.textContent = `
-    #mazenSplash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
-      background:radial-gradient(circle at 50% 45%,#242047 0,#080914 58%);
-      transition:opacity .75s ease,visibility .75s ease}
-    #mazenSplash.hide{opacity:0;visibility:hidden;pointer-events:none}
-    #mazenSplash .splashMark{width:104px;height:104px;border-radius:30px;display:grid;place-items:center;
-      color:#080914;font:800 48px 'Space Grotesk',sans-serif;
-      background:linear-gradient(135deg,#8d73ff,#35e0c1);
-      box-shadow:0 0 70px #8d73ff88;animation:mazenIn 1s ease both}
-    #mazenSplash .splashName{margin-top:18px;text-align:center;font:700 20px 'Space Grotesk',sans-serif;
-      letter-spacing:4px;color:#f4f5ff;animation:mazenIn 1.25s ease both}
-    #mazenSplash .splashSub{margin-top:7px;text-align:center;color:#9da5c2;font-size:10px;letter-spacing:3px}
-    @keyframes mazenIn{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
-    .vaideoPanel{margin-top:18px;border:1px solid #8d73ff55;border-radius:17px;padding:17px;
-      background:linear-gradient(120deg,#8d73ff18,#35e0c10c)}
-    .vaideoPanel h3{margin:0 0 7px;font:600 17px 'Space Grotesk',sans-serif}
-    .vaideoPanel p{color:#9da5c2;font-size:12px;line-height:1.6;margin:0 0 12px}
-    .authNote{margin-top:12px;padding:11px;border:1px solid #f6c76a44;border-radius:11px;
-      color:#e9d49d;background:#f6c76a0d;font-size:12px;line-height:1.6}
-    @media(prefers-reduced-motion:reduce){#mazenSplash .splashMark,#mazenSplash .splashName{animation:none}}
-  `;
-  document.head.appendChild(style);
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.remove('show'),2800)}
+function save(){try{localStorage.setItem(K.chats,JSON.stringify(chats));localStorage.setItem(K.active,active)}catch(e){toast('Storage is full. Some history may not be saved.')}}
+function current(){return chats.find(c=>c.id===active)}
+function go(v){
+  if(!$ (v))return;
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
+  const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',account:'Account & Security',settings:'Settings'};
+  $('crumb').textContent=names[v]||v;$('sidebar').classList.remove('open');
+  if(v==='history')renderHistory();if(v==='chat')renderChat();
+}
+function newChat(){const c={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id;save();renderChat();go('chat')}
+function renderChat(){
+  const box=$('messages'),c=current();box.innerHTML='';
+  if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am MAZEN AI. What would you like to create or explore today?';box.append(d);return}
+  c.messages.forEach(m=>{const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';box.append(d)});
+  box.scrollTop=box.scrollHeight;
+}
+function animateText(el,text){el.textContent='';let i=0;const step=()=>{i=Math.min(i+4,text.length);el.textContent=text.slice(0,i);$('messages').scrollTop=$('messages').scrollHeight;if(i<text.length)requestAnimationFrame(step)};step()}
+async function ask(text,images=[],history=[]){
+  const messages=[{role:'system',content:'You are MAZEN AI, a helpful multilingual assistant. Reply in the language used by the user. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
+  const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,images})});
+  let data={};try{data=await r.json()}catch(e){}
+  if(!r.ok)throw Error(data.error||'Backend error '+r.status);
+  if(!data.reply)throw Error('Empty AI response');return data.reply;
+}
+async function send(text){
+  text=(text||'').trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;
+  let c=current();if(!c){c={id:Date.now().toString(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id}
+  let fullText=text;for(const d of pendingDocs)fullText+='\n\n[Extracted document: '+d.name+']\n'+d.text;
+  const imgs=pendingImages.slice(),fileNames=[...imgs.map(x=>x.name),...pendingDocs.map(x=>x.name)];
+  const shown=(text||'Please analyse the attached file(s).')+(fileNames.length?'\n📎 '+fileNames.join(', '):'');
+  const historyBefore=c.messages.slice(-18);c.messages.push({role:'user',content:shown});
+  if(c.messages.length===1)c.title=(text||fileNames[0]||'New conversation').slice(0,35);
+  c.updated=Date.now();save();renderChat();pendingImages=[];pendingDocs=[];renderPending();
+  const wait=document.createElement('div');wait.className='msg ai typing';wait.textContent='Thinking';$('messages').append(wait);$('messages').scrollTop=$('messages').scrollHeight;
+  $('send').disabled=true;
+  try{
+    const reply=await ask(fullText,imgs.map(x=>x.data),historyBefore);
+    wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save();
+    if($('speakReplies').checked&&$('voice').classList.contains('active'))speak(reply);
+  }catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MAZEN AI: '+e.message;toast(e.message)}
+  finally{$('send').disabled=false}
+}
+function readData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error||Error('Could not read file'));r.readAsDataURL(file)})}
+async function extractDoc(file){
+  const ext=file.name.split('.').pop().toLowerCase();if(file.size>12*1024*1024)throw Error(file.name+' is larger than 12 MB');
+  if(ext==='txt'||ext==='csv')return await file.text();
+  if(ext==='docx'){if(!window.mammoth)throw Error('Word reader did not load');const a=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});return a.value}
+  if(ext==='xlsx'||ext==='xls'){if(!window.XLSX)throw Error('Excel reader did not load');const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});return wb.SheetNames.map(n=>'Sheet: '+n+'\n'+XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n\n')}
+  if(ext==='pdf'){const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs');pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;let all='';for(let p=1;p<=Math.min(pdf.numPages,35);p++){const page=await pdf.getPage(p),content=await page.getTextContent();all+=content.items.map(x=>x.str).join(' ')+'\n'}return all}
+  throw Error('Unsupported document type: '+ext);
+}
+function renderPending(){$('pendingFiles').innerHTML='';[...pendingImages,...pendingDocs].forEach(f=>{const s=document.createElement('span');s.className='filetag';s.textContent='📎 '+f.name;$('pendingFiles').append(s)})}
+async function addImages(files){for(const f of files){if(!f.type.startsWith('image/'))continue;if(f.size>8*1024*1024){toast(f.name+' is over 8 MB');continue}try{pendingImages.push({name:f.name,data:await readData(f)})}catch(e){toast(e.message)}}renderPending()}
+function renderHistory(){
+  $('historyList').innerHTML='';if(!chats.length){$('historyList').textContent='No conversations yet.';return}
+  chats.forEach(c=>{const d=document.createElement('div');d.className='historyitem';const a=document.createElement('button');a.className='btn secondary';a.textContent=c.title||'Conversation';a.onclick=()=>{active=c.id;save();renderChat();go('chat')};const s=document.createElement('span');s.className='muted';s.textContent=new Date(c.updated||Date.now()).toLocaleString();d.append(a,s);$('historyList').append(d)})
+}
+function clearHistory(){if(!chats.length){toast('History is already empty');return}if(confirm('Delete local conversation history from this browser?')){chats=[];active='';save();renderHistory();renderChat();toast('History cleared')}}
+function setupSupabase(){
+  const u=localStorage.getItem(K.sburl),k=localStorage.getItem(K.sbkey);
+  if(u&&k&&window.supabase){try{sb=window.supabase.createClient(u,k);$('authStatus').textContent='Supabase connected. You can sign in or create an account.';sb.auth.getSession().then(({data})=>updateProfile(data?.session?.user||null));sb.auth.onAuthStateChange((_event,session)=>updateProfile(session?.user||null))}catch(e){sb=null;$('authStatus').textContent='Could not initialize Supabase: '+e.message}}
+  else{$('authStatus').textContent='Supabase not configured. Add project URL and public anon key in Settings.';sb=null}
+}
+function updateProfile(user){$('profileName').textContent=user?'Signed in':'Guest mode';$('profileEmail').textContent=user?.email||'Local session'}
+function validAuthFields(){const e=$('authEmail').value.trim(),p=$('authPassword').value;if(!e||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ $('authStatus').textContent='Enter a valid email address.';$('authEmail').focus();return false}if(p.length<8){$('authStatus').textContent='Password must be at least 8 characters.';$('authPassword').focus();return false}return true}
+async function authAction(kind){
+  if(!sb){toast('Configure Supabase first');$('authStatus').textContent='Add your Supabase project URL and public anon key in Settings.';return}
+  if(!validAuthFields())return;
+  const email=$('authEmail').value.trim(),password=$('authPassword').value;$('signIn').disabled=true;$('signUp').disabled=true;
+  try{
+    const result=kind==='signup'?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
+    if(result.error)throw result.error;
+    $('authStatus').textContent=kind==='signup'?'Account created. Check your email if confirmation is enabled.':'Signed in successfully.';
+    if(result.data?.user)updateProfile(result.data.user);
+  }catch(e){$('authStatus').textContent=e.message||'Authentication failed.'}
+  finally{$('signIn').disabled=false;$('signUp').disabled=false}
+}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang==='ar-MA'?'ar-MA':lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||voices.find(v=>v.lang.toLowerCase().startsWith('ar'))||null;speechSynthesis.speak(u)}
 
-  // Animated intro splash.
-  const splash = document.createElement('div');
-  splash.id = 'mazenSplash';
-  splash.innerHTML = '<div><div class="splashMark">M</div><div class="splashName">MAZEN AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';
-  document.body.appendChild(splash);
-  window.setTimeout(() => splash.classList.add('hide'), 1900);
-  window.setTimeout(() => splash.remove(), 2750);
+/* Navigation and buttons */
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+$('newChatBtn').addEventListener('click',newChat);$('newChatMain').addEventListener('click',newChat);$('clearHistoryBtn').addEventListener('click',clearHistory);
+$('topSettings').addEventListener('click',()=>go('settings'));$('hamb').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+$('send').addEventListener('click',()=>{const t=$('prompt').value;$('prompt').value='';send(t)});
+$('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
+$('attachBtn').addEventListener('click',()=>$('attachMenu').classList.toggle('hidden'));
+document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{$('attachMenu').classList.add('hidden');const map={image:'imageInput',camera:'cameraInput',file:'docInput'};$(map[b.dataset.pick]).click()}));
+$('imageInput').addEventListener('change',e=>{addImages([...e.target.files]);e.target.value=''});
+$('cameraInput').addEventListener('change',e=>{addImages([...e.target.files]);e.target.value=''});
+$('docInput').addEventListener('change',async e=>{for(const f of e.target.files){try{const t=await extractDoc(f);if(!t.trim())throw Error('No selectable text found in '+f.name);pendingDocs.push({name:f.name,text:t.slice(0,65000)});toast(f.name+' added')}catch(err){toast(err.message)}}renderPending();e.target.value=''});
+document.addEventListener('click',e=>{if(!$('attachMenu').contains(e.target)&&e.target!==$('attachBtn'))$('attachMenu').classList.add('hidden')});
 
-  // Vaideo launch card. This is an external hand-off, not a direct API connection.
-  const videoSection = $('video');
-  if (videoSection && ! $('vaideoPanel')) {
-    const panel = document.createElement('div');
-    panel.className = 'vaideoPanel';
-    panel.id = 'vaideoPanel';
-    panel.innerHTML = `
-      <h3>🎬 MAZEN VIDEO AI</h3>
-      <p>جهّز وصف الفيديو هنا، ثم افتح Vaideo والصق الوصف هناك لتوليد الفيديو. هذا انتقال إلى خدمة خارجية، وليس اتصال API مباشر.</p>
-      <div class="row">
-        <button class="btn" type="button" id="openVaideo">Open Vaideo ↗</button>
-        <button class="btn secondary" type="button" id="copyAndOpenVaideo">Copy prompt & open</button>
-      </div>
-    `;
-    const card = videoSection.querySelector('.card');
-    if (card) card.prepend(panel);
-    $('openVaideo').addEventListener('click', () => {
-      window.open('https://vaideo.org/', '_blank', 'noopener,noreferrer');
-    });
-    $('copyAndOpenVaideo').addEventListener('click', async () => {
-      const prompt = $('videoPrompt')?.value.trim() || '';
-      if (!prompt) {
-        alert('كتب وصف الفيديو أولاً، ثم عاود الضغط.');
-        $('videoPrompt')?.focus();
-        return;
-      }
-      try {
-        await navigator.clipboard.writeText(prompt);
-        window.open('https://vaideo.org/', '_blank', 'noopener,noreferrer');
-        if (typeof window.toast === 'function') window.toast('Prompt copied. Paste it into Vaideo.');
-        else alert('تم نسخ الوصف. لصقه في Vaideo.');
-      } catch (err) {
-        alert('تعذر النسخ تلقائياً. انسخ الوصف يدوياً ثم افتح Vaideo.');
-      }
-    });
-  }
+/* Image generation */
+$('makeImage').addEventListener('click',async()=>{
+  const p=$('imagePrompt').value.trim();if(!p){toast('Write an image prompt first');return}
+  const b=$('makeImage');b.disabled=true;b.textContent='Creating…';$('imageResult').innerHTML='<p class="muted">Generating image. Please wait…</p>';
+  try{
+    if(!window.puter?.ai?.txt2img)throw Error('Puter image service did not load');
+    const [w,h]=$('imageRatio').value.split(':').map(Number),img=await puter.ai.txt2img(p,{ratio:{w,h}});
+    $('imageResult').innerHTML='';img.classList.add('result');$('imageResult').append(img);
+    const a=document.createElement('a');a.href=img.src;a.download='mazen-ai-image.png';a.textContent='Open / save generated image';a.className='btn secondary';a.style.display='inline-block';a.style.marginTop='10px';$('imageResult').append(a);toast('Image generated');
+  }catch(e){$('imageResult').innerHTML='';const d=document.createElement('div');d.className='status';d.textContent='Image generation could not start: '+(e.message||e)+'. Puter may require sign-in or may have usage limits.';$('imageResult').append(d)}
+  finally{b.disabled=false;b.textContent='Generate image ✨'}
+});
 
-  // Clear, friendly validation for Supabase sign-up / sign-in.
-  const email = $('authEmail');
-  const password = $('authPassword');
-  const authStatus = $('authStatus');
-  function validAuthFields() {
-    const e = (email?.value || '').trim();
-    const p = password?.value || '';
-    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
-      if (authStatus) authStatus.textContent = 'دخل بريد إلكتروني صحيح.';
-      email?.focus();
-      return false;
-    }
-    if (p.length < 8) {
-      if (authStatus) authStatus.textContent = 'كلمة المرور خاصها تكون 8 أحرف على الأقل.';
-      password?.focus();
-      return false;
-    }
-    return true;
-  }
+/* Video prompt helpers and external provider hand-off */
+$('videoPromptHelp').addEventListener('click',async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write your idea first');return}const b=$('videoPromptHelp');b.disabled=true;try{const r=await ask('Improve this into a detailed image-animation video prompt. Include subject, scene, camera movement, lighting, style, duration and aspect ratio. Return only the prompt.\n\n'+p,[],[]);$('videoPrompt').value=r;toast('Prompt improved')}catch(e){toast(e.message)}finally{b.disabled=false}});
+$('copyVideoPrompt').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('videoPrompt').value);toast('Prompt copied')}catch(e){toast('Copy not available in this browser')}});
+$('openVaideo').addEventListener('click',()=>window.open('https://vaideo.org/','_blank','noopener,noreferrer'));
+$('copyAndOpenVaideo').addEventListener('click',async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write a video prompt first');$('videoPrompt').focus();return}try{await navigator.clipboard.writeText(p);window.open('https://vaideo.org/','_blank','noopener,noreferrer');toast('Prompt copied. Paste it into Vaideo.')}catch(e){toast('Copy unavailable. Copy the prompt manually, then open Vaideo.')}});
 
-  const signIn = $('signIn');
-  const signUp = $('signUp');
-  if (signIn) {
-    const old = signIn.onclick;
-    signIn.onclick = async event => {
-      if (!validAuthFields()) return;
-      if (typeof old === 'function') await old.call(signIn, event);
+/* Local still-image animation exporter */
+$('motionImage').addEventListener('change',()=>{const f=$('motionImage').files[0];if(!f)return;if(motionSource)URL.revokeObjectURL(motionSource);motionSource=URL.createObjectURL(f);$('motionStatus').textContent='Image ready. Press Create moving video.'});
+$('stopMotionVideo').addEventListener('click',()=>{if(motionRecorder&&motionRecorder.state!=='inactive')motionRecorder.stop()});
+$('makeMotionVideo').addEventListener('click',async()=>{
+  const f=$('motionImage').files[0];if(!f){toast('Choose an image first');return}
+  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){$('motionStatus').textContent='Video export is not supported by this browser. Try a recent version of Chrome.';return}
+  const btn=$('makeMotionVideo');btn.disabled=true;$('stopMotionVideo').disabled=false;$('motionOutput').innerHTML='';$('motionStatus').textContent='Preparing your clip…';
+  try{
+    const img=new Image();img.src=motionSource||URL.createObjectURL(f);await img.decode();
+    const ratio=$('motionRatio').value.split(':').map(Number),w=ratio[0]===9?720:ratio[0]===1?720:1280,h=ratio[1]===16?1280:ratio[0]===1?720:720;
+    const c=$('motionCanvas');c.width=w;c.height=h;c.classList.remove('hidden');const ctx=c.getContext('2d');
+    const duration=Number($('motionDuration').value)*1000,start=performance.now(),style=$('motionStyle').value,stream=c.captureStream(30);
+    let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';motionChunks=[];
+    motionRecorder=new MediaRecorder(stream,{mimeType:mime});
+    motionRecorder.ondataavailable=e=>{if(e.data.size)motionChunks.push(e.data)};
+    motionRecorder.onerror=e=>{$('motionStatus').textContent='Video recorder error.';btn.disabled=false;$('stopMotionVideo').disabled=true};
+    motionRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(motionChunks,{type:'video/webm'}),url=URL.createObjectURL(blob),v=document.createElement('video');v.src=url;v.controls=true;v.autoplay=true;v.loop=true;v.className='result';const a=document.createElement('a');a.href=url;a.download='mazen-ai-motion-video.webm';a.className='btn';a.style.display='inline-block';a.style.marginTop='10px';a.textContent='Download video (WebM)';$('motionOutput').replaceChildren(v,a);$('motionStatus').textContent='Your moving video is ready. This is image animation, not newly generated AI footage.';btn.disabled=false;$('stopMotionVideo').disabled=true};
+    motionRecorder.start();
+    const draw=now=>{
+      if(!motionRecorder||motionRecorder.state==='inactive')return;
+      const p=Math.min(1,(now-start)/duration);ctx.fillStyle='#080914';ctx.fillRect(0,0,w,h);
+      const scaleBase=Math.max(w/img.width,h/img.height),baseW=img.width*scaleBase,baseH=img.height*scaleBase;let zoom=1+.10*p,dx=0,dy=0;
+      if(style==='out')zoom=1.10-.10*p;if(style==='pan'){zoom=1.12;dx=(p-.5)*w*.09}if(style==='float'){zoom=1.06+Math.sin(p*Math.PI*2)*.018;dy=Math.sin(p*Math.PI*2)*h*.012}
+      const dw=baseW*zoom,dh=baseH*zoom;ctx.drawImage(img,(w-dw)/2+dx,(h-dh)/2+dy,dw,dh);
+      $('motionStatus').textContent='Rendering video… '+Math.round(p*100)+'%';
+      if(p<1)requestAnimationFrame(draw);else setTimeout(()=>{if(motionRecorder&&motionRecorder.state!=='inactive')motionRecorder.stop()},250);
     };
-  }
-  if (signUp) {
-    const old = signUp.onclick;
-    signUp.onclick = async event => {
-      if (!validAuthFields()) return;
-      if (typeof old === 'function') await old.call(signUp, event);
-    };
-  }
+    requestAnimationFrame(draw);
+  }catch(e){$('motionStatus').textContent='Could not create video: '+e.message;btn.disabled=false;$('stopMotionVideo').disabled=true}
+});
+$('videoFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),v=document.createElement('video');v.src=u;v.controls=true;v.className='result';$('videoPreview').replaceChildren(v)});
 
-  // Honest bot-protection status: do not display a fake CAPTCHA checkbox.
-  const accountCard = document.querySelector('#account .authgrid');
-  if (accountCard && !$('turnstileNote')) {
-    const note = document.createElement('div');
-    note.className = 'authNote';
-    note.id = 'turnstileNote';
-    note.textContent = 'حماية الروبوتات غير مفعّلة حالياً. لتفعيلها فعلاً، يلزم إنشاء Turnstile Site Key وSecret Key وربط التحقق من جهة Cloudflare Worker. لا تضع Secret Key داخل هذا الملف أو ترسله في المحادثة.';
-    accountCard.appendChild(note);
-  }
+/* Voice */
+$('startVoice').addEventListener('click',()=>{
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('voiceStatus').textContent='Speech recognition is not supported in this browser. Try Chrome, or type your message below.';return}
+  try{recognition?.stop();recognition=new SR();recognition.lang=$('voiceLanguage').value;recognition.interimResults=true;recognition.continuous=true;
+    recognition.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript+' ';$('voiceText').value=t.trim()};
+    recognition.onerror=e=>$('voiceStatus').textContent='Voice error: '+e.error+'. If Darija is not recognized, choose Arabic (Saudi).';
+    recognition.onend=()=>$('voiceStatus').textContent='Listening stopped. You can edit the recognized text before sending.';
+    recognition.start();$('voiceStatus').textContent='Listening… speak now.';
+  }catch(e){$('voiceStatus').textContent='Could not start microphone: '+e.message}
+});
+$('stopVoice').addEventListener('click',()=>recognition?.stop());
+$('sendVoice').addEventListener('click',async()=>{
+  const t=$('voiceText').value.trim();if(!t){toast('Speak or type a message first');return}
+  const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;
+  try{const instruction=$('voiceDarija').checked&&$('voiceLanguage').value.startsWith('ar')?'The user is speaking Arabic. Reply naturally in Moroccan Darija (الدارجة المغربية), using clear Arabic script. Do not reply in English or Modern Standard Arabic unless asked.\n\n':'Reply in the same language as the user.\n\n';const r=await ask(instruction+t,[],[]);box.textContent=r;if($('speakReplies').checked)speak(r)}
+  catch(e){box.textContent='Could not reach MAZEN AI: '+e.message}finally{$('sendVoice').disabled=false}
+});
 
-  // Restore the Supabase session when configured, and keep profile labels in sync.
-  // The original module creates `sb` privately, so this checks the saved public config
-  // and creates a separate client only for session display/listening.
-  try {
-    const url = localStorage.getItem('mazen_v4_sburl');
-    const key = localStorage.getItem('mazen_v4_sbkey');
-    if (url && key && window.supabase) {
-      const client = window.supabase.createClient(url, key);
-      client.auth.getSession().then(({data}) => {
-        const user = data?.session?.user;
-        if (user) {
-          if ($('profileName')) $('profileName').textContent = 'Signed in';
-          if ($('profileEmail')) $('profileEmail').textContent = user.email || '';
-        }
-      });
-      client.auth.onAuthStateChange((_event, session) => {
-        const user = session?.user;
-        if ($('profileName')) $('profileName').textContent = user ? 'Signed in' : 'Guest mode';
-        if ($('profileEmail')) $('profileEmail').textContent = user?.email || 'Local session';
-      });
-    }
-  } catch (e) {
-    console.warn('MAZEN AI session display:', e);
-  }
-})();
+/* Supabase auth */
+$('saveSupabase').addEventListener('click',()=>{
+  const u=$('supabaseUrl').value.trim(),k=$('supabaseKey').value.trim();
+  if((u&&!/^https:\/\/.+\.supabase\.co\/?$/.test(u))||(!u&&k)||(!k&&u)){toast('Enter both a valid Supabase URL and public key');return}
+  localStorage.setItem(K.sburl,u);localStorage.setItem(K.sbkey,k);setupSupabase();toast('Supabase settings saved');
+});
+$('supabaseUrl').value=localStorage.getItem(K.sburl)||'';$('supabaseKey').value=localStorage.getItem(K.sbkey)||'';
+$('signIn').addEventListener('click',()=>authAction('signin'));$('signUp').addEventListener('click',()=>authAction('signup'));
+$('signOut').addEventListener('click',async()=>{if(!sb){toast('Supabase is not configured');return}try{const {error}=await sb.auth.signOut();if(error)throw error;updateProfile(null);$('authStatus').textContent='Signed out.'}catch(e){$('authStatus').textContent=e.message}});
+
+/* Start-up */
+setupSupabase();
+if(!current()){if(chats.length){active=chats[0].id;save();renderChat()}else newChat()}else renderChat();
+const splash=document.createElement('div');splash.id='mazenSplash';splash.innerHTML='<div><div class="splashMark">M</div><div class="splashName">MAZEN AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';document.body.append(splash);
+setTimeout(()=>splash.classList.add('hide'),1800);setTimeout(()=>splash.remove(),2550);
+
+/* Keep the legacy inline handlers available if any are added later. */
+window.go=go;window.newChat=newChat;window.clearHistory=clearHistory;
 </script>
-<!-- End MAZEN AI enhancement patch -->
 </body>
 </html>
