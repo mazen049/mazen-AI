@@ -1,5 +1,5 @@
-const CACHE='mazen-ai-shell-v4';
-const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg?v=4'];
+const CACHE='mazen-ai-shell-v5';
+const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg?v=5'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
