@@ -150,7 +150,7 @@ button:active,.btn:active{transform:scale(.97)}
 const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
 const $=id=>document.getElementById(id);
 const K={chats:'mazen_v5_chats',active:'mazen_v5_active',sburl:'mazen_v4_sburl',sbkey:'mazen_v4_sbkey'};
-let chats=[],active='',sb=null,recognition=null,pendingImages=[],pendingDocs=[],motionSource=null,motionRecorder=null,motionChunks=[];
+let chats=[],active='',sb=null,sbAuthSubscription=null,recognition=null,pendingImages=[],pendingDocs=[],motionSource=null,motionRecorder=null,motionChunks=[],isSending=false;
 try{chats=JSON.parse(localStorage.getItem(K.chats)||'[]');if(!Array.isArray(chats))chats=[]}catch(e){chats=[]}
 active=localStorage.getItem(K.active)||'';
 
@@ -158,7 +158,7 @@ function toast(t){$('toast').textContent=t;$('toast').classList.add('show');clea
 function save(){try{localStorage.setItem(K.chats,JSON.stringify(chats));localStorage.setItem(K.active,active)}catch(e){toast('Storage is full. Some history may not be saved.')}}
 function current(){return chats.find(c=>c.id===active)}
 function go(v){
-  if(!$ (v))return;
+  if(!$(v))return;
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));
   document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
   const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',account:'Account & Security',settings:'Settings'};
@@ -181,7 +181,7 @@ async function ask(text,images=[],history=[]){
   if(!data.reply)throw Error('Empty AI response');return data.reply;
 }
 async function send(text){
-  text=(text||'').trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;
+  text=(text||'').trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;if(isSending)return;isSending=true;
   let c=current();if(!c){c={id:Date.now().toString(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id}
   let fullText=text;for(const d of pendingDocs)fullText+='\n\n[Extracted document: '+d.name+']\n'+d.text;
   const imgs=pendingImages.slice(),fileNames=[...imgs.map(x=>x.name),...pendingDocs.map(x=>x.name)];
@@ -196,7 +196,7 @@ async function send(text){
     wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save();
     if($('speakReplies').checked&&$('voice').classList.contains('active'))speak(reply);
   }catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MAZEN AI: '+e.message;toast(e.message)}
-  finally{$('send').disabled=false}
+  finally{$('send').disabled=false;isSending=false}
 }
 function readData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error||Error('Could not read file'));r.readAsDataURL(file)})}
 async function extractDoc(file){
@@ -215,9 +215,28 @@ function renderHistory(){
 }
 function clearHistory(){if(!chats.length){toast('History is already empty');return}if(confirm('Delete local conversation history from this browser?')){chats=[];active='';save();renderHistory();renderChat();toast('History cleared')}}
 function setupSupabase(){
+  if(sbAuthSubscription?.unsubscribe){try{sbAuthSubscription.unsubscribe()}catch(e){}}
+  sbAuthSubscription=null;sb=null;
   const u=localStorage.getItem(K.sburl),k=localStorage.getItem(K.sbkey),note=$('accountConfigStatus');
-  if(u&&k&&window.supabase){try{sb=window.supabase.createClient(u,k);$('authStatus').textContent='Supabase client initialized. Try signing in or creating an account.';if(note){note.textContent='Supabase settings are present in this browser. Sign-in still needs a successful test.';note.className='status success'}sb.auth.getSession().then(({data})=>updateProfile(data?.session?.user||null));sb.auth.onAuthStateChange((_event,session)=>updateProfile(session?.user||null))}catch(e){sb=null;$('authStatus').textContent='Could not initialize Supabase: '+e.message;if(note){note.textContent='Supabase setup error: '+e.message;note.className='status'}}}
-  else{$('authStatus').textContent='Supabase not configured. Add project URL and public anon key in Settings.';sb=null;if(note){note.textContent='Sign-in is not configured in this browser yet. Add the Project URL and public publishable key in Settings.';note.className='status'}}
+  if(!u||!k||!window.supabase){
+    $('authStatus').textContent='Supabase not configured. Add project URL and public anon/publishable key in Settings.';
+    if(note){note.textContent='Sign-in is not configured in this browser yet. Add the Project URL and public publishable key in Settings.';note.className='status'}
+    updateProfile(null);return;
+  }
+  try{
+    const parsed=new URL(u);
+    if(parsed.protocol!=='https:'||!parsed.hostname.endsWith('.supabase.co'))throw Error('Use your valid HTTPS Supabase project URL.');
+    sb=window.supabase.createClient(u,k,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    $('authStatus').textContent='Supabase client initialized. Try signing in or creating an account.';
+    if(note){note.textContent='Supabase settings are present in this browser. Sign-in still needs a successful test.';note.className='status success'}
+    sb.auth.getSession().then(({data,error})=>{if(error)throw error;updateProfile(data?.session?.user||null)}).catch(e=>{$('authStatus').textContent='Could not read Supabase session: '+e.message});
+    const {data}=sb.auth.onAuthStateChange((_event,session)=>updateProfile(session?.user||null));
+    sbAuthSubscription=data?.subscription||null;
+  }catch(e){
+    sb=null;$('authStatus').textContent='Could not initialize Supabase: '+e.message;
+    if(note){note.textContent='Supabase setup error: '+e.message;note.className='status'}
+    updateProfile(null);
+  }
 }
 function updateProfile(user){$('profileName').textContent=user?'Signed in':'Guest mode';$('profileEmail').textContent=user?.email||'Local session'}
 function validAuthFields(){const e=$('authEmail').value.trim(),p=$('authPassword').value;if(!e||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ $('authStatus').textContent='Enter a valid email address.';$('authEmail').focus();return false}if(p.length<8){$('authStatus').textContent='Password must be at least 8 characters.';$('authPassword').focus();return false}return true}
@@ -266,7 +285,7 @@ $('makeImage').addEventListener('click',async()=>{
 $('videoPromptHelp').addEventListener('click',async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write your idea first');return}const b=$('videoPromptHelp');b.disabled=true;try{const r=await ask('Improve this into a detailed image-animation video prompt. Include subject, scene, camera movement, lighting, style, duration and aspect ratio. Return only the prompt.\n\n'+p,[],[]);$('videoPrompt').value=r;toast('Prompt improved')}catch(e){toast(e.message)}finally{b.disabled=false}});
 $('copyVideoPrompt').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('videoPrompt').value);toast('Prompt copied')}catch(e){toast('Copy not available in this browser')}});
 $('openVaideo').addEventListener('click',()=>window.open('https://vaideo.org/','_blank','noopener,noreferrer'));
-$('copyAndOpenVaideo').addEventListener('click',async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write a video prompt first');$('videoPrompt').focus();return}try{await navigator.clipboard.writeText(p);window.open('https://vaideo.org/','_blank','noopener,noreferrer');toast('Prompt copied. Paste it into Vaideo.')}catch(e){toast('Copy unavailable. Copy the prompt manually, then open Vaideo.')}});
+$('copyAndOpenVaideo').addEventListener('click',async()=>{const p=$('videoPrompt').value.trim();if(!p){toast('Write a video prompt first');$('videoPrompt').focus();return}const tab=window.open('https://vaideo.org/','_blank','noopener,noreferrer');try{await navigator.clipboard.writeText(p);toast('Prompt copied. Paste it into Vaideo.')}catch(e){toast('Copy unavailable. Paste the prompt manually into the opened page.')}if(!tab)toast('Your browser blocked the new tab. Use Open Vaideo instead.');});
 
 /* Local still-image animation exporter */
 $('motionImage').addEventListener('change',()=>{const f=$('motionImage').files[0];if(!f)return;if(motionSource)URL.revokeObjectURL(motionSource);motionSource=URL.createObjectURL(f);$('motionStatus').textContent='Image ready. Press Create moving video.'});
@@ -330,7 +349,13 @@ $('signOut').addEventListener('click',async()=>{if(!sb){toast('Supabase is not c
 
 /* Start-up */
 setupSupabase();
-if(!current()){if(chats.length){active=chats[0].id;save();renderChat()}else newChat()}else renderChat();
+if(!current()){
+  if(chats.length){active=chats[0].id}
+  else{const first={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(first);active=first.id}
+  save();
+}
+renderChat();
+go('home');
 const splash=document.createElement('div');splash.id='mazenSplash';splash.innerHTML='<div><div class="splashMark">M</div><div class="splashName">MAZEN AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';document.body.append(splash);
 setTimeout(()=>splash.classList.add('hide'),1800);setTimeout(()=>splash.remove(),2550);
 
