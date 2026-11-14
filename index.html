@@ -157,8 +157,10 @@ button:active,.btn:active{transform:scale(.97)}
 'use strict';
 const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
 const $=id=>document.getElementById(id);
+const SUPABASE_URL='https://rqrmfzctfgufqztdqhpa.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_QyBO3_LllBbgtODBtvzq7w_zFFKorV3';
 const K={chats:'mazen_v5_chats',active:'mazen_v5_active',sburl:'mazen_v4_sburl',sbkey:'mazen_v4_sbkey'};
-let chats=[],active='',sb=null,sbAuthSubscription=null,recognition=null,pendingImages=[],pendingDocs=[],motionSource=null,motionRecorder=null,motionChunks=[],isSending=false;
+let chats=[],active='',sb=null,sbAuthSubscription=null,authenticatedUser=null,recognition=null,pendingImages=[],pendingDocs=[],motionSource=null,motionRecorder=null,motionChunks=[],isSending=false;
 try{chats=JSON.parse(localStorage.getItem(K.chats)||'[]');if(!Array.isArray(chats))chats=[]}catch(e){chats=[]}
 active=localStorage.getItem(K.active)||'';
 
@@ -167,6 +169,7 @@ function save(){try{localStorage.setItem(K.chats,JSON.stringify(chats));localSto
 function current(){return chats.find(c=>c.id===active)}
 function go(v){
   if(!$(v))return;
+  if(v!=='account'&&!authenticatedUser){v='account';toast('Please sign in to use MAZEN AI.');}
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));
   document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
   const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',account:'Account & Security',settings:'Settings'};
@@ -233,7 +236,9 @@ function clearHistory(){if(!chats.length){toast('History is already empty');retu
 function setupSupabase(){
   if(sbAuthSubscription?.unsubscribe){try{sbAuthSubscription.unsubscribe()}catch(e){}}
   sbAuthSubscription=null;sb=null;
-  const u=localStorage.getItem(K.sburl),k=localStorage.getItem(K.sbkey),note=$('accountConfigStatus');
+  const u=SUPABASE_URL,k=SUPABASE_PUBLISHABLE_KEY,note=$('accountConfigStatus');
+  localStorage.setItem(K.sburl,u);localStorage.setItem(K.sbkey,k);
+  $('supabaseUrl').value=u;$('supabaseKey').value=k;
   if(!u||!k||!window.supabase){
     $('authStatus').textContent='Supabase not configured. Add project URL and public anon/publishable key in Settings.';
     if(note){note.textContent='Sign-in is not configured in this browser yet. Add the Project URL and public publishable key in Settings.';note.className='status'}
@@ -245,8 +250,8 @@ function setupSupabase(){
     sb=window.supabase.createClient(u,k,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     $('authStatus').textContent='Supabase client initialized. Try signing in or creating an account.';
     if(note){note.textContent='Supabase settings are present in this browser. Sign-in still needs a successful test.';note.className='status success'}
-    sb.auth.getSession().then(({data,error})=>{if(error)throw error;updateProfile(data?.session?.user||null)}).catch(e=>{$('authStatus').textContent='Could not read Supabase session: '+e.message});
-    const {data}=sb.auth.onAuthStateChange((_event,session)=>updateProfile(session?.user||null));
+    sb.auth.getSession().then(({data,error})=>{if(error)throw error;updateProfile(data?.session?.user||null);if(data?.session?.user){go('home')}else{go('account')}}).catch(e=>{$('authStatus').textContent='Could not read Supabase session: '+e.message;go('account')});
+    const {data}=sb.auth.onAuthStateChange((_event,session)=>{updateProfile(session?.user||null);if(session?.user){go('home')}else{go('account')}});
     sbAuthSubscription=data?.subscription||null;
   }catch(e){
     sb=null;$('authStatus').textContent='Could not initialize Supabase: '+e.message;
@@ -254,7 +259,7 @@ function setupSupabase(){
     updateProfile(null);
   }
 }
-function updateProfile(user){$('profileName').textContent=user?'Signed in':'Guest mode';$('profileEmail').textContent=user?.email||'Local session'}
+function updateProfile(user){authenticatedUser=user||null;$('profileName').textContent=user?'Signed in':'Sign in required';$('profileEmail').textContent=user?.email||'No active session';if(!user){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='account'));$('crumb').textContent='Account & Security'}}
 function validAuthFields(){const e=$('authEmail').value.trim(),p=$('authPassword').value;if(!e||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){ $('authStatus').textContent='Enter a valid email address.';$('authEmail').focus();return false}if(p.length<8){$('authStatus').textContent='Password must be at least 8 characters.';$('authPassword').focus();return false}return true}
 async function authAction(kind){
   if(!sb){toast('Configure Supabase first');$('authStatus').textContent='Add your Supabase project URL and public anon key in Settings.';return}
@@ -396,11 +401,12 @@ $('saveSupabase').addEventListener('click',()=>{
   if((u&&!/^https:\/\/.+\.supabase\.co\/?$/.test(u))||(!u&&k)||(!k&&u)){toast('Enter both a valid Supabase URL and public key');return}
   localStorage.setItem(K.sburl,u);localStorage.setItem(K.sbkey,k);setupSupabase();toast('Supabase settings saved');
 });
-$('supabaseUrl').value=localStorage.getItem(K.sburl)||'';$('supabaseKey').value=localStorage.getItem(K.sbkey)||'';
+$('supabaseUrl').value=SUPABASE_URL;$('supabaseKey').value=SUPABASE_PUBLISHABLE_KEY;
 $('signIn').addEventListener('click',()=>authAction('signin'));$('signUp').addEventListener('click',()=>authAction('signup'));
-$('signOut').addEventListener('click',async()=>{if(!sb){toast('Supabase is not configured');return}try{const {error}=await sb.auth.signOut();if(error)throw error;updateProfile(null);$('authStatus').textContent='Signed out.'}catch(e){$('authStatus').textContent=e.message}});
+$('signOut').addEventListener('click',async()=>{if(!sb){toast('Supabase is not configured');return}try{const {error}=await sb.auth.signOut();if(error)throw error;updateProfile(null);go('account');$('authStatus').textContent='Signed out.'}catch(e){$('authStatus').textContent=e.message}});
 
-/* Start-up */
+/* Start-up: authentication is required before entering the workspace. */
+go('account');
 setupSupabase();
 if(!current()){
   if(chats.length){active=chats[0].id}
