@@ -65,4 +65,154 @@ function setupSupabase(){const u=localStorage.getItem(K.sburl),k=localStorage.ge
 $('saveSupabase').onclick=()=>{localStorage.setItem(K.sburl,$('supabaseUrl').value.trim());localStorage.setItem(K.sbkey,$('supabaseKey').value.trim());setupSupabase();toast('Supabase settings saved')};$('supabaseUrl').value=localStorage.getItem(K.sburl)||'';$('supabaseKey').value=localStorage.getItem(K.sbkey)||'';
 $('signUp').onclick=async()=>{if(!sb)return toast('Configure Supabase first');const {error}=await sb.auth.signUp({email:$('authEmail').value,password:$('authPassword').value});$('authStatus').textContent=error?error.message:'Account created. Check your email if confirmation is enabled.'};$('signIn').onclick=async()=>{if(!sb)return toast('Configure Supabase first');const {data,error}=await sb.auth.signInWithPassword({email:$('authEmail').value,password:$('authPassword').value});$('authStatus').textContent=error?error.message:'Signed in successfully.';if(data.user){$('profileName').textContent='Signed in';$('profileEmail').textContent=data.user.email}};$('signOut').onclick=async()=>{if(sb)await sb.auth.signOut();$('profileName').textContent='Guest mode';$('profileEmail').textContent='Local session';$('authStatus').textContent='Signed out.'};
 setupSupabase();if(!current()&&!chats.length)newChat();else renderChat();
-</script></body></html>
+</script><!-- MAZEN AI enhancement patch: paste this entire block immediately before </body> -->
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  // Inject styles without needing to find the existing <style> element.
+  const style = document.createElement('style');
+  style.textContent = `
+    #mazenSplash{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
+      background:radial-gradient(circle at 50% 45%,#242047 0,#080914 58%);
+      transition:opacity .75s ease,visibility .75s ease}
+    #mazenSplash.hide{opacity:0;visibility:hidden;pointer-events:none}
+    #mazenSplash .splashMark{width:104px;height:104px;border-radius:30px;display:grid;place-items:center;
+      color:#080914;font:800 48px 'Space Grotesk',sans-serif;
+      background:linear-gradient(135deg,#8d73ff,#35e0c1);
+      box-shadow:0 0 70px #8d73ff88;animation:mazenIn 1s ease both}
+    #mazenSplash .splashName{margin-top:18px;text-align:center;font:700 20px 'Space Grotesk',sans-serif;
+      letter-spacing:4px;color:#f4f5ff;animation:mazenIn 1.25s ease both}
+    #mazenSplash .splashSub{margin-top:7px;text-align:center;color:#9da5c2;font-size:10px;letter-spacing:3px}
+    @keyframes mazenIn{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
+    .vaideoPanel{margin-top:18px;border:1px solid #8d73ff55;border-radius:17px;padding:17px;
+      background:linear-gradient(120deg,#8d73ff18,#35e0c10c)}
+    .vaideoPanel h3{margin:0 0 7px;font:600 17px 'Space Grotesk',sans-serif}
+    .vaideoPanel p{color:#9da5c2;font-size:12px;line-height:1.6;margin:0 0 12px}
+    .authNote{margin-top:12px;padding:11px;border:1px solid #f6c76a44;border-radius:11px;
+      color:#e9d49d;background:#f6c76a0d;font-size:12px;line-height:1.6}
+    @media(prefers-reduced-motion:reduce){#mazenSplash .splashMark,#mazenSplash .splashName{animation:none}}
+  `;
+  document.head.appendChild(style);
+
+  // Animated intro splash.
+  const splash = document.createElement('div');
+  splash.id = 'mazenSplash';
+  splash.innerHTML = '<div><div class="splashMark">M</div><div class="splashName">MAZEN AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';
+  document.body.appendChild(splash);
+  window.setTimeout(() => splash.classList.add('hide'), 1900);
+  window.setTimeout(() => splash.remove(), 2750);
+
+  // Vaideo launch card. This is an external hand-off, not a direct API connection.
+  const videoSection = $('video');
+  if (videoSection && ! $('vaideoPanel')) {
+    const panel = document.createElement('div');
+    panel.className = 'vaideoPanel';
+    panel.id = 'vaideoPanel';
+    panel.innerHTML = `
+      <h3>🎬 MAZEN VIDEO AI</h3>
+      <p>جهّز وصف الفيديو هنا، ثم افتح Vaideo والصق الوصف هناك لتوليد الفيديو. هذا انتقال إلى خدمة خارجية، وليس اتصال API مباشر.</p>
+      <div class="row">
+        <button class="btn" type="button" id="openVaideo">Open Vaideo ↗</button>
+        <button class="btn secondary" type="button" id="copyAndOpenVaideo">Copy prompt & open</button>
+      </div>
+    `;
+    const card = videoSection.querySelector('.card');
+    if (card) card.prepend(panel);
+    $('openVaideo').addEventListener('click', () => {
+      window.open('https://vaideo.org/', '_blank', 'noopener,noreferrer');
+    });
+    $('copyAndOpenVaideo').addEventListener('click', async () => {
+      const prompt = $('videoPrompt')?.value.trim() || '';
+      if (!prompt) {
+        alert('كتب وصف الفيديو أولاً، ثم عاود الضغط.');
+        $('videoPrompt')?.focus();
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(prompt);
+        window.open('https://vaideo.org/', '_blank', 'noopener,noreferrer');
+        if (typeof window.toast === 'function') window.toast('Prompt copied. Paste it into Vaideo.');
+        else alert('تم نسخ الوصف. لصقه في Vaideo.');
+      } catch (err) {
+        alert('تعذر النسخ تلقائياً. انسخ الوصف يدوياً ثم افتح Vaideo.');
+      }
+    });
+  }
+
+  // Clear, friendly validation for Supabase sign-up / sign-in.
+  const email = $('authEmail');
+  const password = $('authPassword');
+  const authStatus = $('authStatus');
+  function validAuthFields() {
+    const e = (email?.value || '').trim();
+    const p = password?.value || '';
+    if (!e || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+      if (authStatus) authStatus.textContent = 'دخل بريد إلكتروني صحيح.';
+      email?.focus();
+      return false;
+    }
+    if (p.length < 8) {
+      if (authStatus) authStatus.textContent = 'كلمة المرور خاصها تكون 8 أحرف على الأقل.';
+      password?.focus();
+      return false;
+    }
+    return true;
+  }
+
+  const signIn = $('signIn');
+  const signUp = $('signUp');
+  if (signIn) {
+    const old = signIn.onclick;
+    signIn.onclick = async event => {
+      if (!validAuthFields()) return;
+      if (typeof old === 'function') await old.call(signIn, event);
+    };
+  }
+  if (signUp) {
+    const old = signUp.onclick;
+    signUp.onclick = async event => {
+      if (!validAuthFields()) return;
+      if (typeof old === 'function') await old.call(signUp, event);
+    };
+  }
+
+  // Honest bot-protection status: do not display a fake CAPTCHA checkbox.
+  const accountCard = document.querySelector('#account .authgrid');
+  if (accountCard && !$('turnstileNote')) {
+    const note = document.createElement('div');
+    note.className = 'authNote';
+    note.id = 'turnstileNote';
+    note.textContent = 'حماية الروبوتات غير مفعّلة حالياً. لتفعيلها فعلاً، يلزم إنشاء Turnstile Site Key وSecret Key وربط التحقق من جهة Cloudflare Worker. لا تضع Secret Key داخل هذا الملف أو ترسله في المحادثة.';
+    accountCard.appendChild(note);
+  }
+
+  // Restore the Supabase session when configured, and keep profile labels in sync.
+  // The original module creates `sb` privately, so this checks the saved public config
+  // and creates a separate client only for session display/listening.
+  try {
+    const url = localStorage.getItem('mazen_v4_sburl');
+    const key = localStorage.getItem('mazen_v4_sbkey');
+    if (url && key && window.supabase) {
+      const client = window.supabase.createClient(url, key);
+      client.auth.getSession().then(({data}) => {
+        const user = data?.session?.user;
+        if (user) {
+          if ($('profileName')) $('profileName').textContent = 'Signed in';
+          if ($('profileEmail')) $('profileEmail').textContent = user.email || '';
+        }
+      });
+      client.auth.onAuthStateChange((_event, session) => {
+        const user = session?.user;
+        if ($('profileName')) $('profileName').textContent = user ? 'Signed in' : 'Guest mode';
+        if ($('profileEmail')) $('profileEmail').textContent = user?.email || 'Local session';
+      });
+    }
+  } catch (e) {
+    console.warn('MAZEN AI session display:', e);
+  }
+})();
+</script>
+<!-- End MAZEN AI enhancement patch -->
+</body>
+</html>
