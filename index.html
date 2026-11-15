@@ -50,6 +50,13 @@ button:active,.btn:active{transform:scale(.97)}
 #mazenSplash .splashName{animation:mazenIn 1.25s ease both}
 #mazenSplash .splashSub{animation:mazenIn 1.5s ease both}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}body:after,.logo,#mazenSplash .splashMark{animation:none!important}.view.active,.view.active .hero,.view.active .toolcard,.chatbox .msg{animation:none!important}}
+.freePromise{display:flex;gap:14px;align-items:flex-start;margin-top:16px;padding:17px 19px;border:1px solid #35e0c144;border-radius:17px;background:linear-gradient(110deg,#35e0c111,#8d73ff0d);box-shadow:0 12px 32px #0002}
+.freePromiseIcon{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:#35e0c122;color:var(--b);font-size:19px}
+.freePromise strong{font:700 14px 'Space Grotesk';color:#eafffa}
+.freePromise p{margin:5px 0 7px;color:var(--muted);font-size:12px;line-height:1.65}
+.freePromise span{font-size:9px;font-weight:800;letter-spacing:1.7px;color:var(--b)}
+@media(max-width:650px){.freePromise{padding:14px;gap:11px}}
+
 
 #authGate{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 50% 35%,#242047 0,#080914 65%);color:#f4f5ff;overflow:auto}
 #authGate.hidden{display:none!important}.authGateCard{width:min(100%,460px);padding:28px 24px;text-align:left;border:1px solid #ffffff20;border-radius:22px;background:#15182beF;box-shadow:0 24px 80px #0009}
@@ -93,6 +100,7 @@ button:active,.btn:active{transform:scale(.97)}
 
 <section class="view active" id="home">
   <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Welcome, <span class="gradient" id="welcomeName">there</span>!</h1><p>I’m MAZEN AI — your creative intelligence workspace. What would you like to make today?</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
+  <div class="freePromise"><div class="freePromiseIcon">♥</div><div><strong>Useful AI should be accessible to everyone.</strong><p>MAZEN AI values its free community. The core experience is here to help you learn, create and have meaningful conversations — without pressure to pay.</p><span>FREE COMMUNITY · NO PAYMENT PRESSURE</span></div></div>
   <div class="grid">
     <div class="card toolcard" data-go="chat"><div class="toolicon">✧</div><h3>AI Chat</h3><p>Ask questions, write, learn and brainstorm in multiple languages.</p></div>
     <div class="card toolcard" data-go="image"><div class="toolicon">▧</div><h3>Image Studio</h3><p>Generate images from text prompts with the connected image service.</p></div>
@@ -201,7 +209,7 @@ async function ask(text,images=[],history=[]){
   if(sessionError)throw sessionError;
   const accessToken=sessionData?.session?.access_token;
   if(!accessToken){setAuthUI(null);throw Error('Please sign in to continue.')}
-  const messages=[{role:'system',content:'You are MAZEN AI, a helpful multilingual assistant. Reply in the language used by the user. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
+  const messages=[{role:'system',content:'You are MAZEN AI, a helpful multilingual assistant. Reply in the language used by the user. Treat free users with respect: never shame, pressure, guilt, or repeatedly ask anyone to pay or upgrade. Give useful, complete help within the capabilities available. Do not invent subscription plans, prices, quotas, or payment features. If asked about payment, explain only features that are actually available. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
   const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+accessToken},body:JSON.stringify({messages,images})});
   let data={};try{data=await r.json()}catch(e){}
   if(r.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}
