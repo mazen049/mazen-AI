@@ -50,6 +50,30 @@ button:active,.btn:active{transform:scale(.97)}
 #mazenSplash .splashName{animation:mazenIn 1.25s ease both}
 #mazenSplash .splashSub{animation:mazenIn 1.5s ease both}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}body:after,.logo,#mazenSplash .splashMark{animation:none!important}.view.active,.view.active .hero,.view.active .toolcard,.chatbox .msg{animation:none!important}}
+
+.pricingIntro{position:relative;overflow:hidden;padding:30px;border:1px solid #8d73ff44;border-radius:22px;background:linear-gradient(115deg,#17172dcc,#101e2bdc);box-shadow:var(--shadow)}
+.pricingIntro h2{position:relative;margin:12px 0 9px;font:700 clamp(29px,4vw,43px)/1.12 'Space Grotesk'}
+.pricingIntro p{position:relative;max-width:590px;color:var(--muted);line-height:1.7;margin:0}
+.pricingGlow{position:absolute;width:280px;height:280px;right:-80px;top:-120px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));filter:blur(65px);opacity:.22}
+.pricingGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:17px;align-items:stretch}
+.priceCard{position:relative;padding:23px;border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:0 14px 38px #0003}
+.priceCard.featured{border-color:#8d73ff99;background:linear-gradient(145deg,#211c3cdd,#111a2bdd);box-shadow:0 15px 42px #765eff20}
+.popularTag{position:absolute;right:17px;top:17px;padding:6px 9px;border-radius:99px;background:#35e0c122;color:var(--b);font-size:9px;font-weight:800;letter-spacing:1px}
+.priceLabel{color:var(--b);font-size:9px;font-weight:800;letter-spacing:2px}
+.priceCard h3{font:700 25px 'Space Grotesk';margin:9px 0 4px}
+.priceDesc{color:var(--muted);font-size:12px;line-height:1.6;min-height:39px;margin:0}
+.priceAmount{font:700 clamp(31px,4vw,40px) 'Space Grotesk';margin-top:18px}
+.priceAmount small{font:600 12px 'DM Sans';color:var(--muted)}
+.pricePeriod{color:var(--muted);font-size:11px;margin-top:2px}
+.priceCard ul{list-style:none;padding:0;margin:21px 0;display:grid;gap:12px}
+.priceCard li{position:relative;padding-left:23px;color:#dce1f3;font-size:12px;line-height:1.55}
+.priceCard li:before{content:'✓';position:absolute;left:0;color:var(--b);font-weight:800}
+.priceCurrent{width:100%;justify-content:center;opacity:.9}
+.annualOffer{margin-top:14px;padding:12px;border:1px solid #35e0c133;border-radius:12px;background:#35e0c10c;color:#e7fff9;font-size:12px}
+.annualOffer span{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.costNote{margin-top:16px}.costNote h3{margin:0 0 7px;font:600 16px 'Space Grotesk'}.costNote p{color:var(--muted);font-size:12px;line-height:1.7}
+@media(max-width:650px){.pricingGrid{grid-template-columns:1fr}.pricingIntro{padding:22px}.priceDesc{min-height:0}.priceCard{padding:19px}}
+
 .freePromise{display:flex;gap:14px;align-items:flex-start;margin-top:16px;padding:17px 19px;border:1px solid #35e0c144;border-radius:17px;background:linear-gradient(110deg,#35e0c111,#8d73ff0d);box-shadow:0 12px 32px #0002}
 .freePromiseIcon{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:#35e0c122;color:var(--b);font-size:19px}
 .freePromise strong{font:700 14px 'Space Grotesk';color:#eafffa}
@@ -88,6 +112,7 @@ button:active,.btn:active{transform:scale(.97)}
     <button data-view="video"><span class="ico">▶</span> Video Studio</button>
     <button data-view="voice"><span class="ico">◉</span> Voice Room</button>
     <button data-view="history"><span class="ico">◷</span> History</button>
+    <button data-view="plans"><span class="ico">✦</span> Plans &amp; Pricing</button>
   </nav></div>
   <div><div class="navlabel">PREFERENCES</div><nav class="nav">
     <button data-view="account"><span class="ico">♙</span> Account &amp; Security</button>
@@ -164,6 +189,29 @@ button:active,.btn:active{transform:scale(.97)}
   <div class="card authgrid"><div class="status success" id="accountConfigStatus">Your account is active.</div><p class="muted" id="accountEmail">Signed-in account</p><button class="btn secondary" id="signOut" type="button">Sign out</button></div>
 </section>
 
+
+<section class="view" id="plans">
+  <div class="sectionhead"><div><h2>Plans &amp; Pricing</h2><p>Choose the level that works for you. The Free experience stays useful.</p></div><span class="pill">Launch offer · planned</span></div>
+  <div class="pricingIntro"><div class="pricingGlow"></div><div class="eyebrow">MAZEN AI MEMBERSHIP</div><h2>More room to create.<br><span class="gradient">A fair price for everyone.</span></h2><p>Free stays free. Pro adds higher usage and creative tools for people who need more.</p></div>
+  <div class="pricingGrid">
+    <article class="priceCard">
+      <div class="priceLabel">FOR EVERYONE</div><h3>Free</h3><p class="priceDesc">Explore, learn and create without a subscription.</p>
+      <div class="priceAmount">0 <small>SAR</small></div><div class="pricePeriod">Forever</div>
+      <ul><li>AI chat for everyday questions</li><li>Image and document tools within fair free limits</li><li>Image understanding</li><li>Browser voice features</li><li>No payment pressure</li></ul>
+      <button class="btn secondary priceCurrent" type="button" disabled>Your current free access</button>
+    </article>
+    <article class="priceCard featured">
+      <div class="popularTag">MOST VALUE</div><div class="priceLabel">FOR CREATORS</div><h3>Pro</h3><p class="priceDesc">More creative power, more room and priority access.</p>
+      <div class="priceAmount">29.99 <small>SAR</small></div><div class="pricePeriod">Per month · proposed launch price</div>
+      <ul><li><b>6 AI video generations / month</b> (up to 5 seconds each, initial 720p target)</li><li>Higher image-generation allowance</li><li>More AI chat and image understanding</li><li>Larger document analysis allowance</li><li>Priority processing when available</li><li>Pro profile badge and new Pro tools</li></ul>
+      <button class="btn priceCurrent" type="button" disabled>Coming soon · payments not active</button>
+      <div class="annualOffer"><b>Annual option:</b> 299.99 SAR / year <span>Save about 17% vs monthly</span></div>
+    </article>
+  </div>
+  <div class="card costNote"><h3>Why this price?</h3><p>We are planning the Pro limits around real provider costs, not promising unlimited generations. Video quotas and quality may be adjusted before launch so the service stays reliable and sustainable.</p><div class="row"><span class="pill">No unlimited video promise</span><span class="pill">No hidden auto-upgrade</span><span class="pill">Free remains useful</span></div></div>
+  <div class="status" style="margin-top:15px">Important: These are proposed plans only. No subscription has been charged or activated. Video generation, server-side image generation, usage limits and payment processing still need to be connected and tested before Pro can be sold.</div>
+</section>
+
 <section class="view" id="settings">
   <div class="sectionhead"><div><h2>Settings</h2><p>Backend address is built into this version. Server API secrets stay on Cloudflare.</p></div></div>
   <div class="two"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in. Server API secrets stay on Cloudflare.</div><p class="muted">Never paste your Groq API key into this page.</p></div>
@@ -191,7 +239,7 @@ function go(v){
   if(!$(v))return;
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));
   document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
-  const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',account:'Account & Security',settings:'Settings'};
+  const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',plans:'Plans & Pricing',account:'Account & Security',settings:'Settings'};
   $('crumb').textContent=names[v]||v;$('sidebar').classList.remove('open');
   if(v==='history')renderHistory();if(v==='chat')renderChat();
 }
