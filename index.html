@@ -110,6 +110,24 @@ body[data-theme="light"] .hero p,body[data-theme="light"] .pricingIntro p{color:
 body[data-theme="light"] .authGateCard{background:#f7f8fc;color:#20243a}
 body[data-theme="light"] .authGateBrand p{color:#68718a}
 @media(max-width:650px){.appearanceCard{padding:17px}.appearanceLabel{align-items:flex-start;flex-direction:column}.appearanceFooter{align-items:flex-start;flex-direction:column}}
+
+/* Voice Room visual activity */
+.voiceStage{text-align:center;padding:clamp(20px,4vw,38px)!important}
+.voiceOrbWrap{width:190px;height:190px;margin:8px auto 24px;position:relative;display:grid;place-items:center}
+.voiceOrb{width:132px;height:132px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:2;color:#fff;font:700 13px 'Space Grotesk',sans-serif;letter-spacing:3px;background:radial-gradient(circle at 32% 25%,#c5b7ff 0,#8d73ff 22%,#4933a8 57%,#11142d 100%);box-shadow:0 0 28px #8d73ff88, inset -12px -15px 28px #08091499, inset 7px 8px 22px #ffffff55;transition:transform .25s,filter .25s}
+.voiceOrbRing{position:absolute;inset:8px;border:1px solid #8d73ff77;border-radius:50%;box-shadow:0 0 32px #8d73ff33;animation:voiceOrbit 5s linear infinite}
+.voiceOrbRing:before,.voiceOrbRing:after{content:'';position:absolute;inset:12px;border:1px solid #35e0c155;border-radius:50%;animation:voicePulse 2.4s ease-in-out infinite}
+.voiceOrbRing:after{inset:-7px;border-color:#8d73ff55;animation-delay:.7s}
+.voiceOrbWrap.listening .voiceOrb{transform:scale(1.08);filter:saturate(1.3);animation:voiceBreathe .9s ease-in-out infinite alternate}
+.voiceOrbWrap.speaking .voiceOrb{transform:scale(1.12);filter:hue-rotate(22deg) saturate(1.35);animation:voiceBreathe .55s ease-in-out infinite alternate}
+.voiceOrbWrap.listening .voiceOrbRing,.voiceOrbWrap.speaking .voiceOrbRing{animation-duration:1.1s}
+.voiceTitle{margin:0 0 7px}.voiceHint{min-height:22px}
+.voiceControls{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0}
+.voiceLanguage{max-width:280px;margin:0 auto 18px;text-align:left}
+.voiceFootnote{font-size:12px;max-width:620px;margin:18px auto 0;line-height:1.6}
+@keyframes voiceOrbit{to{transform:rotate(360deg)}}@keyframes voicePulse{0%,100%{transform:scale(.94);opacity:.45}50%{transform:scale(1.08);opacity:1}}@keyframes voiceBreathe{to{transform:scale(1.09)}}
+@media(max-width:560px){.voiceOrbWrap{width:160px;height:160px}.voiceOrb{width:112px;height:112px}.voiceControls{align-items:stretch}.voiceControls .btn{flex:1}}
+
 </style>
 </head>
 <body>
@@ -194,13 +212,15 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 </section>
 
 <section class="view" id="voice">
-  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speech input and spoken AI responses.</p></div><span class="pill">Browser voice</span></div>
-  <div class="card"><div class="toolicon" style="width:58px;height:58px;font-size:28px">◉</div><h3>Talk to MAZEN AI</h3><p class="muted">Turn-based speech chat. Recognition availability depends on browser/device support.</p>
-    <div class="row" style="margin:18px 0"><button class="btn" id="startVoice">🎙 Start speaking</button><button class="btn secondary" id="stopVoice">Stop</button><label class="muted"><input type="checkbox" id="speakReplies" checked> Speak AI replies</label></div>
-    <div class="field"><label>Recognition language</label><select id="voiceLanguage"><option value="ar-SA">Arabic (usually broader browser support)</option><option value="ar-MA">Arabic (Morocco / Darija - if supported)</option><option value="en-US">English</option><option value="fr-FR">French</option></select></div>
-    <label class="muted"><input type="checkbox" id="voiceDarija" checked> When I speak Arabic, reply in Moroccan Darija</label>
-    <p class="muted">If Darija recognition is unavailable, choose Arabic (Saudi) and speak naturally; MAZEN AI will still be instructed to answer in Darija.</p>
-    <div class="field"><label>Recognized speech / message</label><textarea id="voiceText" placeholder="Your recognized speech appears here…"></textarea></div><button class="btn" id="sendVoice">Send to MAZEN AI ↗</button><div id="voiceStatus" class="muted" style="margin-top:12px"></div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
+  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speak naturally with MAZEN AI and hear spoken replies.</p></div><span class="pill">Voice beta</span></div>
+  <div class="card voiceStage">
+    <div class="voiceOrbWrap" id="voiceOrbWrap" aria-label="Voice activity indicator"><div class="voiceOrb" id="voiceOrb"><span>MAZEN</span></div><div class="voiceOrbRing"></div></div>
+    <h3 class="voiceTitle">Your voice, your AI</h3><p class="muted voiceHint" id="voiceModeLabel">Choose a language and start speaking.</p>
+    <div class="voiceControls"><button class="btn" id="startVoice">🎙 Start speaking</button><button class="btn secondary" id="stopVoice">Stop listening</button><label class="muted"><input type="checkbox" id="speakReplies" checked> Speak AI replies</label></div>
+    <div class="field voiceLanguage"><label>Language</label><select id="voiceLanguage"><option value="ar-SA">العربية</option><option value="en-US">English</option><option value="fr-FR">Français</option></select></div>
+    <div class="field"><label>Recognized speech / message</label><textarea id="voiceText" placeholder="Your recognized speech appears here…"></textarea></div>
+    <button class="btn" id="sendVoice">Send to MAZEN AI ↗</button><div id="voiceStatus" class="muted" role="status" aria-live="polite" style="margin-top:12px">Ready when you are.</div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
+    <p class="muted voiceFootnote">Voice recognition and spoken responses use the capabilities available in your browser and device. This version is still turn-based, not a continuous live voice conversation.</p>
   </div>
 </section>
 
@@ -417,7 +437,7 @@ async function authAction(kind){
   }catch(e){$('authStatus').textContent=e.message||'Authentication failed.'}
   finally{$('signIn').disabled=false;$('signUp').disabled=false}
 }
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang==='ar-MA'?'ar-MA':lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||voices.find(v=>v.lang.toLowerCase().startsWith('ar'))||null;speechSynthesis.speak(u)}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||null;u.onstart=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('listening');w.classList.add('speaking');$('voiceModeLabel').textContent='MAZEN AI is speaking…'}};u.onend=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('speaking');$('voiceModeLabel').textContent='Reply finished. You can speak again.'}};u.onerror=()=>{const w=$('voiceOrbWrap');if(w)w.classList.remove('speaking')};speechSynthesis.speak(u)}
 
 
 /* Appearance preferences: local, automatic, and persistent across app views. */
@@ -557,22 +577,30 @@ $('makeMotionVideo').addEventListener('click',async()=>{
 });
 $('videoFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const u=URL.createObjectURL(f),v=document.createElement('video');v.src=u;v.controls=true;v.className='result';$('videoPreview').replaceChildren(v)});
 
-/* Voice */
+/* Voice Room: browser speech recognition + spoken replies (turn-based beta). */
+function setVoiceMode(mode,label){
+  const wrap=$('voiceOrbWrap');wrap.classList.remove('listening','speaking');if(mode)wrap.classList.add(mode);
+  $('voiceModeLabel').textContent=label;
+}
 $('startVoice').addEventListener('click',()=>{
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('voiceStatus').textContent='Speech recognition is not supported in this browser. Try Chrome, or type your message below.';return}
-  try{recognition?.stop();recognition=new SR();recognition.lang=$('voiceLanguage').value;recognition.interimResults=true;recognition.continuous=true;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){$('voiceStatus').textContent='Speech recognition is not supported in this browser. Try Chrome, or type your message below.';setVoiceMode('', 'Type a message if voice recognition is unavailable.');return}
+  try{
+    recognition?.stop();recognition=new SR();recognition.lang=$('voiceLanguage').value;recognition.interimResults=true;recognition.continuous=true;
+    recognition.onstart=()=>{setVoiceMode('listening','Listening… speak naturally.');$('voiceStatus').textContent='Listening…'};
     recognition.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript+' ';$('voiceText').value=t.trim()};
-    recognition.onerror=e=>$('voiceStatus').textContent='Voice error: '+e.error+'. If Darija is not recognized, choose Arabic (Saudi).';
-    recognition.onend=()=>$('voiceStatus').textContent='Listening stopped. You can edit the recognized text before sending.';
-    recognition.start();$('voiceStatus').textContent='Listening… speak now.';
-  }catch(e){$('voiceStatus').textContent='Could not start microphone: '+e.message}
+    recognition.onerror=e=>{$('voiceStatus').textContent='Voice error: '+e.error;setVoiceMode('', 'Voice recognition stopped. You can type below.')};
+    recognition.onend=()=>{setVoiceMode('', 'Ready to send your message.');$('voiceStatus').textContent='Listening stopped. Review your message, then send it to MAZEN AI.'};
+    recognition.start();
+  }catch(e){$('voiceStatus').textContent='Could not start microphone: '+e.message;setVoiceMode('', 'Check microphone permission and try again.')}
 });
-$('stopVoice').addEventListener('click',()=>recognition?.stop());
+$('stopVoice').addEventListener('click',()=>{recognition?.stop();setVoiceMode('', 'Listening stopped.')});
 $('sendVoice').addEventListener('click',async()=>{
   const t=$('voiceText').value.trim();if(!t){toast('Speak or type a message first');return}
-  const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;
-  try{const instruction=$('voiceDarija').checked&&$('voiceLanguage').value.startsWith('ar')?'The user is speaking Arabic. Reply naturally in Moroccan Darija (الدارجة المغربية), using clear Arabic script. Do not reply in English or Modern Standard Arabic unless asked.\n\n':'Reply in the same language as the user.\n\n';const r=await ask(instruction+t,[],[]);box.textContent=r;if($('speakReplies').checked)speak(r)}
-  catch(e){box.textContent='Could not reach MAZEN AI: '+e.message}finally{$('sendVoice').disabled=false}
+  recognition?.stop();const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;setVoiceMode('', 'MAZEN AI is preparing a reply…');
+  try{const r=await ask('Reply naturally in the same language as the user. Supported voice languages are Arabic, English and French.\n\n'+t,[],[]);box.textContent=r;if($('speakReplies').checked)speak(r);else setVoiceMode('', 'Reply ready. You can speak again.')}
+  catch(e){box.textContent='Could not reach MAZEN AI: '+e.message;setVoiceMode('', 'Could not complete the reply. Try again.')}
+  finally{$('sendVoice').disabled=false}
 });
 
 /* Supabase email/password authentication */
