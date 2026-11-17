@@ -88,6 +88,28 @@ button:active,.btn:active{transform:scale(.97)}
 .authGateBrand h1{font:700 25px 'Space Grotesk';margin:0 0 8px}.authGateBrand p{color:#aeb6d0;line-height:1.6;font-size:13px;margin:0}
 .authGateCard .row{margin-top:15px}.authGateCard .row button{flex:1}
 .authGateCard .authNote{margin-top:14px}
+
+/* Appearance customization */
+:root{--custom-bg:#080914;--a:#8d73ff;--accent-soft:#8d73ff22}
+body{background:radial-gradient(ellipse at 75% 0%,color-mix(in srgb,var(--a) 22%,transparent) 0,transparent 35%),radial-gradient(ellipse at 0% 85%,color-mix(in srgb,var(--b) 22%,transparent) 0,transparent 32%),var(--custom-bg)}
+.appearanceCard{padding:24px}.appearanceHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.appearanceHeading h3{font:700 22px 'Space Grotesk';margin:7px 0 4px}.appearanceBadge{font-size:9px;letter-spacing:1.5px;font-weight:800;color:var(--b);border:1px solid color-mix(in srgb,var(--b) 35%,transparent);background:color-mix(in srgb,var(--b) 10%,transparent);border-radius:99px;padding:7px 10px}
+.appearanceGroup{padding:20px 0;border-top:1px solid var(--line);margin-top:17px}.appearanceLabel{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.appearanceLabel strong{font:600 14px 'Space Grotesk'}.choiceRow,.swatchRow,.colorControl{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.choiceBtn{padding:10px 15px;border-radius:11px;border:1px solid var(--line);background:#ffffff08;color:var(--text)}.choiceBtn.active{border-color:var(--a);background:color-mix(in srgb,var(--a) 18%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--a) 10%,transparent)}
+.colorControl input[type=color],.accentSwatches input[type=color]{width:46px;height:42px;padding:4px;border-radius:10px;border:1px solid var(--line);background:#ffffff0b;cursor:pointer}.colorHex{max-width:120px;text-transform:uppercase}.swatch{width:29px;height:29px;border-radius:50%;border:2px solid #ffffff55;background:var(--swatch);box-shadow:0 0 0 2px #0004;cursor:pointer}.swatch:hover{transform:scale(1.12)}.swatch.selected{outline:2px solid var(--text);outline-offset:3px}.appearanceFooter{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:15px;border-top:1px solid var(--line)}
+body[data-theme="light"]{--panel:rgba(255,255,255,.82);--line:rgba(30,35,55,.14);--text:#20243a;--muted:#68718a;color:var(--text);background:radial-gradient(ellipse at 75% 0%,color-mix(in srgb,var(--a) 13%,transparent) 0,transparent 35%),radial-gradient(ellipse at 0% 85%,#35bda522 0,transparent 32%),var(--custom-bg)}
+body[data-theme="light"]:before{opacity:.10;background-image:linear-gradient(#2222 1px,transparent 1px),linear-gradient(90deg,#2222 1px,transparent 1px)}
+body[data-theme="light"] .side{background:#f7f8fcf2;border-color:var(--line)}
+body[data-theme="light"] .nav button,body[data-theme="light"] .newchat:not(.btn){color:#59617a}
+body[data-theme="light"] .nav button:hover,body[data-theme="light"] .nav button.active{color:#20243a}
+body[data-theme="light"] .hero,body[data-theme="light"] .pricingIntro{background:linear-gradient(115deg,#ffffffdf,#edf1f9e8);border-color:#2222}
+body[data-theme="light"] .card,body[data-theme="light"] .priceCard{background:var(--panel);color:var(--text)}
+body[data-theme="light"] .input,body[data-theme="light"] textarea,body[data-theme="light"] select{background:#fff;color:#20243a;border-color:#252b451f}
+body[data-theme="light"] .profile,body[data-theme="light"] .pill,body[data-theme="light"] .iconbtn,body[data-theme="light"] .choiceBtn{background:#ffffffaa;color:#30364e}
+body[data-theme="light"] .msg.ai{background:#ffffffbd;color:#20243a}
+body[data-theme="light"] .sectionhead h2,body[data-theme="light"] .appearanceLabel strong{color:#20243a}
+body[data-theme="light"] .hero p,body[data-theme="light"] .pricingIntro p{color:#68718a}
+body[data-theme="light"] .authGateCard{background:#f7f8fc;color:#20243a}
+body[data-theme="light"] .authGateBrand p{color:#68718a}
+@media(max-width:650px){.appearanceCard{padding:17px}.appearanceLabel{align-items:flex-start;flex-direction:column}.appearanceFooter{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -215,8 +237,26 @@ button:active,.btn:active{transform:scale(.97)}
 </section>
 
 <section class="view" id="settings">
-  <div class="sectionhead"><div><h2>Settings</h2><p>Backend address is built into this version. Server API secrets stay on Cloudflare.</p></div></div>
-  <div class="two"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in. Server API secrets stay on Cloudflare.</div><p class="muted">Never paste your Groq API key into this page.</p></div>
+  <div class="sectionhead"><div><h2>Settings</h2><p>Personalize the look and feel of your MAZEN AI workspace.</p></div></div>
+  <div class="card appearanceCard">
+    <div class="appearanceHeading"><div><span class="eyebrow">PERSONALIZATION</span><h3>Appearance</h3><p class="muted">Changes are saved automatically on this device and apply across the whole app.</p></div><span class="appearanceBadge">LIVE</span></div>
+    <div class="appearanceGroup"><div class="appearanceLabel"><strong>Theme</strong><span class="muted">Choose your interface mode</span></div>
+      <div class="choiceRow" role="group" aria-label="Theme">
+        <button class="choiceBtn" type="button" data-theme-choice="dark">🌙 Dark</button>
+        <button class="choiceBtn" type="button" data-theme-choice="light">☀️ Light</button>
+        <button class="choiceBtn" type="button" data-theme-choice="system">◐ System</button>
+      </div>
+    </div>
+    <div class="appearanceGroup"><div class="appearanceLabel"><strong>Background color</strong><span class="muted">Set the main app background</span></div>
+      <div class="colorControl"><input id="appearanceBg" type="color" value="#080914" aria-label="Choose background color"><input id="appearanceBgHex" class="input colorHex" type="text" value="#080914" maxlength="7" aria-label="Background hex color"><button class="btn secondary" id="resetBg" type="button">Reset</button></div>
+      <div class="swatchRow" aria-label="Background presets"><button class="swatch" type="button" data-bg="#080914" style="--swatch:#080914" aria-label="Midnight"></button><button class="swatch" type="button" data-bg="#101827" style="--swatch:#101827" aria-label="Deep navy"></button><button class="swatch" type="button" data-bg="#171326" style="--swatch:#171326" aria-label="Plum"></button><button class="swatch" type="button" data-bg="#10201f" style="--swatch:#10201f" aria-label="Forest"></button><button class="swatch" type="button" data-bg="#20232b" style="--swatch:#20232b" aria-label="Slate"></button></div>
+    </div>
+    <div class="appearanceGroup"><div class="appearanceLabel"><strong>Accent color</strong><span class="muted">Change buttons, highlights and glow</span></div>
+      <div class="swatchRow accentSwatches"><button class="swatch" type="button" data-accent="#8d73ff" style="--swatch:#8d73ff" aria-label="Violet"></button><button class="swatch" type="button" data-accent="#438cff" style="--swatch:#438cff" aria-label="Blue"></button><button class="swatch" type="button" data-accent="#16b99a" style="--swatch:#16b99a" aria-label="Teal"></button><button class="swatch" type="button" data-accent="#e45c9c" style="--swatch:#e45c9c" aria-label="Pink"></button><button class="swatch" type="button" data-accent="#e09a36" style="--swatch:#e09a36" aria-label="Amber"></button><input id="appearanceAccent" type="color" value="#8d73ff" aria-label="Custom accent color"></div>
+    </div>
+    <div class="appearanceFooter"><span class="muted" id="appearanceStatus" aria-live="polite">Your appearance is saved automatically.</span><button class="btn secondary" id="resetAppearance" type="button">↺ Reset all</button></div>
+  </div>
+  <div class="two" style="margin-top:15px"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in. Server API secrets stay on Cloudflare.</div><p class="muted">Never paste your Groq API key into this page.</p></div>
   <div class="card"><h3>Access</h3><div class="status success">A valid Supabase email/password session is required to use MAZEN AI.</div></div></div>
   <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">MAZEN AI · Developed by Mazen Rihani</div>
 </section>
@@ -378,6 +418,42 @@ async function authAction(kind){
   finally{$('signIn').disabled=false;$('signUp').disabled=false}
 }
 function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang==='ar-MA'?'ar-MA':lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||voices.find(v=>v.lang.toLowerCase().startsWith('ar'))||null;speechSynthesis.speak(u)}
+
+
+/* Appearance preferences: local, automatic, and persistent across app views. */
+const APPEARANCE_KEY='mazen_ai_appearance_v1';
+const DEFAULT_APPEARANCE={theme:'dark',bg:'#080914',accent:'#8d73ff'};
+function readAppearance(){try{return {...DEFAULT_APPEARANCE,...JSON.parse(localStorage.getItem(APPEARANCE_KEY)||'{}')}}catch(e){return {...DEFAULT_APPEARANCE}}}
+let appearance=readAppearance();
+function validHex(value){return /^#[0-9a-fA-F]{6}$/.test(String(value||''))}
+function applyAppearance(){
+  const root=document.documentElement,theme=appearance.theme||'dark';
+  document.body.dataset.theme=theme==='system'?(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):theme;
+  root.style.setProperty('--custom-bg',appearance.bg);
+  root.style.setProperty('--bg',appearance.bg);
+  root.style.setProperty('--a',appearance.accent);
+  root.style.setProperty('--accent-soft',appearance.accent+'22');
+  const bg=$('appearanceBg'),bgHex=$('appearanceBgHex'),accent=$('appearanceAccent');
+  if(bg)bg.value=appearance.bg;if(bgHex)bgHex.value=appearance.bg.toUpperCase();if(accent)accent.value=appearance.accent;
+  document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===theme));
+  document.querySelectorAll('[data-bg]').forEach(b=>b.classList.toggle('selected',b.dataset.bg.toLowerCase()===appearance.bg.toLowerCase()));
+  document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('selected',b.dataset.accent.toLowerCase()===appearance.accent.toLowerCase()));
+}
+function saveAppearance(message='Appearance saved automatically.'){
+  localStorage.setItem(APPEARANCE_KEY,JSON.stringify(appearance));applyAppearance();
+  const status=$('appearanceStatus');if(status)status.textContent=message;
+}
+function setAppearance(key,value){appearance[key]=value;saveAppearance()}
+document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>setAppearance('theme',b.dataset.themeChoice)));
+$('appearanceBg').addEventListener('input',e=>{if(validHex(e.target.value)){appearance.bg=e.target.value;saveAppearance()}});
+$('appearanceBgHex').addEventListener('change',e=>{const v=e.target.value.trim();if(validHex(v)){setAppearance('bg',v)}else{e.target.value=appearance.bg.toUpperCase();toast('Enter a valid hex color, like #080914')}});
+document.querySelectorAll('[data-bg]').forEach(b=>b.addEventListener('click',()=>setAppearance('bg',b.dataset.bg)));
+$('appearanceAccent').addEventListener('input',e=>setAppearance('accent',e.target.value));
+document.querySelectorAll('[data-accent]').forEach(b=>b.addEventListener('click',()=>setAppearance('accent',b.dataset.accent)));
+$('resetBg').addEventListener('click',()=>setAppearance('bg',DEFAULT_APPEARANCE.bg));
+$('resetAppearance').addEventListener('click',()=>{appearance={...DEFAULT_APPEARANCE};saveAppearance('Appearance restored to the original MAZEN AI look.')});
+applyAppearance();
+if(appearance.theme==='system')matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',applyAppearance);
 
 /* Navigation and buttons */
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
