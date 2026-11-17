@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080914">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icon.svg?v=5" type="image/svg+xml">
-<link rel="shortcut icon" href="./icon.svg?v=5" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icon.svg?v=5">
+<link rel="icon" href="./icon.svg?v=6" type="image/svg+xml">
+<link rel="shortcut icon" href="./icon.svg?v=6" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg?v=6">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="MAZEN AI">
+<meta name="apple-mobile-web-app-title" content="NEXORA AI">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>MAZEN AI — Studio</title>
+<title>NEXORA AI — Studio</title>
 <script src="https://js.puter.com/v2/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
@@ -24,7 +24,7 @@
 @media(max-width:900px){.side{width:225px}.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.side{position:fixed;left:0;top:0;bottom:0;width:270px;transform:translateX(-105%);box-shadow:var(--shadow)}.side.open{transform:none}.hamb{display:inline-block}.main{padding:15px}.top{margin-bottom:18px}.hero{padding:22px}.grid,.two{grid-template-columns:1fr}.chatbox{min-height:300px}.msg{max-width:94%}.topright .pill{display:none}.composer{gap:6px}.composer .btn{padding:10px}.attachmenu{left:-4px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* MAZEN AI motion system */
+/* NEXORA AI motion system */
 :root{scroll-behavior:smooth}
 body:after{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 18% 25%,#8d73ff16,transparent 28%),radial-gradient(circle at 82% 72%,#35e0c116,transparent 30%);animation:ambientDrift 18s ease-in-out infinite alternate}
 @keyframes ambientDrift{0%{transform:translate3d(-1.5%,0,0) scale(1)}100%{transform:translate3d(1.5%,-1%,0) scale(1.04)}}
@@ -89,6 +89,14 @@ button:active,.btn:active{transform:scale(.97)}
 .authGateCard .row{margin-top:15px}.authGateCard .row button{flex:1}
 .authGateCard .authNote{margin-top:14px}
 
+/* NEXORA coordinated color themes */
+.themePresetGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.themePreset{min-width:0;text-align:left;padding:13px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,color-mix(in srgb,var(--preset-a) 16%,var(--panel)),var(--panel));color:var(--text);display:grid;gap:7px}
+.themePreset:hover{transform:translateY(-2px);border-color:var(--preset-a)}
+.themePreset.active{border-color:var(--preset-a);box-shadow:0 0 0 2px color-mix(in srgb,var(--preset-a) 25%,transparent)}
+.themePreset strong{font:600 12px 'Space Grotesk'}.themePreset small{font-size:10px;color:var(--muted)}
+.presetDots{display:flex;gap:5px}.presetDots i{width:17px;height:17px;border-radius:50%;background:var(--preset-bg);border:2px solid #ffffff66}.presetDots i:nth-child(2){background:var(--preset-a)}.presetDots i:nth-child(3){background:var(--preset-b)}
+@media(max-width:650px){.themePresetGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Appearance customization */
 :root{--custom-bg:#080914;--a:#8d73ff;--accent-soft:#8d73ff22}
 body{background:radial-gradient(ellipse at 75% 0%,color-mix(in srgb,var(--a) 22%,transparent) 0,transparent 35%),radial-gradient(ellipse at 0% 85%,color-mix(in srgb,var(--b) 22%,transparent) 0,transparent 32%),var(--custom-bg)}
@@ -133,7 +141,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 <body>
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authGateTitle">
  <div class="authGateCard">
-  <div class="authGateBrand"><div class="authGateLogo">M</div><h1 id="authGateTitle">Welcome to MAZEN AI</h1><p>Sign in or create an account to continue. No email code is needed when email confirmation is disabled in Supabase.</p></div>
+  <div class="authGateBrand"><div class="authGateLogo">N</div><h1 id="authGateTitle">Welcome to NEXORA AI</h1><p>Sign in or create an account to continue. No email code is needed when email confirmation is disabled in Supabase.</p></div>
   <div class="field"><label for="authEmail">Email</label><input class="input" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
   <div class="field"><label for="authPassword">Password</label><input class="input" id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters"></div>
   <div class="row"><button class="btn" id="signIn" type="button">Sign in</button><button class="btn secondary" id="signUp" type="button">Create account</button></div>
@@ -143,7 +151,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 </div>
 <div class="shell hidden">
 <aside class="side" id="sidebar">
-  <div class="brand"><div class="logo">M</div><div><strong>MAZEN AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
+  <div class="brand"><div class="logo">N</div><div><strong>NEXORA AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
   <button class="newchat" id="newChatBtn">＋ &nbsp; New conversation</button>
   <div><div class="navlabel">WORKSPACE</div><nav class="nav">
     <button class="active" data-view="home"><span class="ico">⌂</span> Overview</button>
@@ -158,14 +166,14 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
     <button data-view="account"><span class="ico">♙</span> Account &amp; Security</button>
     <button data-view="settings"><span class="ico">⚙</span> Settings</button>
   </nav></div>
-  <div class="sidebottom"><div class="profile"><div class="avatar">M</div><div><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small></div></div></div>
+  <div class="sidebottom"><div class="profile"><div class="avatar">N</div><div><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small></div></div></div>
 </aside>
 <main class="main">
-<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MAZEN AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> MAZEN AI · Beta</span><button class="btn secondary" id="installApp" type="button">⬇ Install app</button><button class="iconbtn" id="topSettings">⚙</button></div></header>
+<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">NEXORA AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> NEXORA AI · Beta</span><button class="btn secondary" id="installApp" type="button">⬇ Install app</button><button class="iconbtn" id="topSettings">⚙</button></div></header>
 
 <section class="view active" id="home">
-  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Welcome, <span class="gradient" id="welcomeName">there</span>!</h1><p>I’m MAZEN AI — your creative intelligence workspace. What would you like to make today?</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
-  <div class="freePromise"><div class="freePromiseIcon">♥</div><div><strong>Useful AI should be accessible to everyone.</strong><p>MAZEN AI values its free community. The core experience is here to help you learn, create and have meaningful conversations — without pressure to pay.</p><span>FREE COMMUNITY · NO PAYMENT PRESSURE</span></div></div>
+  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Welcome, <span class="gradient" id="welcomeName">there</span>!</h1><p>I’m NEXORA AI — your creative intelligence workspace. What would you like to make today?</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
+  <div class="freePromise"><div class="freePromiseIcon">♥</div><div><strong>Useful AI should be accessible to everyone.</strong><p>NEXORA AI values its free community. The core experience is here to help you learn, create and have meaningful conversations — without pressure to pay.</p><span>FREE COMMUNITY · NO PAYMENT PRESSURE</span></div></div>
   <div class="grid">
     <div class="card toolcard" data-go="chat"><div class="toolicon">✧</div><h3>AI Chat</h3><p>Ask questions, write, learn and brainstorm in multiple languages.</p></div>
     <div class="card toolcard" data-go="image"><div class="toolicon">▧</div><h3>Image Studio</h3><p>Generate images from text prompts with the connected image service.</p></div>
@@ -173,20 +181,20 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
     <div class="card toolcard" data-go="voice"><div class="toolicon">◉</div><h3>Voice Room</h3><p>Speak your message and listen to AI replies where your browser supports it.</p></div>
     <div class="card toolcard" data-go="history"><div class="toolicon">◷</div><h3>History</h3><p>Find your recent local conversations.</p></div>
     <div class="card toolcard" data-go="account"><div class="toolicon">♙</div><h3>Account &amp; Security</h3><p>Configure real sign-in and review bot-protection status.</p></div>
-  </div><div class="footer">MAZEN AI · Created by Mazen Rihani</div>
+  </div><div class="footer">NEXORA AI · Created by Mazen Rihani</div>
 </section>
 
 <section class="view" id="chat">
-  <div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to MAZEN AI in your preferred language.</p></div><button class="btn secondary" id="newChatMain">＋ New chat</button></div>
+  <div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to NEXORA AI in your preferred language.</p></div><button class="btn secondary" id="newChatMain">＋ New chat</button></div>
   <div class="card chatbox" id="messages" aria-live="polite"></div><div id="pendingFiles" class="filebar"></div>
   <div class="composer"><div class="attachwrap"><button class="iconbtn" id="attachBtn" title="Attach file">＋</button><div class="attachmenu hidden" id="attachMenu"><button data-pick="image">🖼️ Choose image</button><button data-pick="camera">📷 Take photo</button><button data-pick="file">📄 PDF / Word / Excel / text</button></div></div>
   <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
-  <textarea id="prompt" placeholder="Message MAZEN AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
+  <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
   <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div>
 </section>
 
 <section class="view" id="image">
-  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create a new image or upload one and tell MAZEN AI what to change.</p></div><span class="pill">Puter image engine</span></div>
+  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create a new image or upload one and tell NEXORA AI what to change.</p></div><span class="pill">Puter image engine</span></div>
   <div class="card">
     <div class="field"><label>Describe your image</label><textarea id="imagePrompt" placeholder="Describe the image you want to create, or explain what should change in your uploaded photo…"></textarea></div>
     <div class="field"><label>＋ Add a photo to edit (optional)</label><input id="editImageInput" class="input" type="file" accept="image/png,image/jpeg,image/webp,image/gif"><div id="editImagePreview" class="hidden"></div><button class="btn secondary" id="clearEditImage" type="button" style="display:none">Remove photo</button><p class="muted">Upload one image (up to 8 MB). Example: “Change the background to a beach while keeping the person unchanged.”</p></div>
@@ -201,7 +209,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
     <div class="vaideoPanel"><h3>🎬 MAZEN VIDEO AI</h3><p>جهّز وصف الفيديو هنا، ثم افتح Vaideo والصق الوصف هناك. هذا انتقال إلى خدمة خارجية وليس اتصال API مباشر.</p><div class="row"><button class="btn" id="openVaideo">Open Vaideo ↗</button><button class="btn secondary" id="copyAndOpenVaideo">Copy prompt &amp; open</button></div></div>
     <div class="status success" style="margin-top:16px">Free mode: animate one image with camera movement and export a WebM video. This is image animation, not AI text-to-video generation.</div>
     <div class="field"><label>1. Video concept / prompt (optional)</label><textarea id="videoPrompt" placeholder="A cinematic slow camera push toward a futuristic city at sunset…"></textarea></div>
-    <div class="row"><button class="btn secondary" id="videoPromptHelp">Improve prompt with MAZEN AI</button><button class="btn secondary" id="copyVideoPrompt">Copy prompt</button></div>
+    <div class="row"><button class="btn secondary" id="videoPromptHelp">Improve prompt with NEXORA AI</button><button class="btn secondary" id="copyVideoPrompt">Copy prompt</button></div>
     <div class="field"><label>2. Choose an image to animate</label><input class="input" id="motionImage" type="file" accept="image/*"></div>
     <div class="two"><div class="field"><label>Camera motion</label><select id="motionStyle"><option value="zoom">Cinematic zoom in</option><option value="out">Slow zoom out</option><option value="pan">Pan left to right</option><option value="float">Floating camera</option></select></div><div class="field"><label>Aspect ratio</label><select id="motionRatio"><option value="16:9">Landscape 16:9</option><option value="9:16">Portrait 9:16</option><option value="1:1">Square 1:1</option></select></div></div>
     <div class="field"><label>Duration</label><select id="motionDuration"><option value="5">5 seconds</option><option value="8" selected>8 seconds</option><option value="10">10 seconds</option></select></div>
@@ -212,14 +220,14 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 </section>
 
 <section class="view" id="voice">
-  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speak naturally with MAZEN AI and hear spoken replies.</p></div><span class="pill">Voice beta</span></div>
+  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speak naturally with NEXORA AI and hear spoken replies.</p></div><span class="pill">Voice beta</span></div>
   <div class="card voiceStage">
     <div class="voiceOrbWrap" id="voiceOrbWrap" aria-label="Voice activity indicator"><div class="voiceOrb" id="voiceOrb"><span>MAZEN</span></div><div class="voiceOrbRing"></div></div>
     <h3 class="voiceTitle">Your voice, your AI</h3><p class="muted voiceHint" id="voiceModeLabel">Choose a language and start speaking.</p>
     <div class="voiceControls"><button class="btn" id="startVoice">🎙 Start speaking</button><button class="btn secondary" id="stopVoice">Stop listening</button><label class="muted"><input type="checkbox" id="speakReplies" checked> Speak AI replies</label></div>
     <div class="field voiceLanguage"><label>Language</label><select id="voiceLanguage"><option value="ar-SA">العربية</option><option value="en-US">English</option><option value="fr-FR">Français</option></select></div>
     <div class="field"><label>Recognized speech / message</label><textarea id="voiceText" placeholder="Your recognized speech appears here…"></textarea></div>
-    <button class="btn" id="sendVoice">Send to MAZEN AI ↗</button><div id="voiceStatus" class="muted" role="status" aria-live="polite" style="margin-top:12px">Ready when you are.</div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
+    <button class="btn" id="sendVoice">Send to NEXORA AI ↗</button><div id="voiceStatus" class="muted" role="status" aria-live="polite" style="margin-top:12px">Ready when you are.</div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
     <p class="muted voiceFootnote">Voice recognition and spoken responses use the capabilities available in your browser and device. This version is still turn-based, not a continuous live voice conversation.</p>
   </div>
 </section>
@@ -227,14 +235,14 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 <section class="view" id="history"><div class="sectionhead"><div><h2>History</h2><p>Your conversations are saved only in this browser on this device.</p></div><div class="row"><button class="btn secondary" id="exportHistoryBtn">Export data ↓</button><button class="btn secondary" id="clearHistoryBtn">Clear history</button></div></div><div class="status" style="margin-bottom:14px">Privacy note: conversations are saved only in this browser on this device. Export a backup before clearing browser data.</div><div class="card" id="historyList"></div></section>
 
 <section class="view" id="account">
-  <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Manage your MAZEN AI account.</p></div></div>
+  <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Manage your NEXORA AI account.</p></div></div>
   <div class="card authgrid"><div class="status success" id="accountConfigStatus">Your account is active.</div><p class="muted" id="accountEmail">Signed-in account</p><button class="btn secondary" id="signOut" type="button">Sign out</button></div>
 </section>
 
 
 <section class="view" id="plans">
   <div class="sectionhead"><div><h2>Plans &amp; Pricing</h2><p>Choose the level that works for you. The Free experience stays useful.</p></div><span class="pill">Launch offer · planned</span></div>
-  <div class="pricingIntro"><div class="pricingGlow"></div><div class="eyebrow">MAZEN AI MEMBERSHIP</div><h2>More room to create.<br><span class="gradient">A fair price for everyone.</span></h2><p>Free stays free. Pro adds higher usage and creative tools for people who need more.</p></div>
+  <div class="pricingIntro"><div class="pricingGlow"></div><div class="eyebrow">NEXORA AI MEMBERSHIP</div><h2>More room to create.<br><span class="gradient">A fair price for everyone.</span></h2><p>Free stays free. Pro adds higher usage and creative tools for people who need more.</p></div>
   <div class="pricingGrid">
     <article class="priceCard">
       <div class="priceLabel">FOR EVERYONE</div><h3>Free</h3><p class="priceDesc">Explore, learn and create without a subscription.</p>
@@ -257,7 +265,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 </section>
 
 <section class="view" id="settings">
-  <div class="sectionhead"><div><h2>Settings</h2><p>Personalize the look and feel of your MAZEN AI workspace.</p></div></div>
+  <div class="sectionhead"><div><h2>Settings</h2><p>Personalize the look and feel of your NEXORA AI workspace.</p></div></div>
   <div class="card appearanceCard">
     <div class="appearanceHeading"><div><span class="eyebrow">PERSONALIZATION</span><h3>Appearance</h3><p class="muted">Changes are saved automatically on this device and apply across the whole app.</p></div><span class="appearanceBadge">LIVE</span></div>
     <div class="appearanceGroup"><div class="appearanceLabel"><strong>Theme</strong><span class="muted">Choose your interface mode</span></div>
@@ -265,6 +273,16 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
         <button class="choiceBtn" type="button" data-theme-choice="dark">🌙 Dark</button>
         <button class="choiceBtn" type="button" data-theme-choice="light">☀️ Light</button>
         <button class="choiceBtn" type="button" data-theme-choice="system">◐ System</button>
+      </div>
+    </div>
+    <div class="appearanceGroup"><div class="appearanceLabel"><strong>Color themes</strong><span class="muted">One tap applies a coordinated palette</span></div>
+      <div class="themePresetGrid" role="group" aria-label="Color themes">
+        <button class="themePreset" type="button" data-preset="original" style="--preset-bg:#080914;--preset-a:#8d73ff;--preset-b:#35e0c1"><span class="presetDots"><i></i><i></i><i></i></span><strong>Original</strong><small>Violet · Mint</small></button>
+        <button class="themePreset" type="button" data-preset="space" style="--preset-bg:#071426;--preset-a:#438cff;--preset-b:#35c7e8"><span class="presetDots"><i></i><i></i><i></i></span><strong>Space Blue</strong><small>Blue · Ice</small></button>
+        <button class="themePreset" type="button" data-preset="purple" style="--preset-bg:#150d27;--preset-a:#a879ff;--preset-b:#e08cff"><span class="presetDots"><i></i><i></i><i></i></span><strong>Galaxy Purple</strong><small>Purple · Lilac</small></button>
+        <button class="themePreset" type="button" data-preset="emerald" style="--preset-bg:#071b19;--preset-a:#16b99a;--preset-b:#7ce6b5"><span class="presetDots"><i></i><i></i><i></i></span><strong>Emerald</strong><small>Teal · Green</small></button>
+        <button class="themePreset" type="button" data-preset="pink" style="--preset-bg:#210f1b;--preset-a:#e45c9c;--preset-b:#ffb0d1"><span class="presetDots"><i></i><i></i><i></i></span><strong>Pink Pulse</strong><small>Pink · Rose</small></button>
+        <button class="themePreset" type="button" data-preset="orange" style="--preset-bg:#211407;--preset-a:#e09a36;--preset-b:#ffd27a"><span class="presetDots"><i></i><i></i><i></i></span><strong>Solar Orange</strong><small>Amber · Gold</small></button>
       </div>
     </div>
     <div class="appearanceGroup"><div class="appearanceLabel"><strong>Background color</strong><span class="muted">Set the main app background</span></div>
@@ -277,8 +295,8 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
     <div class="appearanceFooter"><span class="muted" id="appearanceStatus" aria-live="polite">Your appearance is saved automatically.</span><button class="btn secondary" id="resetAppearance" type="button">↺ Reset all</button></div>
   </div>
   <div class="two" style="margin-top:15px"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in. Server API secrets stay on Cloudflare.</div><p class="muted">Never paste your Groq API key into this page.</p></div>
-  <div class="card"><h3>Access</h3><div class="status success">A valid Supabase email/password session is required to use MAZEN AI.</div></div></div>
-  <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">MAZEN AI · Developed by Mazen Rihani</div>
+  <div class="card"><h3>Access</h3><div class="status success">A valid Supabase email/password session is required to use NEXORA AI.</div></div></div>
+  <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">NEXORA AI · Developed by Mazen Rihani</div>
 </section>
 </main></div>
 <div class="toast" id="toast" role="status"></div>
@@ -308,7 +326,7 @@ function go(v){
 function newChat(){const c={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id;save();renderChat();go('chat')}
 function renderChat(){
   const box=$('messages'),c=current();box.innerHTML='';
-  if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am MAZEN AI. What would you like to create or explore today?';box.append(d);return}
+  if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am NEXORA AI. What would you like to create or explore today?';box.append(d);return}
   c.messages.forEach(m=>{const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';box.append(d)});
   box.scrollTop=box.scrollHeight;
 }
@@ -319,7 +337,7 @@ async function ask(text,images=[],history=[]){
   if(sessionError)throw sessionError;
   const accessToken=sessionData?.session?.access_token;
   if(!accessToken){setAuthUI(null);throw Error('Please sign in to continue.')}
-  const messages=[{role:'system',content:'You are MAZEN AI, a helpful multilingual assistant. Reply in the language used by the user. Treat free users with respect: never shame, pressure, guilt, or repeatedly ask anyone to pay or upgrade. Give useful, complete help within the capabilities available. Do not invent subscription plans, prices, quotas, or payment features. If asked about payment, explain only features that are actually available. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
+  const messages=[{role:'system',content:'You are NEXORA AI, a helpful multilingual assistant. Reply in the language used by the user. Treat free users with respect: never shame, pressure, guilt, or repeatedly ask anyone to pay or upgrade. Give useful, complete help within the capabilities available. Do not invent subscription plans, prices, quotas, or payment features. If asked about payment, explain only features that are actually available. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
   const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+accessToken},body:JSON.stringify({messages,images})});
   let data={};try{data=await r.json()}catch(e){}
   if(r.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}
@@ -341,7 +359,7 @@ async function send(text){
     const reply=await ask(fullText,imgs.map(x=>x.data),historyBefore);
     wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save();
     if($('speakReplies').checked&&$('voice').classList.contains('active'))speak(reply);
-  }catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MAZEN AI: '+e.message;toast(e.message)}
+  }catch(e){wait.classList.remove('typing');wait.textContent='Could not reach NEXORA AI: '+e.message;toast(e.message)}
   finally{$('send').disabled=false;isSending=false}
 }
 function readData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error||Error('Could not read file'));r.readAsDataURL(file)})}
@@ -361,7 +379,7 @@ function renderHistory(){
 }
 function exportHistory(){
   if(!chats.length){toast('There is no conversation history to export');return}
-  const backup={app:'MAZEN AI',formatVersion:1,exportedAt:new Date().toISOString(),storage:'This export contains local conversation history only.',conversations:chats};
+  const backup={app:'NEXORA AI',formatVersion:1,exportedAt:new Date().toISOString(),storage:'This export contains local conversation history only.',conversations:chats};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='mazen-ai-conversations-'+new Date().toISOString().slice(0,10)+'.json';
@@ -383,11 +401,11 @@ function setAuthUI(session){
     const displayName=getDisplayNameFromEmail(user.email);$('profileName').textContent=displayName;$('welcomeName').textContent=displayName;
     $('profileEmail').textContent=user.email||'Signed in';
     $('accountEmail').textContent=user.email||'Signed-in account';
-    $('accountConfigStatus').textContent='Your account is active. Your MAZEN AI session is secured by Supabase.';
+    $('accountConfigStatus').textContent='Your account is active. Your NEXORA AI session is secured by Supabase.';
   }else{
     $('profileName').textContent='Signed out';
     $('profileEmail').textContent='Sign in required';
-    $('authStatus').textContent='Sign in or create an account to enter MAZEN AI.';
+    $('authStatus').textContent='Sign in or create an account to enter NEXORA AI.';
   }
 }
 function setupSupabase(){
@@ -437,12 +455,13 @@ async function authAction(kind){
   }catch(e){$('authStatus').textContent=e.message||'Authentication failed.'}
   finally{$('signIn').disabled=false;$('signUp').disabled=false}
 }
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||null;u.onstart=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('listening');w.classList.add('speaking');$('voiceModeLabel').textContent='MAZEN AI is speaking…'}};u.onend=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('speaking');$('voiceModeLabel').textContent='Reply finished. You can speak again.'}};u.onerror=()=>{const w=$('voiceOrbWrap');if(w)w.classList.remove('speaking')};speechSynthesis.speak(u)}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||null;u.onstart=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('listening');w.classList.add('speaking');$('voiceModeLabel').textContent='NEXORA AI is speaking…'}};u.onend=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('speaking');$('voiceModeLabel').textContent='Reply finished. You can speak again.'}};u.onerror=()=>{const w=$('voiceOrbWrap');if(w)w.classList.remove('speaking')};speechSynthesis.speak(u)}
 
 
 /* Appearance preferences: local, automatic, and persistent across app views. */
 const APPEARANCE_KEY='mazen_ai_appearance_v1';
-const DEFAULT_APPEARANCE={theme:'dark',bg:'#080914',accent:'#8d73ff'};
+const DEFAULT_APPEARANCE={theme:'dark',bg:'#080914',accent:'#8d73ff',secondary:'#35e0c1'};
+const COLOR_PRESETS={original:{bg:'#080914',accent:'#8d73ff',secondary:'#35e0c1'},space:{bg:'#071426',accent:'#438cff',secondary:'#35c7e8'},purple:{bg:'#150d27',accent:'#a879ff',secondary:'#e08cff'},emerald:{bg:'#071b19',accent:'#16b99a',secondary:'#7ce6b5'},pink:{bg:'#210f1b',accent:'#e45c9c',secondary:'#ffb0d1'},orange:{bg:'#211407',accent:'#e09a36',secondary:'#ffd27a'}};
 function readAppearance(){try{return {...DEFAULT_APPEARANCE,...JSON.parse(localStorage.getItem(APPEARANCE_KEY)||'{}')}}catch(e){return {...DEFAULT_APPEARANCE}}}
 let appearance=readAppearance();
 function validHex(value){return /^#[0-9a-fA-F]{6}$/.test(String(value||''))}
@@ -452,18 +471,22 @@ function applyAppearance(){
   root.style.setProperty('--custom-bg',appearance.bg);
   root.style.setProperty('--bg',appearance.bg);
   root.style.setProperty('--a',appearance.accent);
+  root.style.setProperty('--b',appearance.secondary||DEFAULT_APPEARANCE.secondary);
   root.style.setProperty('--accent-soft',appearance.accent+'22');
   const bg=$('appearanceBg'),bgHex=$('appearanceBgHex'),accent=$('appearanceAccent');
   if(bg)bg.value=appearance.bg;if(bgHex)bgHex.value=appearance.bg.toUpperCase();if(accent)accent.value=appearance.accent;
   document.querySelectorAll('[data-theme-choice]').forEach(b=>b.classList.toggle('active',b.dataset.themeChoice===theme));
   document.querySelectorAll('[data-bg]').forEach(b=>b.classList.toggle('selected',b.dataset.bg.toLowerCase()===appearance.bg.toLowerCase()));
   document.querySelectorAll('[data-accent]').forEach(b=>b.classList.toggle('selected',b.dataset.accent.toLowerCase()===appearance.accent.toLowerCase()));
+  document.querySelectorAll('[data-preset]').forEach(b=>{const p=COLOR_PRESETS[b.dataset.preset];b.classList.toggle('active',!!p&&p.bg===appearance.bg&&p.accent===appearance.accent&&(appearance.secondary||DEFAULT_APPEARANCE.secondary)===p.secondary)});
 }
 function saveAppearance(message='Appearance saved automatically.'){
   localStorage.setItem(APPEARANCE_KEY,JSON.stringify(appearance));applyAppearance();
   const status=$('appearanceStatus');if(status)status.textContent=message;
 }
 function setAppearance(key,value){appearance[key]=value;saveAppearance()}
+function applyColorPreset(name){const preset=COLOR_PRESETS[name];if(!preset)return;appearance={...appearance,...preset};saveAppearance(name==='original'?'Original NEXORA theme restored.':name[0].toUpperCase()+name.slice(1)+' theme applied.')}
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>applyColorPreset(b.dataset.preset)));
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>setAppearance('theme',b.dataset.themeChoice)));
 $('appearanceBg').addEventListener('input',e=>{if(validHex(e.target.value)){appearance.bg=e.target.value;saveAppearance()}});
 $('appearanceBgHex').addEventListener('change',e=>{const v=e.target.value.trim();if(validHex(v)){setAppearance('bg',v)}else{e.target.value=appearance.bg.toUpperCase();toast('Enter a valid hex color, like #080914')}});
@@ -471,7 +494,7 @@ document.querySelectorAll('[data-bg]').forEach(b=>b.addEventListener('click',()=
 $('appearanceAccent').addEventListener('input',e=>setAppearance('accent',e.target.value));
 document.querySelectorAll('[data-accent]').forEach(b=>b.addEventListener('click',()=>setAppearance('accent',b.dataset.accent)));
 $('resetBg').addEventListener('click',()=>setAppearance('bg',DEFAULT_APPEARANCE.bg));
-$('resetAppearance').addEventListener('click',()=>{appearance={...DEFAULT_APPEARANCE};saveAppearance('Appearance restored to the original MAZEN AI look.')});
+$('resetAppearance').addEventListener('click',()=>{appearance={...DEFAULT_APPEARANCE};saveAppearance('Appearance restored to the original NEXORA AI look.')});
 applyAppearance();
 if(appearance.theme==='system')matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',applyAppearance);
 
@@ -514,7 +537,7 @@ async function runImageTask(editMode){
     if(editMode)opts.input_image=imageToEditData;
     const img=await puter.ai.txt2img(p,opts);
     $('imageResult').innerHTML='';img.classList.add('result');$('imageResult').append(img);
-    const a=document.createElement('a');a.href=img.src;a.download=editMode?'mazen-ai-edited-image.png':'mazen-ai-image.png';a.textContent='Download / save image';a.className='btn secondary';a.style.display='inline-block';a.style.marginTop='10px';$('imageResult').append(a);toast(editMode?'Edited image is ready':'Image generated');
+    const a=document.createElement('a');a.href=img.src;a.download=editMode?'nexora-ai-edited-image.png':'nexora-ai-image.png';a.textContent='Download / save image';a.className='btn secondary';a.style.display='inline-block';a.style.marginTop='10px';$('imageResult').append(a);toast(editMode?'Edited image is ready':'Image generated');
   }catch(e){$('imageResult').innerHTML='';const d=document.createElement('div');d.className='status';d.textContent='Image task could not start: '+(e.message||e)+'. Puter may require sign-in or have usage limits.';$('imageResult').append(d)}
   finally{b.disabled=false;other.disabled=false;b.textContent=editMode?'Edit uploaded photo ✨':'Generate image ✨'}
 }
@@ -524,11 +547,11 @@ $('editImage').addEventListener('click',()=>runImageTask(true));
 /* Installable web app (PWA) */
 let installPromptEvent=null;
 const installButton=$('installApp');
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install MAZEN AI';installButton.classList.remove('hidden')});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install NEXORA AI';installButton.classList.remove('hidden')});
 installButton.addEventListener('click',async()=>{
   if(installPromptEvent){
     installPromptEvent.prompt();const choice=await installPromptEvent.userChoice;
-    if(choice?.outcome==='accepted')toast('MAZEN AI installation started');
+    if(choice?.outcome==='accepted')toast('NEXORA AI installation started');
     installPromptEvent=null;
   }else{
     toast(/iphone|ipad|ipod/i.test(navigator.userAgent)?'On iPhone/iPad: tap Share, then Add to Home Screen.':'Open your browser menu and choose Install app or Add to Home Screen.');
@@ -561,7 +584,7 @@ $('makeMotionVideo').addEventListener('click',async()=>{
     motionRecorder=new MediaRecorder(stream,{mimeType:mime});
     motionRecorder.ondataavailable=e=>{if(e.data.size)motionChunks.push(e.data)};
     motionRecorder.onerror=e=>{$('motionStatus').textContent='Video recorder error.';btn.disabled=false;$('stopMotionVideo').disabled=true};
-    motionRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(motionChunks,{type:'video/webm'}),url=URL.createObjectURL(blob),v=document.createElement('video');v.src=url;v.controls=true;v.autoplay=true;v.loop=true;v.className='result';const a=document.createElement('a');a.href=url;a.download='mazen-ai-motion-video.webm';a.className='btn';a.style.display='inline-block';a.style.marginTop='10px';a.textContent='Download video (WebM)';$('motionOutput').replaceChildren(v,a);$('motionStatus').textContent='Your moving video is ready. This is image animation, not newly generated AI footage.';btn.disabled=false;$('stopMotionVideo').disabled=true};
+    motionRecorder.onstop=()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(motionChunks,{type:'video/webm'}),url=URL.createObjectURL(blob),v=document.createElement('video');v.src=url;v.controls=true;v.autoplay=true;v.loop=true;v.className='result';const a=document.createElement('a');a.href=url;a.download='nexora-ai-motion-video.webm';a.className='btn';a.style.display='inline-block';a.style.marginTop='10px';a.textContent='Download video (WebM)';$('motionOutput').replaceChildren(v,a);$('motionStatus').textContent='Your moving video is ready. This is image animation, not newly generated AI footage.';btn.disabled=false;$('stopMotionVideo').disabled=true};
     motionRecorder.start();
     const draw=now=>{
       if(!motionRecorder||motionRecorder.state==='inactive')return;
@@ -590,16 +613,16 @@ $('startVoice').addEventListener('click',()=>{
     recognition.onstart=()=>{setVoiceMode('listening','Listening… speak naturally.');$('voiceStatus').textContent='Listening…'};
     recognition.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript+' ';$('voiceText').value=t.trim()};
     recognition.onerror=e=>{$('voiceStatus').textContent='Voice error: '+e.error;setVoiceMode('', 'Voice recognition stopped. You can type below.')};
-    recognition.onend=()=>{setVoiceMode('', 'Ready to send your message.');$('voiceStatus').textContent='Listening stopped. Review your message, then send it to MAZEN AI.'};
+    recognition.onend=()=>{setVoiceMode('', 'Ready to send your message.');$('voiceStatus').textContent='Listening stopped. Review your message, then send it to NEXORA AI.'};
     recognition.start();
   }catch(e){$('voiceStatus').textContent='Could not start microphone: '+e.message;setVoiceMode('', 'Check microphone permission and try again.')}
 });
 $('stopVoice').addEventListener('click',()=>{recognition?.stop();setVoiceMode('', 'Listening stopped.')});
 $('sendVoice').addEventListener('click',async()=>{
   const t=$('voiceText').value.trim();if(!t){toast('Speak or type a message first');return}
-  recognition?.stop();const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;setVoiceMode('', 'MAZEN AI is preparing a reply…');
+  recognition?.stop();const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;setVoiceMode('', 'NEXORA AI is preparing a reply…');
   try{const r=await ask('Reply naturally in the same language as the user. Supported voice languages are Arabic, English and French.\n\n'+t,[],[]);box.textContent=r;if($('speakReplies').checked)speak(r);else setVoiceMode('', 'Reply ready. You can speak again.')}
-  catch(e){box.textContent='Could not reach MAZEN AI: '+e.message;setVoiceMode('', 'Could not complete the reply. Try again.')}
+  catch(e){box.textContent='Could not reach NEXORA AI: '+e.message;setVoiceMode('', 'Could not complete the reply. Try again.')}
   finally{$('sendVoice').disabled=false}
 });
 
@@ -622,7 +645,7 @@ if(!current()){
 }
 renderChat();
 go('home');
-const splash=document.createElement('div');splash.id='mazenSplash';splash.innerHTML='<div><div class="splashMark">M</div><div class="splashName">MAZEN AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';document.body.append(splash);
+const splash=document.createElement('div');splash.id='mazenSplash';splash.innerHTML='<div><div class="splashMark">N</div><div class="splashName">NEXORA AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';document.body.append(splash);
 setTimeout(()=>splash.classList.add('hide'),1800);setTimeout(()=>splash.remove(),2550);
 
 /* Keep the legacy inline handlers available if any are added later. */
