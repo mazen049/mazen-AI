@@ -190,7 +190,23 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
   <div class="composer"><div class="attachwrap"><button class="iconbtn" id="attachBtn" title="Attach file">＋</button><div class="attachmenu hidden" id="attachMenu"><button data-pick="image">🖼️ Choose image</button><button data-pick="camera">📷 Take photo</button><button data-pick="file">📄 PDF / Word / Excel / text</button></div></div>
   <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
   <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
-  <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div><div class="muted" style="margin-top:5px">Privacy: ordinary chats are not sent to the moderation reports table. If you report a message, the selected message and limited recent context are sent to the moderation team.</div>
+  <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div><div class="muted" id="privacyNotice" style="margin-top:5px" role="note" aria-live="polite"></div>
+<script>
+(function(){
+  const notice=document.getElementById('privacyNotice');
+  if(!notice)return;
+  const language=(navigator.languages&&navigator.languages[0]||navigator.language||'en').toLowerCase();
+  const messages={
+    ar:'الخصوصية: لا تُرسل المحادثات العادية إلى نظام بلاغات الإشراف. إذا أبلغت عن رسالة، فسيتم إرسال الرسالة التي اخترتها وسياق محدود من المحادثة إلى فريق الإدارة لمراجعة البلاغ.',
+    en:'Privacy: ordinary chats are not sent to the moderation reports system. If you report a message, the message you selected and limited conversation context will be sent to the moderation team for review.',
+    fr:'Confidentialité : les conversations ordinaires ne sont pas envoyées au système de signalement. Si vous signalez un message, le message sélectionné et un contexte limité de la conversation seront transmis à l’équipe de modération pour examen.'
+  };
+  const key=language.startsWith('ar')?'ar':language.startsWith('fr')?'fr':'en';
+  notice.lang=key;
+  notice.dir=key==='ar'?'rtl':'ltr';
+  notice.textContent=messages[key];
+})();
+</script>
 </section>
 
 <section class="view" id="image">
