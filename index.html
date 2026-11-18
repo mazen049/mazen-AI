@@ -50,6 +50,7 @@ button:active,.btn:active{transform:scale(.97)}
 #mazenSplash .splashSub{animation:mazenIn 1.5s ease both}
 @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}body:after,.logo,#mazenSplash .splashMark{animation:none!important}.view.active,.view.active .hero,.view.active .toolcard,.chatbox .msg{animation:none!important}}
 
+.currencyPicker{margin-top:16px;display:grid;grid-template-columns:1fr minmax(190px,260px);gap:8px 18px;align-items:center}.currencyPicker .muted{margin:5px 0 0}.currencyPicker label{font-size:11px;color:var(--muted);font-weight:700}.currencyPicker select{grid-column:2;grid-row:1 / span 2;min-width:0}.currencyPicker #currencyStatus{grid-column:1 / -1;margin:0}.annualOffer span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.annualOffer b{display:inline-block;margin-right:4px}@media(max-width:650px){.currencyPicker{grid-template-columns:1fr}.currencyPicker select,.currencyPicker #currencyStatus{grid-column:1;grid-row:auto}}
 .pricingIntro{position:relative;overflow:hidden;padding:30px;border:1px solid #8d73ff44;border-radius:22px;background:linear-gradient(115deg,#17172dcc,#101e2bdc);box-shadow:var(--shadow)}
 .pricingIntro h2{position:relative;margin:12px 0 9px;font:700 clamp(29px,4vw,43px)/1.12 'Space Grotesk'}
 .pricingIntro p{position:relative;max-width:590px;color:var(--muted);line-height:1.7;margin:0}
@@ -297,25 +298,32 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 <section class="view" id="plans">
   <div class="sectionhead"><div><h2>Plans &amp; Pricing</h2><p>Choose the level that works for you. The Free experience stays useful.</p></div><span class="pill">Launch offer · planned</span></div>
   <div class="pricingIntro"><div class="pricingGlow"></div><div class="eyebrow">NEXORA AI MEMBERSHIP</div><h2>More room to create.<br><span class="gradient">A fair price for everyone.</span></h2><p>Free stays free. Pro adds higher usage and creative tools for people who need more.</p></div>
+  <div class="currencyPicker card">
+    <div><strong>Prices in your currency</strong><p class="muted">Choose your country. NEXORA converts the USD base prices into an estimated local display price.</p></div>
+    <label for="pricingCountry">Country / region</label>
+    <select id="pricingCountry" class="input" aria-label="Choose your country for local pricing">
+      <option value="SA">Saudi Arabia · SAR</option><option value="MA">Morocco · MAD</option><option value="US">United States · USD</option><option value="GB">United Kingdom · GBP</option><option value="AE">United Arab Emirates · AED</option><option value="FR">France · EUR</option><option value="DE">Germany · EUR</option><option value="ES">Spain · EUR</option><option value="IT">Italy · EUR</option><option value="CA">Canada · CAD</option><option value="AU">Australia · AUD</option><option value="IN">India · INR</option><option value="EG">Egypt · EGP</option><option value="TR">Türkiye · TRY</option><option value="JP">Japan · JPY</option><option value="PK">Pakistan · PKR</option><option value="ZA">South Africa · ZAR</option><option value="NG">Nigeria · NGN</option><option value="ID">Indonesia · IDR</option><option value="MY">Malaysia · MYR</option><option value="SG">Singapore · SGD</option><option value="CH">Switzerland · CHF</option><option value="SE">Sweden · SEK</option><option value="NO">Norway · NOK</option><option value="KW">Kuwait · KWD</option><option value="QA">Qatar · QAR</option><option value="BH">Bahrain · BHD</option><option value="OM">Oman · OMR</option><option value="JO">Jordan · JOD</option><option value="IQ">Iraq · IQD</option><option value="TN">Tunisia · TND</option><option value="DZ">Algeria · DZD</option><option value="CN">China · CNY</option><option value="BD">Bangladesh · BDT</option><option value="PH">Philippines · PHP</option><option value="VN">Vietnam · VND</option><option value="TH">Thailand · THB</option><option value="MX">Mexico · MXN</option><option value="BR">Brazil · BRL</option><option value="AR">Argentina · ARS</option><option value="CL">Chile · CLP</option><option value="PL">Poland · PLN</option><option value="RO">Romania · RON</option><option value="CZ">Czechia · CZK</option><option value="DK">Denmark · DKK</option><option value="KR">South Korea · KRW</option><option value="NZ">New Zealand · NZD</option><option value="HK">Hong Kong · HKD</option><option value="IL">Israel · ILS</option><option value="KE">Kenya · KES</option><option value="GH">Ghana · GHS</option>
+    </select>
+    <p class="muted" id="currencyStatus" role="status" aria-live="polite">Loading exchange rates…</p>
+  </div>
   <div class="pricingGrid">
     <article class="priceCard">
       <div class="priceLabel">FOR EVERYONE</div><h3>Free</h3><p class="priceDesc">Explore, learn and create without a subscription.</p>
-      <div class="priceAmount">0 <small>SAR</small></div><div class="pricePeriod">Forever</div>
+      <div class="priceAmount">0 <small>FREE</small></div><div class="pricePeriod">Forever</div>
       <ul><li>AI chat for everyday questions</li><li><b>Up to 5 document file uploads per day</b> for work, study and everyday tasks (within per-file size and processing limits)</li><li>Image understanding</li><li><b>Video creation up to 30 seconds per video</b> (planned Free allowance)</li><li>Browser voice features</li><li>No payment pressure</li></ul>
       <button class="btn secondary priceCurrent" type="button" disabled>Your current free access</button>
     </article>
     <article class="priceCard featured">
       <div class="popularTag">MOST VALUE</div><div class="priceLabel">FOR CREATORS</div><h3>Pro</h3><p class="priceDesc">More creative power, more room and priority access.</p>
-      <div class="priceAmount">29.99 <small>SAR</small></div><div class="pricePeriod">Per month · proposed launch price</div>
+      <div class="priceAmount" id="proMonthlyPrice">$7.99 <small>USD</small></div><div class="pricePeriod">Per month · proposed launch price</div>
       <ul><li><b>AI video generation up to 2 minutes per video</b> (planned Pro maximum; monthly usage quota to be set after provider-cost testing)</li><li>Higher image-generation allowance</li><li>More AI chat and image understanding</li><li>Larger document analysis allowance</li><li>Priority processing when available</li><li>Pro profile badge and new Pro tools</li></ul>
       <button class="btn priceCurrent" type="button" disabled>Coming soon · payments not active</button>
-
-      <div class="annualOffer"><b>Weekly option:</b> 9.99 SAR / 7 days <span>For short projects and trying Pro features.</span></div>
-      <div class="annualOffer"><b>Annual option:</b> 299.99 SAR / year <span>Save about 17% vs paying monthly.</span></div>
+      <div class="annualOffer"><b>Weekly option:</b> <span id="proWeeklyPrice">$2.69 USD / 7 days</span><span>For short projects and trying Pro features.</span></div>
+      <div class="annualOffer"><b>Annual option:</b> <span id="proAnnualPrice">$79.99 USD / year</span><span>Save about 17% vs paying monthly.</span></div>
     </article>
   </div>
-  <div class="card costNote"><h3>Why this price?</h3><p>We are planning the Pro limits around real provider costs, not promising unlimited generations. Video quotas and quality may be adjusted before launch so the service stays reliable and sustainable.</p><div class="row"><span class="pill">No unlimited video promise</span><span class="pill">No hidden auto-upgrade</span><span class="pill">Free remains useful</span></div></div>
-  <div class="status" style="margin-top:15px">Important: These are proposed plans only. No subscription has been charged or activated. The 5-file daily Free upload limit and video durations (up to 30 seconds on Free and up to 2 minutes on Pro) are product targets, not yet enforced or guaranteed live. Video duration, monthly quotas and quality must be validated against provider costs; per-file size/page limits, server-side usage controls, video generation and payment processing must be connected and tested before launch.</div>
+  <div class="card costNote"><h3>Why this price?</h3><p>USD is the base pricing currency. Local amounts are estimates converted using the latest available exchange rate; the final checkout price may differ depending on the payment provider, taxes and regional pricing rules. We are planning Pro limits around real provider costs, not promising unlimited generations.</p><div class="row"><span class="pill">No unlimited video promise</span><span class="pill">No hidden auto-upgrade</span><span class="pill">Free remains useful</span></div></div>
+  <div class="status" style="margin-top:15px">Important: These are proposed prices only. No subscription has been charged or activated. The 5-file daily Free upload limit and video durations (up to 30 seconds on Free and up to 2 minutes on Pro) are product targets, not yet enforced or guaranteed live. Payment processing must be connected and tested before launch.</div>
 </section>
 
 <section class="view" id="settings">
@@ -366,6 +374,57 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 'use strict';
 const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
 const $=id=>document.getElementById(id);
+/* NEXORA local pricing display: USD is the base; local values are estimates only. */
+const NEXORA_USD_PRICES={monthly:7.99,weekly:2.69,annual:79.99};
+const NEXORA_COUNTRY_CURRENCY={SA:'SAR',MA:'MAD',US:'USD',GB:'GBP',AE:'AED',FR:'EUR',DE:'EUR',ES:'EUR',IT:'EUR',CA:'CAD',AU:'AUD',IN:'INR',EG:'EGP',TR:'TRY',JP:'JPY',PK:'PKR',ZA:'ZAR',NG:'NGN',ID:'IDR',MY:'MYR',SG:'SGD',CH:'CHF',SE:'SEK',NO:'NOK',KW:'KWD',QA:'QAR',BH:'BHD',OM:'OMR',JO:'JOD',IQ:'IQD',TN:'TND',DZ:'DZD',CN:'CNY',BD:'BDT',PH:'PHP',VN:'VND',TH:'THB',MX:'MXN',BR:'BRL',AR:'ARS',CL:'CLP',PL:'PLN',RO:'RON',CZ:'CZK',DK:'DKK',KR:'KRW',NZ:'NZD',HK:'HKD',IL:'ILS',KE:'KES',GH:'GHS'};
+let nexoraUsdRates={USD:1},nexoraRateDate='';
+function nexoraBrowserRegion(){
+  for(const locale of (navigator.languages||[navigator.language||'en-US'])){
+    try{const region=new Intl.Locale(locale).region;if(region&&NEXORA_COUNTRY_CURRENCY[region])return region}catch(e){}
+  }
+  return 'US';
+}
+function nexoraFormatPrice(usd,currency){
+  const rate=Number(nexoraUsdRates[currency]);
+  if(!Number.isFinite(rate)||rate<=0)return new Intl.NumberFormat(undefined,{style:'currency',currency:'USD'}).format(usd);
+  const amount=usd*rate;
+  return new Intl.NumberFormat(undefined,{style:'currency',currency,maximumFractionDigits:currency==='JPY'||currency==='KRW'||currency==='VND'?0:2}).format(amount);
+}
+function nexoraRenderPrices(){
+  const country=$('pricingCountry')?.value||'US';
+  const currency=NEXORA_COUNTRY_CURRENCY[country]||'USD';
+  const monthly=$('proMonthlyPrice'),weekly=$('proWeeklyPrice'),annual=$('proAnnualPrice');
+  if(monthly)monthly.innerHTML=nexoraFormatPrice(NEXORA_USD_PRICES.monthly,currency)+' <small>'+currency+'</small>';
+  if(weekly)weekly.textContent=nexoraFormatPrice(NEXORA_USD_PRICES.weekly,currency)+' '+currency+' / 7 days';
+  if(annual)annual.textContent=nexoraFormatPrice(NEXORA_USD_PRICES.annual,currency)+' '+currency+' / year';
+  const status=$('currencyStatus');
+  if(status){
+    if(currency==='USD'||nexoraUsdRates[currency])status.textContent='Estimated local display price · Base prices: $7.99 monthly, $2.69 weekly, $79.99 yearly'+(nexoraRateDate?' · Exchange rates dated '+nexoraRateDate:'');
+    else status.textContent='Live rate for '+currency+' is unavailable. Showing the USD base price instead.';
+  }
+}
+async function nexoraLoadExchangeRates(){
+  const status=$('currencyStatus');
+  try{
+    const response=await fetch('https://open.er-api.com/v6/latest/USD',{cache:'no-store'});
+    if(!response.ok)throw Error('Exchange-rate service unavailable');
+    const data=await response.json();
+    if(data.result!=='success'||!data.rates)throw Error('Invalid exchange-rate response');
+    nexoraUsdRates=data.rates;nexoraRateDate=data.time_last_update_utc?new Date(data.time_last_update_utc).toLocaleDateString():'';
+    nexoraRenderPrices();
+  }catch(e){
+    if(status)status.textContent='Could not load exchange rates. Showing USD base prices; local conversion will retry on a later visit.';
+  }
+}
+function nexoraInitLocalPricing(){
+  const picker=$('pricingCountry');if(!picker)return;
+  let country=nexoraBrowserRegion();
+  try{const saved=localStorage.getItem('nexora_pricing_country');if(saved&&NEXORA_COUNTRY_CURRENCY[saved])country=saved}catch(e){}
+  picker.value=country;
+  picker.addEventListener('change',()=>{try{localStorage.setItem('nexora_pricing_country',picker.value)}catch(e){}nexoraRenderPrices()});
+  nexoraRenderPrices();nexoraLoadExchangeRates();
+}
+
 const SUPABASE_URL='https://rqrmfzctfgufqztdqhpa.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_QyBO3_LIIBbgt0DBtvzq7w_zFFKorV3';
 const K={chats:'mazen_v5_chats',active:'mazen_v5_active',sburl:'mazen_v4_sburl',sbkey:'mazen_v4_sbkey'};
@@ -925,6 +984,7 @@ $('signOut').addEventListener('click',async()=>{
 });
 
 /* Start-up: require a valid Supabase account session. */
+nexoraInitLocalPricing();
 setupSupabase();
 if(!current()){
   if(chats.length){active=chats[0].id}
