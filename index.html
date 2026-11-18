@@ -210,14 +210,15 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 </section>
 
 <section class="view" id="image">
-  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create an image from your description with NEXORA AI.</p></div><span class="pill">FLUX.2 Klein 9B</span></div>
+  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create an image from your description with NEXORA AI.</p></div><span class="pill">Lucid Origin + FLUX.2 Klein</span></div>
   <div class="card">
     <div class="field"><label for="imagePrompt">Describe the image you want</label><textarea id="imagePrompt" maxlength="1500" placeholder="Example: A cinematic futuristic city at sunset, detailed architecture, soft golden light..."></textarea><div class="muted">Be clear about the subject, setting, lighting and visual style. Maximum 1,500 characters.</div></div>
     <div class="two">
       <div class="field"><label for="imageSize">Image format</label><select id="imageSize"><option value="1024x1024">Square · 1:1</option><option value="1024x768">Landscape · 4:3</option><option value="768x1024">Portrait · 3:4</option></select></div>
-      <div class="field"><label>Image model</label><div class="input" aria-label="Image model" style="color:var(--b)">FLUX.2 Klein 9B</div></div>
+      <div class="field"><label for="imageModel">Image model (Pro choice)</label><select id="imageModel"><option value="lucid">Lucid Origin</option><option value="klein">FLUX.2 Klein 9B</option></select></div>
     </div>
-    <div class="row"><button class="btn" id="generateImageBtn" type="button">✦ Generate image</button><span class="muted" id="imageStatus" role="status" aria-live="polite">Sign in with a Pro-enabled account to generate images.</span></div>
+    <p class="muted">Free: 2 Lucid Origin generations per day, then automatic switch to Klein. Pro: choose either model. The server enforces your plan and daily limit.</p>
+    <div class="row"><button class="btn" id="generateImageBtn" type="button">✦ Generate image</button><span class="muted" id="imageStatus" role="status" aria-live="polite">Sign in to generate images. Free and Pro plans are supported.</span></div>
   </div>
   <div class="card hidden" id="imageResultCard" style="margin-top:16px">
     <div class="row" style="justify-content:space-between;margin-bottom:12px"><strong>Your generated image</strong><a class="btn secondary hidden" id="downloadGeneratedImage" download="nexora-ai-image.png">Download image ↓</a></div>
@@ -694,23 +695,26 @@ async function generateNexoraImage(){
     const {data,error}=await sb.auth.getSession();if(error)throw error;
     const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');
     const [width,height]=$('imageSize').value.split('x').map(Number);
+    const requestedModel=$('imageModel')?.value||'lucid';
     const response=await fetch(BACKEND_URL+'/generate-image',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({prompt,width,height})
+      body:JSON.stringify({prompt,width,height,model:requestedModel})
     });
     if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}
     if(!response.ok){
       let payload={};try{payload=await response.json()}catch(e){}
-      if(response.status===403&&payload.code==='PRO_REQUIRED')throw Error('Image generation is currently available to Pro accounts only.');
       throw Error(payload.error||'Image generation failed ('+response.status+').');
     }
+    const actualModel=response.headers.get('X-Nexora-Image-Model')||'AI image model';
+    const lucidRemaining=response.headers.get('X-Nexora-Lucid-Remaining');
     const blob=await response.blob();
     if(!blob.type.startsWith('image/'))throw Error('The image service returned an unsupported response. Please try again.');
     if(generatedImageUrl)URL.revokeObjectURL(generatedImageUrl);
     generatedImageUrl=URL.createObjectURL(blob);
     image.src=generatedImageUrl;download.href=generatedImageUrl;download.classList.remove('hidden');
-    resultCard.classList.remove('hidden');status.textContent='Your image is ready.';
+    resultCard.classList.remove('hidden');
+    status.textContent='Your image is ready · Model: '+actualModel+(lucidRemaining!==null?' · Lucid generations left today: '+lucidRemaining:'');
     resultCard.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){
     status.textContent=error.message||'Could not generate the image.';
