@@ -135,6 +135,21 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 @keyframes voiceOrbit{to{transform:rotate(360deg)}}@keyframes voicePulse{0%,100%{transform:scale(.94);opacity:.45}50%{transform:scale(1.08);opacity:1}}@keyframes voiceBreathe{to{transform:scale(1.09)}}
 @media(max-width:560px){.voiceOrbWrap{width:160px;height:160px}.voiceOrb{width:112px;height:112px}.voiceControls{align-items:stretch}.voiceControls .btn{flex:1}}
 
+/* Rich attachment previews */
+.attachmentGrid,.pendingAttachmentGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:9px;margin-top:9px;width:min(100%,520px)}
+.attachmentCard,.pendingAttachmentCard{position:relative;min-width:0;overflow:hidden;border:1px solid #ffffff20;border-radius:13px;background:linear-gradient(145deg,#ffffff12,#ffffff06);box-shadow:0 8px 22px #0002}
+.attachmentPreview{display:block;width:100%;height:116px;object-fit:cover;cursor:zoom-in;margin:0!important;max-width:none!important;max-height:none!important;border-radius:0!important}
+.attachmentMeta{display:grid;gap:4px;padding:8px 10px;min-width:0}
+.attachmentMeta strong,.pendingAttachmentCard strong{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.attachmentType{font-size:8px;letter-spacing:1.3px;font-weight:800;color:var(--b)}
+.attachmentFileIcon{height:76px;display:grid;place-items:center;font-size:31px;background:linear-gradient(135deg,#8d73ff20,#35e0c115)}
+.pendingAttachmentPreview{width:100%;height:88px;display:block;object-fit:cover;cursor:zoom-in}
+.pendingAttachmentCard>strong{display:block;padding:7px 30px 9px 9px}
+.removeAttachment{position:absolute;right:6px;top:6px;width:25px;height:25px;border:1px solid #ffffff30;border-radius:50%;background:#090914dd;color:white;font-size:18px;line-height:1}
+.attachmentLightbox{position:fixed;inset:0;z-index:30000;display:grid;place-items:center;padding:24px;background:#02030beF;backdrop-filter:blur(14px)}
+.attachmentLightbox img{max-width:min(94vw,1100px);max-height:88vh;object-fit:contain;border-radius:14px;box-shadow:0 25px 90px #000a}
+.attachmentClose{position:absolute;top:18px;right:20px;width:42px;height:42px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff14;color:white;font-size:27px}
+@media(max-width:650px){.attachmentGrid,.pendingAttachmentGrid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:7px}.attachmentPreview{height:100px}.pendingAttachmentPreview{height:78px}.attachmentLightbox{padding:12px}}
 </style>
 </head>
 <body>
@@ -344,12 +359,40 @@ function go(v){
   if(v==='history')renderHistory();if(v==='chat')renderChat();if(v==='admin'){loadAdminUsers();loadAdminReports();}
 }
 function newChat(){const c={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id;save();renderChat();go('chat')}
+function renderAttachmentCards(container,attachments=[]){
+  if(!attachments.length)return;
+  const grid=document.createElement('div');grid.className='attachmentGrid';
+  attachments.forEach(file=>{
+    const card=document.createElement('div');card.className='attachmentCard';
+    if(file.kind==='image'&&file.preview){
+      const img=document.createElement('img');img.className='attachmentPreview';img.src=file.preview;img.alt=file.name||'Attached image';
+      img.loading='lazy';img.addEventListener('click',()=>openAttachmentPreview(file.preview,file.name));card.append(img);
+      const meta=document.createElement('div');meta.className='attachmentMeta';meta.innerHTML='<span class="attachmentType">IMAGE</span>';
+      const name=document.createElement('strong');name.textContent=file.name||'Image';meta.append(name);card.append(meta);
+    }else{
+      const icon=document.createElement('div');icon.className='attachmentFileIcon';icon.textContent=file.icon||'📄';card.append(icon);
+      const meta=document.createElement('div');meta.className='attachmentMeta';
+      const type=document.createElement('span');type.className='attachmentType';type.textContent=(file.kind==='document'?(file.ext||'FILE'):'FILE').toUpperCase();meta.append(type);
+      const name=document.createElement('strong');name.textContent=file.name||'Attached file';meta.append(name);card.append(meta);
+    }
+    grid.append(card);
+  });
+  container.append(grid);
+}
+function openAttachmentPreview(src,name){
+  const overlay=document.createElement('div');overlay.className='attachmentLightbox';
+  const close=document.createElement('button');close.type='button';close.className='attachmentClose';close.textContent='×';close.setAttribute('aria-label','Close image preview');
+  const img=document.createElement('img');img.src=src;img.alt=name||'Image preview';
+  close.addEventListener('click',()=>overlay.remove());overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove()});
+  overlay.append(close,img);document.body.append(overlay);
+}
 function renderChat(){
   const box=$('messages'),c=current();box.innerHTML='';
   if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am NEXORA AI. What would you like to create or explore today?';box.append(d);return}
   c.messages.forEach((m,index)=>{
     const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(m.role==='user'?'flex-end':'flex-start')+';gap:6px';
     const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';wrap.append(d);
+    renderAttachmentCards(wrap,m.attachments||[]);
     if(m.role==='assistant'){
       const report=document.createElement('button');report.type='button';report.className='btn secondary';report.textContent='⚑ Report message';report.style.cssText='font-size:11px;padding:6px 10px;align-self:flex-start';
       report.addEventListener('click',()=>submitMessageReport(index));wrap.append(report);
@@ -376,9 +419,10 @@ async function send(text){
   text=(text||'').trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;if(isSending)return;isSending=true;
   let c=current();if(!c){c={id:Date.now().toString(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id}
   let fullText=text;for(const d of pendingDocs)fullText+='\n\n[Extracted document: '+d.name+']\n'+d.text;
-  const imgs=pendingImages.slice(),fileNames=[...imgs.map(x=>x.name),...pendingDocs.map(x=>x.name)];
+  const imgs=pendingImages.slice(),docs=pendingDocs.slice(),fileNames=[...imgs.map(x=>x.name),...docs.map(x=>x.name)];
+  const attachments=[...imgs.map(x=>({kind:'image',name:x.name,preview:x.preview})),...docs.map(x=>({kind:'document',name:x.name,ext:x.ext,icon:fileIcon(x.ext)}))];
   const shown=(text||'Please analyse the attached file(s).')+(fileNames.length?'\n📎 '+fileNames.join(', '):'');
-  const historyBefore=c.messages.slice(-18);c.messages.push({role:'user',content:shown});
+  const historyBefore=c.messages.slice(-18);c.messages.push({role:'user',content:shown,attachments});
   if(c.messages.length===1)c.title=(text||fileNames[0]||'New conversation').slice(0,35);
   c.updated=Date.now();save();renderChat();pendingImages=[];pendingDocs=[];renderPending();
   const wait=document.createElement('div');wait.className='msg ai typing';wait.textContent='Thinking';$('messages').append(wait);$('messages').scrollTop=$('messages').scrollHeight;
@@ -399,8 +443,44 @@ async function extractDoc(file){
   if(ext==='pdf'){const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs');pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';const pdf=await pdfjs.getDocument({data:await file.arrayBuffer()}).promise;let all='';for(let p=1;p<=Math.min(pdf.numPages,35);p++){const page=await pdf.getPage(p),content=await page.getTextContent();all+=content.items.map(x=>x.str).join(' ')+'\n'}return all}
   throw Error('Unsupported document type: '+ext);
 }
-function renderPending(){$('pendingFiles').innerHTML='';[...pendingImages,...pendingDocs].forEach(f=>{const s=document.createElement('span');s.className='filetag';s.textContent='📎 '+f.name;$('pendingFiles').append(s)})}
-async function addImages(files){for(const f of files){if(!f.type.startsWith('image/'))continue;if(f.size>8*1024*1024){toast(f.name+' is over 8 MB');continue}try{pendingImages.push({name:f.name,data:await readData(f)})}catch(e){toast(e.message)}}renderPending()}
+function fileIcon(ext){
+  const icons={pdf:'📕',doc:'📘',docx:'📘',xls:'📗',xlsx:'📗',csv:'📊',txt:'📝',ppt:'📙',pptx:'📙',zip:'🗜️'};
+  return icons[String(ext||'').toLowerCase()]||'📄';
+}
+function renderPending(){
+  const box=$('pendingFiles');box.innerHTML='';
+  const all=[...pendingImages.map((f,i)=>({...f,kind:'image',index:i})),...pendingDocs.map((f,i)=>({...f,kind:'document',index:i}))];
+  if(!all.length)return;
+  const grid=document.createElement('div');grid.className='pendingAttachmentGrid';
+  all.forEach(file=>{
+    const card=document.createElement('div');card.className='pendingAttachmentCard';
+    if(file.kind==='image'&&file.preview){const img=document.createElement('img');img.src=file.preview;img.alt=file.name;img.className='pendingAttachmentPreview';img.addEventListener('click',()=>openAttachmentPreview(file.preview,file.name));card.append(img)}
+    else{const icon=document.createElement('div');icon.className='attachmentFileIcon';icon.textContent=fileIcon(file.ext);card.append(icon)}
+    const name=document.createElement('strong');name.textContent=file.name;name.title=file.name;card.append(name);
+    const remove=document.createElement('button');remove.type='button';remove.className='removeAttachment';remove.textContent='×';remove.setAttribute('aria-label','Remove '+file.name);
+    remove.addEventListener('click',()=>{if(file.kind==='image')pendingImages.splice(file.index,1);else pendingDocs.splice(file.index,1);renderPending()});card.append(remove);
+    grid.append(card);
+  });
+  box.append(grid);
+}
+async function makeImagePreview(file){
+  const data=await readData(file);
+  try{
+    const bitmap=await createImageBitmap(file),scale=Math.min(1,420/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+    return {data,preview:canvas.toDataURL('image/jpeg',.72)};
+  }catch(e){return {data,preview:data}}
+}
+async function addImages(files){
+  for(const f of files){
+    if(!f.type.startsWith('image/'))continue;
+    if(f.size>8*1024*1024){toast(f.name+' is over 8 MB');continue}
+    try{const image=await makeImagePreview(f);pendingImages.push({name:f.name,type:f.type,size:f.size,...image})}
+    catch(e){toast(e.message)}
+  }
+  renderPending();
+}
 function renderHistory(){
   $('historyList').innerHTML='';if(!chats.length){$('historyList').textContent='No conversations yet.';return}
   chats.forEach(c=>{const d=document.createElement('div');d.className='historyitem';const a=document.createElement('button');a.className='btn secondary';a.textContent=c.title||'Conversation';a.onclick=()=>{active=c.id;save();renderChat();go('chat')};const s=document.createElement('span');s.className='muted';s.textContent=new Date(c.updated||Date.now()).toLocaleString();d.append(a,s);$('historyList').append(d)})
@@ -702,7 +782,7 @@ $('attachBtn').addEventListener('click',()=>$('attachMenu').classList.toggle('hi
 document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{$('attachMenu').classList.add('hidden');const map={image:'imageInput',camera:'cameraInput',file:'docInput'};$(map[b.dataset.pick]).click()}));
 $('imageInput').addEventListener('change',e=>{addImages([...e.target.files]);e.target.value=''});
 $('cameraInput').addEventListener('change',e=>{addImages([...e.target.files]);e.target.value=''});
-$('docInput').addEventListener('change',async e=>{for(const f of e.target.files){try{const t=await extractDoc(f);if(!t.trim())throw Error('No selectable text found in '+f.name);const {data,error}=await sb.auth.getSession();if(error)throw error;const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');const response=await fetch(BACKEND_URL+'/document-quota',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({})});let payload={};try{payload=await response.json()}catch(err){}if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}if(!response.ok||payload.allowed!==true)throw Error(payload.error||'Daily document upload limit reached.');pendingDocs.push({name:f.name,text:t.slice(0,65000)});toast(f.name+' added'+(payload.is_pro?'':' · '+payload.remaining+' uploads left today'))}catch(err){toast(err.message||'Could not add document.')}}renderPending();e.target.value=''});
+$('docInput').addEventListener('change',async e=>{for(const f of e.target.files){try{const t=await extractDoc(f);if(!t.trim())throw Error('No selectable text found in '+f.name);const {data,error}=await sb.auth.getSession();if(error)throw error;const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');const response=await fetch(BACKEND_URL+'/document-quota',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({})});let payload={};try{payload=await response.json()}catch(err){}if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}if(!response.ok||payload.allowed!==true)throw Error(payload.error||'Daily document upload limit reached.');const ext=f.name.split('.').pop().toLowerCase();pendingDocs.push({name:f.name,ext,text:t.slice(0,65000)});toast(f.name+' added'+(payload.is_pro?'':' · '+payload.remaining+' uploads left today'))}catch(err){toast(err.message||'Could not add document.')}}renderPending();e.target.value=''});
 document.addEventListener('click',e=>{if(!$('attachMenu').contains(e.target)&&e.target!==$('attachBtn'))$('attachMenu').classList.add('hidden')});
 
 /* NEXORA AI Image Studio — Cloudflare Workers AI */
