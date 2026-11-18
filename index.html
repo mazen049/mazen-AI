@@ -160,6 +160,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
     <button data-view="voice"><span class="ico">◉</span> Voice Room</button>
     <button data-view="history"><span class="ico">◷</span> History</button>
     <button data-view="plans"><span class="ico">✦</span> Plans &amp; Pricing</button>
+    <button data-view="admin" id="adminNav" class="hidden"><span class="ico">⚙</span> Admin Panel</button>
   </nav></div>
   <div><div class="navlabel">PREFERENCES</div><nav class="nav">
     <button data-view="account"><span class="ico">♙</span> Account &amp; Security</button>
@@ -281,6 +282,11 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
   <div class="card"><h3>Access</h3><div class="status success">A valid Supabase email/password session is required to use NEXORA AI.</div></div></div>
   <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">NEXORA AI · Developed by Mazen Rihani</div>
 </section>
+<section class="view" id="admin">
+  <div class="sectionhead"><div><div class="eyebrow">OWNER CONTROLS</div><h2>Admin Panel</h2><p>Manage account plans and access. Chat contents are not shown here.</p></div><button class="btn secondary" id="adminRefresh">↻ Refresh</button></div>
+  <div class="card" style="margin-bottom:15px"><div class="row" style="justify-content:space-between"><div><strong id="adminCount">Users</strong><div class="muted">Account IDs, plan status and access controls</div></div><span class="pill" id="adminStatus">Checking access…</span></div></div>
+  <div id="adminUsers" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))"><div class="card muted">Loading admin data…</div></div>
+</section>
 </main></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -300,11 +306,12 @@ function save(){try{localStorage.setItem(K.chats,JSON.stringify(chats));localSto
 function current(){return chats.find(c=>c.id===active)}
 function go(v){
   if(!$(v))return;
+  if(v==='admin'&&!isAdmin){toast('Administrator access required.');return}
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));
   document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
-  const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',plans:'Plans & Pricing',account:'Account & Security',settings:'Settings'};
+  const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',plans:'Plans & Pricing',account:'Account & Security',settings:'Settings',admin:'Admin Panel'};
   $('crumb').textContent=names[v]||v;$('sidebar').classList.remove('open');
-  if(v==='history')renderHistory();if(v==='chat')renderChat();
+  if(v==='history')renderHistory();if(v==='chat')renderChat();if(v==='admin')loadAdminUsers();
 }
 function newChat(){const c={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id;save();renderChat();go('chat')}
 function renderChat(){
@@ -385,10 +392,13 @@ function setAuthUI(session){
     $('profileEmail').textContent=user.email||'Signed in';
     $('accountEmail').textContent=user.email||'Signed-in account';
     $('accountConfigStatus').textContent='Your account is active. Your NEXORA AI session is secured by Supabase.';
+    checkAdminAccess();
   }else{
     $('profileName').textContent='Signed out';
     $('profileEmail').textContent='Sign in required';
-    $('authStatus').textContent='Sign in or create an account to enter NEXORA AI.';
+    $('adminNav').classList.add('hidden');
+    $('adminUsers').innerHTML='<div class="card muted">Sign in with the administrator account to manage users.</div>';
+    $('adminStatus').textContent='Not signed in';
   }
 }
 function setupSupabase(){
@@ -480,6 +490,83 @@ $('resetBg').addEventListener('click',()=>setAppearance('bg',DEFAULT_APPEARANCE.
 $('resetAppearance').addEventListener('click',()=>{appearance={...DEFAULT_APPEARANCE};saveAppearance('Appearance restored to the original NEXORA AI look.')});
 applyAppearance();
 if(appearance.theme==='system')matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',applyAppearance);
+
+/* Admin panel: all privileged actions are verified by the Worker. */
+async function adminRequest(path,body={}){
+  const {data,error}=await sb.auth.getSession();if(error)throw error;
+  const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');
+  const response=await fetch(BACKEND_URL+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)});
+  let payload={};try{payload=await response.json()}catch(e){}
+  if(!response.ok)throw Error(payload.error||'Admin request failed ('+response.status+')');
+  return payload;
+}
+let isAdmin=false;
+async function checkAdminAccess(){
+  isAdmin=false;$('adminNav').classList.add('hidden');
+  if(!authenticatedUser||!sb)return;
+  try{
+    await adminRequest('/admin/users',{});
+    isAdmin=true;$('adminNav').classList.remove('hidden');
+    if($('admin').classList.contains('active'))loadAdminUsers();
+  }catch(e){$('adminNav').classList.add('hidden');}
+}
+function adminUserList(payload){
+  if(Array.isArray(payload))return payload;
+  if(Array.isArray(payload.users))return payload.users;
+  if(Array.isArray(payload.data))return payload.data;
+  return [];
+}
+async function loadAdminUsers(){
+  if(!isAdmin){$('adminStatus').textContent='Access denied';return}
+  $('adminStatus').textContent='Loading…';$('adminUsers').innerHTML='<div class="card muted">Loading users…</div>';
+  try{
+    const payload=await adminRequest('/admin/users',{});
+    const users=adminUserList(payload);
+    $('adminCount').textContent=users.length+' user'+(users.length===1?'':'s');
+    $('adminStatus').textContent='Connected';
+    if(!users.length){$('adminUsers').innerHTML='<div class="card muted">No user profiles were returned yet.</div>';return}
+    $('adminUsers').innerHTML='';
+    users.forEach(u=>{
+      const card=document.createElement('article');card.className='card';
+      const id=document.createElement('div');id.className='muted';id.textContent='User ID: '+(u.user_id||'Unknown');id.style.cssText='overflow-wrap:anywhere;margin-bottom:12px';
+      const title=document.createElement('strong');title.textContent=u.is_admin?'Administrator':'User account';
+      const meta=document.createElement('div');meta.className='minirow';
+      const plan=document.createElement('span');plan.className='pill';plan.textContent='Plan: '+(u.plan||'free').toUpperCase();
+      const status=document.createElement('span');status.className='pill';status.textContent=u.is_banned?'Banned':'Active';
+      meta.append(plan,status);
+      const expiry=document.createElement('p');expiry.className='muted';expiry.textContent=u.pro_expires_at?'Pro expiry: '+new Date(u.pro_expires_at).toLocaleString():'No Pro expiry set';
+      const actions=document.createElement('div');actions.className='minirow';
+      const add=(label,action,cls='btn secondary')=>{const b=document.createElement('button');b.className=cls;b.textContent=label;b.dataset.adminAction=action;b.dataset.userId=u.user_id||'';actions.append(b)};
+      if(!u.is_admin){
+        if(u.is_banned)add('Unban','unban');else add('Ban','ban');
+        if(u.plan==='pro')add('Set Free','free');else add('Enable Pro','pro','btn');
+      }
+      card.append(title,id,meta,expiry,actions);$('adminUsers').append(card);
+    });
+  }catch(e){$('adminStatus').textContent='Could not load';$('adminUsers').innerHTML='';const msg=document.createElement('div');msg.className='status';msg.textContent=e.message;$('adminUsers').append(msg)}
+}
+async function runAdminAction(action,userId){
+  if(!userId||!isAdmin)return;
+  try{
+    if(action==='ban'){
+      const reason=prompt('Reason for the ban (visible in the admin record):');if(!reason||reason.trim().length<4)return;
+      await adminRequest('/admin/ban',{target_user_id:userId,reason:reason.trim()});
+    }else if(action==='unban'){
+      if(!confirm('Unban this account?'))return;
+      await adminRequest('/admin/unban',{target_user_id:userId});
+    }else if(action==='pro'){
+      const date=prompt('Pro expiry date and time (ISO format, e.g. 2026-12-31T23:59:00Z):');
+      if(!date)return;const expiry=new Date(date);if(Number.isNaN(expiry.getTime())||expiry<=new Date()){toast('Enter a future expiry date.');return}
+      await adminRequest('/admin/pro',{target_user_id:userId,expires_at:expiry.toISOString()});
+    }else if(action==='free'){
+      if(!confirm('Change this account to Free?'))return;
+      await adminRequest('/admin/free',{target_user_id:userId});
+    }
+    toast('Admin action completed.');await loadAdminUsers();
+  }catch(e){toast(e.message||'Admin action failed.')}
+}
+$('adminRefresh').addEventListener('click',loadAdminUsers);
+$('adminUsers').addEventListener('click',e=>{const b=e.target.closest('[data-admin-action]');if(b)runAdminAction(b.dataset.adminAction,b.dataset.userId)});
 
 /* Navigation and buttons */
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
