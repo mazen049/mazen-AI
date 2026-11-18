@@ -150,6 +150,29 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 .attachmentLightbox img{max-width:min(94vw,1100px);max-height:88vh;object-fit:contain;border-radius:14px;box-shadow:0 25px 90px #000a}
 .attachmentClose{position:absolute;top:18px;right:20px;width:42px;height:42px;border:1px solid #ffffff30;border-radius:50%;background:#ffffff14;color:white;font-size:27px}
 @media(max-width:650px){.attachmentGrid,.pendingAttachmentGrid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:7px}.attachmentPreview{height:100px}.pendingAttachmentPreview{height:78px}.attachmentLightbox{padding:12px}}
+
+/* Realistic attachment picker */
+.attachwrap{position:relative;flex:0 0 auto}
+.attach-trigger{display:grid;place-items:center;transition:background .22s ease,transform .22s ease,border-color .22s ease}
+.attach-plus{display:block;font:300 29px/1 Arial,sans-serif;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.attach-trigger[aria-expanded="true"] .attach-plus{transform:rotate(45deg)}
+.attachmenu{position:absolute;left:0;bottom:calc(100% + 13px);width:min(292px,calc(100vw - 38px));padding:8px;display:grid;gap:3px;background:rgba(20,23,39,.96);border:1px solid rgba(255,255,255,.13);border-radius:19px;box-shadow:0 18px 55px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.06);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:50;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(10px) scale(.96);transform-origin:bottom left;transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1),visibility .2s}
+.attachmenu.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1)}
+.attach-option{width:100%;min-height:65px;display:flex;align-items:center;gap:12px;padding:9px 10px;border:0;border-radius:13px;background:transparent;color:#f4f5ff;text-align:left;cursor:pointer;transition:background .16s ease,transform .16s ease}
+.attach-option:hover{background:rgba(255,255,255,.075)}
+.attach-option:active{transform:scale(.985);background:rgba(255,255,255,.11)}
+.attach-option-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:13px}
+.attach-option-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.camera-icon{color:#a9a0ff;background:linear-gradient(145deg,rgba(141,115,255,.24),rgba(141,115,255,.09))}
+.photo-icon{color:#66dfc3;background:linear-gradient(145deg,rgba(53,224,193,.22),rgba(53,224,193,.08))}
+.file-icon{color:#83b8ff;background:linear-gradient(145deg,rgba(87,155,255,.23),rgba(87,155,255,.08))}
+.attach-option-copy{min-width:0;display:grid;gap:4px}
+.attach-option-copy strong{font-size:13px;font-weight:650;letter-spacing:.1px}
+.attach-option-copy small{font-size:11px;color:#929bb8;font-weight:400}
+.attach-chevron{width:16px;height:16px;margin-left:auto;flex:0 0 16px;fill:none;stroke:#68718f;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:650px){.attachmenu{left:-3px;bottom:calc(100% + 11px);transform-origin:bottom left}}
+@media(prefers-reduced-motion:reduce){.attachmenu,.attach-plus,.attach-option{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -202,7 +225,11 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 <section class="view" id="chat">
   <div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to NEXORA AI in your preferred language.</p></div><button class="btn secondary" id="newChatMain">＋ New chat</button></div>
   <div class="card chatbox" id="messages" aria-live="polite"></div><div id="pendingFiles" class="filebar"></div>
-  <div class="composer"><div class="attachwrap"><button class="iconbtn" id="attachBtn" title="Attach file">＋</button><div class="attachmenu hidden" id="attachMenu"><button data-pick="image">🖼️ Choose image</button><button data-pick="camera">📷 Take photo</button><button data-pick="file">📄 PDF / Word / Excel / text</button></div></div>
+  <div class="composer"><div class="attachwrap"><button class="iconbtn attach-trigger" id="attachBtn" type="button" title="Add attachment" aria-label="Add attachment" aria-expanded="false" aria-controls="attachMenu"><span class="attach-plus" aria-hidden="true">+</span></button><div class="attachmenu" id="attachMenu" aria-hidden="true">
+  <button class="attach-option" type="button" data-pick="camera"><span class="attach-option-icon camera-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.5-2h7l1.5 2h3A1.5 1.5 0 0 1 21.5 9v9A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="attach-option-copy"><strong>Camera</strong><small>Take a new photo</small></span><svg class="attach-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+  <button class="attach-option" type="button" data-pick="image"><span class="attach-option-icon photo-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3.5" width="18" height="17" rx="3"/><circle cx="8.5" cy="9" r="1.5"/><path d="m4 17 5-5 3.5 3.5 2.5-2.5 5 5"/></svg></span><span class="attach-option-copy"><strong>Photo library</strong><small>Choose photos or images</small></span><svg class="attach-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+  <button class="attach-option" type="button" data-pick="file"><span class="attach-option-icon file-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3.5H6A2.5 2.5 0 0 0 3.5 6v12A2.5 2.5 0 0 0 6 20.5h12a2.5 2.5 0 0 0 2.5-2.5V11Z"/><path d="M13 3.5V11h7.5M8 15h8M8 18h6"/></svg></span><span class="attach-option-copy"><strong>File</strong><small>PDF, Word, Excel and more</small></span><svg class="attach-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+</div></div>
   <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
   <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
   <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div><div class="muted" id="privacyNotice" style="margin-top:5px" role="note" aria-live="polite"></div>
@@ -778,8 +805,12 @@ $('newChatBtn').addEventListener('click',newChat);$('newChatMain').addEventListe
 $('topSettings').addEventListener('click',()=>go('settings'));$('hamb').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 $('send').addEventListener('click',()=>{const t=$('prompt').value;$('prompt').value='';send(t)});
 $('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
-$('attachBtn').addEventListener('click',()=>$('attachMenu').classList.toggle('hidden'));
-document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{$('attachMenu').classList.add('hidden');const map={image:'imageInput',camera:'cameraInput',file:'docInput'};$(map[b.dataset.pick]).click()}));
+const attachMenu=$('attachMenu'),attachBtn=$('attachBtn');
+function closeAttachMenu(){attachMenu.classList.remove('is-open');attachMenu.setAttribute('aria-hidden','true');attachBtn.setAttribute('aria-expanded','false')}
+attachBtn.addEventListener('click',()=>{const opening=!attachMenu.classList.contains('is-open');if(opening){attachMenu.classList.add('is-open');attachMenu.setAttribute('aria-hidden','false');attachBtn.setAttribute('aria-expanded','true')}else closeAttachMenu()});
+document.querySelectorAll('[data-pick]').forEach(b=>b.addEventListener('click',()=>{const map={image:'imageInput',camera:'cameraInput',file:'docInput'};closeAttachMenu();$(map[b.dataset.pick]).click()}));
+document.addEventListener('click',e=>{if(!attachMenu.contains(e.target)&&!attachBtn.contains(e.target))closeAttachMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAttachMenu()});
 $('imageInput').addEventListener('change',e=>{addImages([...e.target.files]);e.target.value=''});
 $('cameraInput').addEventListener('change',e=>{addImages([...e.target.files]);e.target.value=''});
 $('docInput').addEventListener('change',async e=>{for(const f of e.target.files){try{const t=await extractDoc(f);if(!t.trim())throw Error('No selectable text found in '+f.name);const {data,error}=await sb.auth.getSession();if(error)throw error;const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');const response=await fetch(BACKEND_URL+'/document-quota',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({})});let payload={};try{payload=await response.json()}catch(err){}if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}if(!response.ok||payload.allowed!==true)throw Error(payload.error||'Daily document upload limit reached.');const ext=f.name.split('.').pop().toLowerCase();pendingDocs.push({name:f.name,ext,text:t.slice(0,65000)});toast(f.name+' added'+(payload.is_pro?'':' · '+payload.remaining+' uploads left today'))}catch(err){toast(err.message||'Could not add document.')}}renderPending();e.target.value=''});
