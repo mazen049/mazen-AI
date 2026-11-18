@@ -190,7 +190,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
   <div class="composer"><div class="attachwrap"><button class="iconbtn" id="attachBtn" title="Attach file">＋</button><div class="attachmenu hidden" id="attachMenu"><button data-pick="image">🖼️ Choose image</button><button data-pick="camera">📷 Take photo</button><button data-pick="file">📄 PDF / Word / Excel / text</button></div></div>
   <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
   <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
-  <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div>
+  <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div><div class="muted" style="margin-top:5px">Privacy: ordinary chats are not sent to the moderation reports table. If you report a message, the selected message and limited recent context are sent to the moderation team.</div>
 </section>
 
 <section class="view" id="image">
@@ -283,9 +283,11 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
   <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">NEXORA AI · Developed by Mazen Rihani</div>
 </section>
 <section class="view" id="admin">
-  <div class="sectionhead"><div><div class="eyebrow">OWNER CONTROLS</div><h2>Admin Panel</h2><p>Manage account plans and access. Chat contents are not shown here.</p></div><button class="btn secondary" id="adminRefresh">↻ Refresh</button></div>
+  <div class="sectionhead"><div><div class="eyebrow">OWNER CONTROLS</div><h2>Admin Panel</h2><p>Manage accounts and review only content users choose to report.</p></div><button class="btn secondary" id="adminRefresh">↻ Refresh</button></div>
   <div class="card" style="margin-bottom:15px"><div class="row" style="justify-content:space-between"><div><strong id="adminCount">Users</strong><div class="muted">Account IDs, plan status and access controls</div></div><span class="pill" id="adminStatus">Checking access…</span></div></div>
   <div id="adminUsers" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))"><div class="card muted">Loading admin data…</div></div>
+  <div class="sectionhead" style="margin-top:28px"><div><h2>User reports</h2><p>Only messages users explicitly submit for review appear here.</p></div><button class="btn secondary" id="reportsRefresh">↻ Refresh reports</button></div>
+  <div id="adminReports" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"><div class="card muted">Reports have not been loaded.</div></div>
 </section>
 </main></div>
 <div class="toast" id="toast" role="status"></div>
@@ -311,13 +313,21 @@ function go(v){
   document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
   const names={home:'Overview',chat:'AI Chat',image:'Image Studio',video:'Video Studio',voice:'Voice Room',history:'History',plans:'Plans & Pricing',account:'Account & Security',settings:'Settings',admin:'Admin Panel'};
   $('crumb').textContent=names[v]||v;$('sidebar').classList.remove('open');
-  if(v==='history')renderHistory();if(v==='chat')renderChat();if(v==='admin')loadAdminUsers();
+  if(v==='history')renderHistory();if(v==='chat')renderChat();if(v==='admin'){loadAdminUsers();loadAdminReports();}
 }
 function newChat(){const c={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id;save();renderChat();go('chat')}
 function renderChat(){
   const box=$('messages'),c=current();box.innerHTML='';
   if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am NEXORA AI. What would you like to create or explore today?';box.append(d);return}
-  c.messages.forEach(m=>{const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';box.append(d)});
+  c.messages.forEach((m,index)=>{
+    const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(m.role==='user'?'flex-end':'flex-start')+';gap:6px';
+    const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';wrap.append(d);
+    if(m.role==='assistant'){
+      const report=document.createElement('button');report.type='button';report.className='btn secondary';report.textContent='⚑ Report message';report.style.cssText='font-size:11px;padding:6px 10px;align-self:flex-start';
+      report.addEventListener('click',()=>submitMessageReport(index));wrap.append(report);
+    }
+    box.append(wrap);
+  });
   box.scrollTop=box.scrollHeight;
 }
 function animateText(el,text){el.textContent='';let i=0;const step=()=>{i=Math.min(i+4,text.length);el.textContent=text.slice(0,i);$('messages').scrollTop=$('messages').scrollHeight;if(i<text.length)requestAnimationFrame(step)};step()}
@@ -492,6 +502,27 @@ applyAppearance();
 if(appearance.theme==='system')matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',applyAppearance);
 
 /* Admin panel: all privileged actions are verified by the Worker. */
+async function submitMessageReport(messageIndex){
+  const c=current();if(!c||!sb)return;
+  const selected=c.messages[messageIndex];
+  if(!selected||selected.role!=='assistant')return;
+  const reason=prompt('Why are you reporting this message?');
+  if(!reason||reason.trim().length<4){if(reason!==null)toast('Please enter a clear reason (at least 4 characters).');return}
+  const cleanContext=c.messages.slice(Math.max(0,messageIndex-3),Math.min(c.messages.length,messageIndex+2))
+    .map(m=>({role:m.role,content:String(m.content||'').slice(0,1500)}));
+  try{
+    const {data,error}=await sb.auth.getSession();if(error)throw error;
+    const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');
+    const response=await fetch(BACKEND_URL+'/report',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({
+      reported_content:String(selected.content||'').slice(0,4000),
+      conversation_context:cleanContext,
+      reason:reason.trim().slice(0,500)
+    })});
+    let payload={};try{payload=await response.json()}catch(e){}
+    if(!response.ok)throw Error(payload.error||'Could not submit report.');
+    toast('Report submitted. Thank you for helping keep NEXORA AI safe.');
+  }catch(e){toast(e.message||'Could not submit report.')}
+}
 async function adminRequest(path,body={}){
   const {data,error}=await sb.auth.getSession();if(error)throw error;
   const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');
@@ -507,7 +538,7 @@ async function checkAdminAccess(){
   try{
     await adminRequest('/admin/users',{});
     isAdmin=true;$('adminNav').classList.remove('hidden');
-    if($('admin').classList.contains('active'))loadAdminUsers();
+    if($('admin').classList.contains('active')){loadAdminUsers();loadAdminReports();}
   }catch(e){$('adminNav').classList.add('hidden');}
 }
 function adminUserList(payload){
@@ -545,6 +576,46 @@ async function loadAdminUsers(){
     });
   }catch(e){$('adminStatus').textContent='Could not load';$('adminUsers').innerHTML='';const msg=document.createElement('div');msg.className='status';msg.textContent=e.message;$('adminUsers').append(msg)}
 }
+async function loadAdminReports(){
+  if(!isAdmin)return;
+  const box=$('adminReports');box.innerHTML='<div class="card muted">Loading reports…</div>';
+  try{
+    const payload=await adminRequest('/admin/reports',{});
+    const reports=Array.isArray(payload.reports)?payload.reports:[];
+    box.innerHTML='';
+    if(!reports.length){box.innerHTML='<div class="card muted">No user reports yet.</div>';return}
+    reports.forEach(report=>{
+      const card=document.createElement('article');card.className='card';
+      const heading=document.createElement('strong');heading.textContent='Report #'+report.id+' · '+String(report.status||'pending').toUpperCase();
+      const meta=document.createElement('p');meta.className='muted';meta.textContent='User: '+report.user_id+' · '+(report.created_at?new Date(report.created_at).toLocaleString():'Date unavailable');
+      const reason=document.createElement('p');reason.textContent='Reason: '+(report.reason||'Not provided');
+      const content=document.createElement('div');content.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:#080914';content.textContent=report.reported_content||'No reported text';
+      card.append(heading,meta,reason,content);
+      if(Array.isArray(report.conversation_context)&&report.conversation_context.length){
+        const contextTitle=document.createElement('p');contextTitle.className='muted';contextTitle.textContent='Limited conversation context';card.append(contextTitle);
+        report.conversation_context.forEach(item=>{const line=document.createElement('p');line.className='muted';line.style.whiteSpace='pre-wrap';line.textContent=(item.role==='user'?'User: ':'Assistant: ')+(item.content||'');card.append(line)});
+      }
+      if(report.status==='pending'){
+        const actions=document.createElement('div');actions.className='minirow';
+        const reviewed=document.createElement('button');reviewed.className='btn';reviewed.textContent='Mark reviewed';
+        reviewed.addEventListener('click',()=>updateReportStatus(report.id,'reviewed'));
+        const dismiss=document.createElement('button');dismiss.className='btn secondary';dismiss.textContent='Dismiss';
+        dismiss.addEventListener('click',()=>updateReportStatus(report.id,'dismissed'));
+        actions.append(reviewed,dismiss);card.append(actions);
+      }
+      if(report.admin_notes){const notes=document.createElement('p');notes.className='muted';notes.textContent='Admin notes: '+report.admin_notes;card.append(notes)}
+      box.append(card);
+    });
+  }catch(e){box.innerHTML='';const error=document.createElement('div');error.className='status';error.textContent=e.message||'Could not load reports.';box.append(error)}
+}
+async function updateReportStatus(reportId,status){
+  if(!isAdmin)return;
+  const notes=prompt('Optional admin note (do not include unnecessary personal information):')||'';
+  try{
+    await adminRequest('/admin/report-status',{report_id:reportId,status,admin_notes:notes});
+    toast('Report updated.');await loadAdminReports();
+  }catch(e){toast(e.message||'Could not update report.')}
+}
 async function runAdminAction(action,userId){
   if(!userId||!isAdmin)return;
   try{
@@ -565,7 +636,8 @@ async function runAdminAction(action,userId){
     toast('Admin action completed.');await loadAdminUsers();
   }catch(e){toast(e.message||'Admin action failed.')}
 }
-$('adminRefresh').addEventListener('click',loadAdminUsers);
+$('adminRefresh').addEventListener('click',()=>{loadAdminUsers();loadAdminReports()});
+$('reportsRefresh').addEventListener('click',loadAdminReports);
 $('adminUsers').addEventListener('click',e=>{const b=e.target.closest('[data-admin-action]');if(b)runAdminAction(b.dataset.adminAction,b.dataset.userId)});
 
 /* Navigation and buttons */
