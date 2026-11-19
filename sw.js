@@ -1,5 +1,5 @@
-const CACHE='nexora-ai-shell-v8';
-const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg?v=6'];
+const CACHE='nexora-ai-shell-v9';
+const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg?v=6','./nexora-app-icon-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
