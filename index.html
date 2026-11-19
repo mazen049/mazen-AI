@@ -922,17 +922,24 @@ $('imagePrompt').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key
 /* Installable web app (PWA) */
 let installPromptEvent=null;
 const installButton=$('installApp');
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install NEXORA AI';installButton.classList.remove('hidden')});
-installButton.addEventListener('click',async()=>{
-  if(installPromptEvent){
-    installPromptEvent.prompt();const choice=await installPromptEvent.userChoice;
-    if(choice?.outcome==='accepted')toast('NEXORA AI installation started');
-    installPromptEvent=null;
-  }else{
-    toast(/iphone|ipad|ipod/i.test(navigator.userAgent)?'On iPhone/iPad: tap Share, then Add to Home Screen.':'Open your browser menu and choose Install app or Add to Home Screen.');
-  }
-});
-window.addEventListener('appinstalled',()=>{installButton.textContent='✓ App installed';installButton.disabled=true});
+const isWindowsStoreShell=new URLSearchParams(window.location.search).get('platform')==='windows';
+if(isWindowsStoreShell){
+  installButton.classList.add('hidden');
+  installButton.setAttribute('aria-hidden','true');
+  installButton.tabIndex=-1;
+}else{
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install NEXORA AI';installButton.classList.remove('hidden')});
+  installButton.addEventListener('click',async()=>{
+    if(installPromptEvent){
+      installPromptEvent.prompt();const choice=await installPromptEvent.userChoice;
+      if(choice?.outcome==='accepted')toast('NEXORA AI installation started');
+      installPromptEvent=null;
+    }else{
+      toast(/iphone|ipad|ipod/i.test(navigator.userAgent)?'On iPhone/iPad: tap Share, then Add to Home Screen.':'Open your browser menu and choose Install app or Add to Home Screen.');
+    }
+  });
+  window.addEventListener('appinstalled',()=>{installButton.textContent='✓ App installed';installButton.disabled=true});
+}
 if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
   let refreshingAfterUpdate=false;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
