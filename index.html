@@ -736,7 +736,7 @@ async function authAction(kind){
 async function verifySignupEmail(){
   if(!sb||!pendingVerificationEmail){$('authStatus').textContent='Create your account first to request a verification code.';return}
   const token=$('authEmailCode').value.trim();
-  if(!/^\\d{6}$/.test(token)){$('authStatus').textContent='Enter the 6-digit code from your email.';$('authEmailCode').focus();return}
+  if(!/^\d{6}$/.test(token)){$('authStatus').textContent='Enter the 6-digit code from your email.';$('authEmailCode').focus();return}
   $('verifyEmailCode').disabled=true;$('resendEmailCode').disabled=true;
   $('authStatus').textContent='Verifying your email…';
   try{
