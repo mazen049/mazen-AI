@@ -571,7 +571,7 @@ function renderChat(){
     const actions=document.createElement('div');actions.className='message-actions';
     const addAction=(label,title,handler,active=false)=>{const btn=document.createElement('button');btn.type='button';btn.className='message-action'+(active?' selected':'');btn.textContent=label;btn.title=title;btn.setAttribute('aria-label',title);btn.addEventListener('click',handler);actions.append(btn)};
     addAction('⧉','Copy message',()=>copyMessage(m.content||''));
-    if(m.role==='user')addAction('✎','Edit message',()=>editMessage(index));
+    if(m.role==='user'){addAction('✎','Edit message',()=>editMessage(index));addAction('↗','Share message',()=>shareMessage(m.content||''))}
     else{
       addAction('↻','Retry response',()=>retryAssistant(index));
       addAction('👍','Good response',()=>setMessageFeedback(index,'up'),m.feedback==='up');
