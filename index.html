@@ -616,7 +616,7 @@ async function ask(text,images=[],history=[]){
 async function send(text){
   text=(text||'').trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;if(isSending)return;isSending=true;
   let c=current();if(!c){c={id:Date.now().toString(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id}
-  let fullText=(thinkMode?'Please think carefully through the problem before answering. Give a clear, accurate, well-structured final answer; do not reveal private chain-of-thought.\\n\\n':'')+text;for(const d of pendingDocs)fullText+='\\n\\n[Extracted document: '+d.name+']\\n'+d.text;
+  let fullText=(thinkMode?'Please think carefully through the problem before answering. Give a clear, accurate, well-structured final answer; do not reveal private chain-of-thought.\n\n':'')+text;for(const d of pendingDocs)fullText+='\n\n[Extracted document: '+d.name+']\n'+d.text;
   const imgs=pendingImages.slice(),docs=pendingDocs.slice(),fileNames=[...imgs.map(x=>x.name),...docs.map(x=>x.name)];
   const attachments=[...imgs.map(x=>({kind:'image',name:x.name,preview:x.preview})),...docs.map(x=>({kind:'document',name:x.name,ext:x.ext,icon:fileIcon(x.ext)}))];
   const shown=(text||'Please analyse the attached file(s).')+(fileNames.length?'\n📎 '+fileNames.join(', '):'');
