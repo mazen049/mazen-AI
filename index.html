@@ -202,12 +202,16 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 <body>
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authGateTitle">
  <div class="authGateCard">
-  <div class="authGateBrand"><div class="authGateLogo">N</div><h1 id="authGateTitle">Welcome to NEXORA AI</h1><p>Sign in or create an account to continue. No email code is needed when email confirmation is disabled in Supabase.</p></div>
+  <div class="authGateBrand"><div class="authGateLogo">N</div><h1 id="authGateTitle">Welcome to NEXORA AI</h1><p>Create your account and verify your email once. Returning users can sign in normally.</p></div>
   <div class="field"><label for="authEmail">Email</label><input class="input" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
   <div class="field"><label for="authPassword">Password</label><input class="input" id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters"></div>
-  <div class="row"><button class="btn" id="signIn" type="button">Sign in</button><button class="btn secondary" id="signUp" type="button">Create account</button></div>
+  <div class="row" id="authMainActions"><button class="btn" id="signIn" type="button">Sign in</button><button class="btn secondary" id="signUp" type="button">Create account</button></div>
+  <div id="emailVerifyPanel" class="hidden">
+   <div class="field"><label for="authEmailCode">6-digit email code</label><input class="input" id="authEmailCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter the code from your email"></div>
+   <div class="row"><button class="btn" id="verifyEmailCode" type="button">Verify email</button><button class="btn secondary" id="resendEmailCode" type="button">Resend code</button></div>
+  </div>
   <div id="authStatus" class="muted" role="status" aria-live="polite" style="margin-top:12px">Connecting to secure account service…</div>
-  <div class="authNote">Use an email address you control and a strong, unique password. Email and password accounts do not by themselves prove a visitor is human.</div>
+  <div class="authNote">Email verification is required only when creating an account. Keep your password private and use an email address you control.</div>
  </div>
 </div>
 <div class="shell hidden">
@@ -697,27 +701,65 @@ function validAuthFields(){
   }
   return true;
 }
+let pendingVerificationEmail='';
 async function authAction(kind){
   if(!sb){$('authStatus').textContent='Account service is still loading. Please wait a moment.';return}
   if(!validAuthFields())return;
   const email=$('authEmail').value.trim(),password=$('authPassword').value;
   $('signIn').disabled=true;$('signUp').disabled=true;
-  $('authStatus').textContent=kind==='signup'?'Creating your account…':'Signing in…';
+  $('authStatus').textContent=kind==='signup'?'Creating your account and sending a verification code…':'Signing in…';
   try{
     const result=kind==='signup'
-      ?await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}})
+      ?await sb.auth.signUp({email,password})
       :await sb.auth.signInWithPassword({email,password});
     if(result.error)throw result.error;
     if(result.data?.session){
       setAuthUI(result.data.session);
-      $('authStatus').textContent=kind==='signup'?'Account created. You are signed in.':'Signed in successfully.';
+      $('authStatus').textContent=kind==='signup'?'Account created and email verified.':'Signed in successfully.';
+      $('emailVerifyPanel').classList.add('hidden');
     }else if(kind==='signup'){
-      $('authStatus').textContent='Account created, but Supabase is still requiring email confirmation. In Supabase Dashboard, open Authentication → Providers → Email and turn OFF Confirm email, then try again.';
+      pendingVerificationEmail=email;
+      $('emailVerifyPanel').classList.remove('hidden');
+      $('authEmailCode').value='';
+      $('authEmailCode').focus();
+      $('authStatus').textContent='A 6-digit verification code has been sent if this email can be registered. Enter it below to activate your account.';
     }else{
-      $('authStatus').textContent='Sign-in did not return an active session. Please check your email/password and Supabase settings.';
+      $('authStatus').textContent='Sign-in did not return an active session. Check your email/password and confirm your email if this is a new account.';
     }
-  }catch(e){$('authStatus').textContent=e.message||'Authentication failed.'}
-  finally{$('signIn').disabled=false;$('signUp').disabled=false}
+  }catch(e){
+    const message=String(e.message||'Authentication failed.');
+    $('authStatus').textContent=/email not confirmed/i.test(message)
+      ?'Please verify your email first. Create the account again or request a new code.'
+      :message;
+  }finally{$('signIn').disabled=false;$('signUp').disabled=false}
+}
+async function verifySignupEmail(){
+  if(!sb||!pendingVerificationEmail){$('authStatus').textContent='Create your account first to request a verification code.';return}
+  const token=$('authEmailCode').value.trim();
+  if(!/^\\d{6}$/.test(token)){$('authStatus').textContent='Enter the 6-digit code from your email.';$('authEmailCode').focus();return}
+  $('verifyEmailCode').disabled=true;$('resendEmailCode').disabled=true;
+  $('authStatus').textContent='Verifying your email…';
+  try{
+    const {data,error}=await sb.auth.verifyOtp({email:pendingVerificationEmail,token,type:'signup'});
+    if(error)throw error;
+    if(!data?.session)throw Error('Email verification did not create a session. Please sign in.');
+    $('emailVerifyPanel').classList.add('hidden');
+    setAuthUI(data.session);
+    $('authStatus').textContent='Email verified. Your NEXORA AI account is ready.';
+    pendingVerificationEmail='';
+  }catch(e){$('authStatus').textContent=e.message||'The code could not be verified. Check it and try again.'}
+  finally{$('verifyEmailCode').disabled=false;$('resendEmailCode').disabled=false}
+}
+async function resendSignupCode(){
+  if(!sb||!pendingVerificationEmail)return;
+  $('resendEmailCode').disabled=true;$('authStatus').textContent='Sending a new code…';
+  try{
+    const {error}=await sb.auth.resend({type:'signup',email:pendingVerificationEmail});
+    if(error)throw error;
+    $('authEmailCode').value='';
+    $('authStatus').textContent='If the address is eligible, a new verification code has been sent. Check your inbox and spam folder.';
+  }catch(e){$('authStatus').textContent=e.message||'Could not resend the code.'}
+  finally{$('resendEmailCode').disabled=false}
 }
 function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||null;u.onstart=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('listening');w.classList.add('speaking');$('voiceModeLabel').textContent='NEXORA AI is speaking…'}};u.onend=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('speaking');$('voiceModeLabel').textContent='Reply finished. You can speak again.'}};u.onerror=()=>{const w=$('voiceOrbWrap');if(w)w.classList.remove('speaking')};speechSynthesis.speak(u)}
 
@@ -1051,6 +1093,9 @@ $('sendVoice').addEventListener('click',async()=>{
 /* Supabase email/password authentication */
 $('signIn').addEventListener('click',()=>authAction('signin'));
 $('signUp').addEventListener('click',()=>authAction('signup'));
+$('verifyEmailCode').addEventListener('click',verifySignupEmail);
+$('resendEmailCode').addEventListener('click',resendSignupCode);
+$('authEmailCode').addEventListener('keydown',e=>{if(e.key==='Enter')verifySignupEmail()});
 $('authPassword').addEventListener('keydown',e=>{if(e.key==='Enter')authAction('signin')});
 $('signOut').addEventListener('click',async()=>{
   if(!sb)return;
