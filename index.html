@@ -225,6 +225,19 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 [dir="rtl"],[lang="ar"],.msg:lang(ar){font-family:'Noto Sans Arabic','Inter','DM Sans',sans-serif;line-height:1.9;letter-spacing:0}
 @media(max-width:650px){body{font-size:14px}.msg{font-size:14px;line-height:1.85}.hero p{font-size:13px;line-height:1.8}.sectionhead h2{font-size:24px}}
 
+
+/* ChatGPT-style message actions and composer controls */
+.message-wrap{display:flex;flex-direction:column;gap:6px;max-width:min(92%,790px)}
+.message-wrap.message-user{align-self:flex-end;align-items:flex-end}.message-wrap.message-assistant{align-self:flex-start;align-items:flex-start}
+.message-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:0 3px;opacity:.86}
+.message-action{border:1px solid transparent;background:transparent;color:#9da5c2;border-radius:8px;padding:5px 8px;font-size:12px;line-height:1.2;min-height:28px}
+.message-action:hover,.message-action.selected{color:#f4f5ff;background:#ffffff12;border-color:#ffffff18}.message-action.selected{color:#35e0c1}
+.message-wrap .msg{max-width:100%}
+.think-toggle{height:50px;white-space:nowrap;color:#cfc5ff}.think-toggle.active{background:#8d73ff2c;border-color:#8d73ff99;color:#fff;box-shadow:0 0 0 2px #8d73ff22}
+.mic-compose{height:50px;min-width:48px;font-size:17px}.mic-compose.recording{background:#ff6ab522;border-color:#ff6ab5;color:#ff9acb;animation:micPulse 1s ease-in-out infinite alternate}
+@keyframes micPulse{to{box-shadow:0 0 0 5px #ff6ab522}}
+@media(max-width:650px){.message-wrap{max-width:98%}.message-actions{gap:2px}.message-action{padding:5px 6px}.think-toggle{font-size:11px;padding:8px}.mic-compose{min-width:40px;padding:8px}.composer{flex-wrap:wrap}.composer textarea{flex:1 1 100%;order:0}.composer .attachwrap{order:1}.composer .think-toggle{order:2}.composer .mic-compose{order:3}.composer #send{order:4;flex:1}}
+
 </style>
 </head>
 <body>
@@ -287,7 +300,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
   <button class="attach-option" type="button" data-pick="file"><span class="attach-option-icon file-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3.5H6A2.5 2.5 0 0 0 3.5 6v12A2.5 2.5 0 0 0 6 20.5h12a2.5 2.5 0 0 0 2.5-2.5V11Z"/><path d="M13 3.5V11h7.5M8 15h8M8 18h6"/></svg></span><span class="attach-option-copy"><strong>File</strong><small>PDF, Word, Excel and more</small></span><svg class="attach-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
 </div></div>
   <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
-  <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="btn" id="send">Send ↗</button></div>
+  <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="iconbtn think-toggle" id="thinkToggle" type="button" aria-pressed="false" title="Think mode">✧ Think</button><button class="iconbtn mic-compose" id="micCompose" type="button" title="Speak your message" aria-label="Speak your message">🎙</button><button class="btn" id="send">Send ↗</button></div>
   <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div><div class="muted" id="privacyNotice" style="margin-top:5px" role="note" aria-live="polite"></div>
 <script>
 (function(){
@@ -552,16 +565,39 @@ function renderChat(){
   const box=$('messages'),c=current();box.innerHTML='';
   if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am NEXORA AI. What would you like to create or explore today?';box.append(d);return}
   c.messages.forEach((m,index)=>{
-    const wrap=document.createElement('div');wrap.style.cssText='display:flex;flex-direction:column;align-items:'+(m.role==='user'?'flex-end':'flex-start')+';gap:6px';
+    const wrap=document.createElement('div');wrap.className='message-wrap '+(m.role==='user'?'message-user':'message-assistant');
     const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';wrap.append(d);
     renderAttachmentCards(wrap,m.attachments||[]);
-    if(m.role==='assistant'){
-      const report=document.createElement('button');report.type='button';report.className='btn secondary';report.textContent='⚑ Report message';report.style.cssText='font-size:11px;padding:6px 10px;align-self:flex-start';
-      report.addEventListener('click',()=>openReportDialog(index));wrap.append(report);
+    const actions=document.createElement('div');actions.className='message-actions';
+    const addAction=(label,title,handler,active=false)=>{const btn=document.createElement('button');btn.type='button';btn.className='message-action'+(active?' selected':'');btn.textContent=label;btn.title=title;btn.setAttribute('aria-label',title);btn.addEventListener('click',handler);actions.append(btn)};
+    addAction('⧉','Copy message',()=>copyMessage(m.content||''));
+    if(m.role==='user')addAction('✎','Edit message',()=>editMessage(index));
+    else{
+      addAction('↻','Retry response',()=>retryAssistant(index));
+      addAction('👍','Good response',()=>setMessageFeedback(index,'up'),m.feedback==='up');
+      addAction('👎','Bad response',()=>setMessageFeedback(index,'down'),m.feedback==='down');
+      addAction('↗','Share response',()=>shareMessage(m.content||''));
+      const report=document.createElement('button');report.type='button';report.className='message-action';report.textContent='⚑';report.title='Report message';report.setAttribute('aria-label','Report message');report.addEventListener('click',()=>openReportDialog(index));actions.append(report);
     }
-    box.append(wrap);
+    addAction('⑂','Branch in new chat',()=>branchFromMessage(index));
+    wrap.append(actions);box.append(wrap);
   });
   box.scrollTop=box.scrollHeight;
+}
+async function copyMessage(text){try{await navigator.clipboard.writeText(text);toast('Copied to clipboard.')}catch(e){const area=document.createElement('textarea');area.value=text;document.body.append(area);area.select();try{document.execCommand('copy');toast('Copied to clipboard.')}catch(err){toast('Could not copy this message.')}area.remove()}}
+async function shareMessage(text){try{if(navigator.share)await navigator.share({title:'NEXORA AI',text});else{await navigator.clipboard.writeText(text);toast('Share is unavailable here; text copied so you can paste it.')}}catch(e){if(e.name!=='AbortError')toast('Could not share this message.')}}
+function setMessageFeedback(index,value){const c=current();if(!c?.messages[index])return;c.messages[index].feedback=c.messages[index].feedback===value?'':value;save();renderChat();toast('Thanks for the feedback.')}
+function editMessage(index){const c=current(),m=c?.messages[index];if(!m||m.role!=='user')return;$('prompt').value=m.content||'';c.messages=c.messages.slice(0,index);c.updated=Date.now();save();renderChat();$('prompt').focus();toast('Edit your message, then send it again.')}
+function branchFromMessage(index){const source=current();if(!source)return;const branch={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'Branch · '+(source.title||'Conversation').slice(0,25),messages:source.messages.slice(0,index+1).map(m=>({...m,attachments:(m.attachments||[]).map(a=>({...a}))})),updated:Date.now()};chats.unshift(branch);active=branch.id;save();renderChat();go('chat');toast('New chat branched from this message.')}
+async function retryAssistant(index){
+  const c=current();if(!c||isSending)return;let userIndex=index-1;while(userIndex>=0&&c.messages[userIndex].role!=='user')userIndex--;
+  if(userIndex<0){toast('There is no user message to retry.');return}
+  const user=c.messages[userIndex];if((user.attachments||[]).length){toast('Retry for messages with attachments is not available yet.');return}
+  const history=c.messages.slice(0,userIndex).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content||''}));
+  c.messages=c.messages.slice(0,userIndex+1);save();renderChat();isSending=true;const wait=document.createElement('div');wait.className='msg ai typing';wait.textContent='Thinking';$('messages').append(wait);$('messages').scrollTop=$('messages').scrollHeight;$('send').disabled=true;
+  try{const reply=await ask(user.content||'',[],history);wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save()}
+  catch(e){wait.classList.remove('typing');wait.textContent='Could not reach NEXORA AI: '+e.message;toast(e.message)}
+  finally{$('send').disabled=false;isSending=false;renderChat()}
 }
 function animateText(el,text){el.textContent='';let i=0;const step=()=>{i=Math.min(i+4,text.length);el.textContent=text.slice(0,i);$('messages').scrollTop=$('messages').scrollHeight;if(i<text.length)requestAnimationFrame(step)};step()}
 async function ask(text,images=[],history=[]){
@@ -580,7 +616,7 @@ async function ask(text,images=[],history=[]){
 async function send(text){
   text=(text||'').trim();if(!text&&!pendingImages.length&&!pendingDocs.length)return;if(isSending)return;isSending=true;
   let c=current();if(!c){c={id:Date.now().toString(),title:'New conversation',messages:[],updated:Date.now()};chats.unshift(c);active=c.id}
-  let fullText=text;for(const d of pendingDocs)fullText+='\n\n[Extracted document: '+d.name+']\n'+d.text;
+  let fullText=(thinkMode?'Please think carefully through the problem before answering. Give a clear, accurate, well-structured final answer; do not reveal private chain-of-thought.\\n\\n':'')+text;for(const d of pendingDocs)fullText+='\\n\\n[Extracted document: '+d.name+']\\n'+d.text;
   const imgs=pendingImages.slice(),docs=pendingDocs.slice(),fileNames=[...imgs.map(x=>x.name),...docs.map(x=>x.name)];
   const attachments=[...imgs.map(x=>({kind:'image',name:x.name,preview:x.preview})),...docs.map(x=>({kind:'document',name:x.name,ext:x.ext,icon:fileIcon(x.ext)}))];
   const shown=(text||'Please analyse the attached file(s).')+(fileNames.length?'\n📎 '+fileNames.join(', '):'');
@@ -1000,6 +1036,18 @@ document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',(
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
 $('newChatBtn').addEventListener('click',newChat);$('newChatMain').addEventListener('click',newChat);$('clearHistoryBtn').addEventListener('click',clearHistory);$('exportHistoryBtn').addEventListener('click',exportHistory);
 $('topSettings').addEventListener('click',()=>go('settings'));$('hamb').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+let thinkMode=false,composeRecognition=null;
+$('thinkToggle').addEventListener('click',()=>{thinkMode=!thinkMode;$('thinkToggle').classList.toggle('active',thinkMode);$('thinkToggle').setAttribute('aria-pressed',String(thinkMode));toast(thinkMode?'Think mode enabled.':'Think mode disabled.')});
+$('micCompose').addEventListener('click',()=>{
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Voice input is not supported in this browser. Try Chrome.');return}
+ if(composeRecognition){composeRecognition.stop();composeRecognition=null;$('micCompose').classList.remove('recording');return}
+ try{const rec=new SR();composeRecognition=rec;rec.lang=navigator.language||'en-US';rec.interimResults=true;rec.continuous=false;
+ rec.onstart=()=>{$('micCompose').classList.add('recording');$('micCompose').title='Stop voice input'};
+ rec.onresult=e=>{let transcript='';for(let i=0;i<e.results.length;i++)transcript+=e.results[i][0].transcript;$('prompt').value=transcript};
+ rec.onerror=e=>toast('Microphone: '+e.error);
+ rec.onend=()=>{composeRecognition=null;$('micCompose').classList.remove('recording');$('micCompose').title='Speak your message';$('prompt').focus()};rec.start()
+ }catch(e){composeRecognition=null;toast('Could not start microphone. Check browser permission.')}
+});
 $('send').addEventListener('click',()=>{const t=$('prompt').value;$('prompt').value='';send(t)});
 $('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('send').click()}});
 const attachMenu=$('attachMenu'),attachBtn=$('attachBtn');
