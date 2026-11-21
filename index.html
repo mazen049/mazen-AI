@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080914">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./nexora-app-icon-512.png" type="image/png" sizes="512x512">
-<link rel="shortcut icon" href="./nexora-app-icon-512.png" type="image/png">
-<link rel="apple-touch-icon" href="./nexora-app-icon-512.png">
+<link rel="icon" href="./icon.svg?v=7" type="image/svg+xml" sizes="any">
+<link rel="shortcut icon" href="./icon.svg?v=7" type="image/png">
+<link rel="apple-touch-icon" href="./icon.svg?v=7">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="NEXORA AI">
+<meta name="apple-mobile-web-app-title" content="MA AI">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>NEXORA AI — Studio</title>
+<title>MA AI — Studio</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://js.puter.com/v2/"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
@@ -24,7 +24,7 @@
 @media(max-width:900px){.side{width:225px}.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.side{position:fixed;left:0;top:0;bottom:0;width:270px;transform:translateX(-105%);box-shadow:var(--shadow)}.side.open{transform:none}.hamb{display:inline-block}.main{padding:15px}.top{margin-bottom:18px}.hero{padding:22px}.grid,.two{grid-template-columns:1fr}.chatbox{min-height:300px}.msg{max-width:94%}.topright .pill{display:none}.composer{gap:6px}.composer .btn{padding:10px}.attachmenu{left:-4px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 
-/* NEXORA AI motion system */
+/* MA AI motion system */
 :root{scroll-behavior:smooth}
 body:after{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(circle at 18% 25%,#8d73ff16,transparent 28%),radial-gradient(circle at 82% 72%,#35e0c116,transparent 30%);animation:ambientDrift 18s ease-in-out infinite alternate}
 @keyframes ambientDrift{0%{transform:translate3d(-1.5%,0,0) scale(1)}100%{transform:translate3d(1.5%,-1%,0) scale(1.04)}}
@@ -90,7 +90,7 @@ button:active,.btn:active{transform:scale(.97)}
 .authGateCard .row{margin-top:15px}.authGateCard .row button{flex:1}
 .authGateCard .authNote{margin-top:14px}
 
-/* NEXORA coordinated color themes */
+/* MA AI coordinated color themes */
 .themePresetGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .themePreset{min-width:0;text-align:left;padding:13px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,color-mix(in srgb,var(--preset-a) 16%,var(--panel)),var(--panel));color:var(--text);display:grid;gap:7px}
 .themePreset:hover{transform:translateY(-2px);border-color:var(--preset-a)}
@@ -199,7 +199,7 @@ body[data-theme="light"] .authGateBrand p{color:#68718a}
 @media(prefers-reduced-motion:reduce){.reportOverlay,.reportDialog{transition:none!important}}
 
 
-/* NEXORA typography polish — clearer hierarchy and comfortable reading */
+/* MA AI typography polish — clearer hierarchy and comfortable reading */
 :root{--font-ui:'Inter','Noto Sans Arabic','DM Sans',system-ui,sans-serif;--font-display:'Space Grotesk','Inter','Noto Sans Arabic',system-ui,sans-serif}
 body{font-family:var(--font-ui);font-size:14px;line-height:1.65;letter-spacing:.005em;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
@@ -243,7 +243,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 <body>
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authGateTitle">
  <div class="authGateCard">
-  <div class="authGateBrand"><div class="authGateLogo">N</div><h1 id="authGateTitle">Welcome to NEXORA AI</h1><p>Create your account and verify your email once. Returning users can sign in normally.</p></div>
+  <div class="authGateBrand"><div class="authGateLogo">MA</div><h1 id="authGateTitle">Welcome to MA AI</h1><p>Create your account and verify your email once. Returning users can sign in normally.</p></div>
   <div class="field"><label for="authEmail">Email</label><input class="input" id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
   <div class="field"><label for="authPassword">Password</label><input class="input" id="authPassword" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters"></div>
   <div class="row" id="authMainActions"><button class="btn" id="signIn" type="button">Sign in</button><button class="btn secondary" id="signUp" type="button">Create account</button></div>
@@ -257,7 +257,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 </div>
 <div class="shell hidden">
 <aside class="side" id="sidebar">
-  <div class="brand"><div class="logo">N</div><div><strong>NEXORA AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
+  <div class="brand"><div class="logo">MA</div><div><strong>MA AI</strong><small>INTELLIGENCE STUDIO</small></div></div>
   <button class="newchat" id="newChatBtn">＋ &nbsp; New conversation</button>
   <div><div class="navlabel">WORKSPACE</div><nav class="nav">
     <button class="active" data-view="home"><span class="ico">⌂</span> Overview</button>
@@ -273,14 +273,14 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
     <button data-view="account"><span class="ico">♙</span> Account &amp; Security</button>
     <button data-view="settings"><span class="ico">⚙</span> Settings</button>
   </nav></div>
-  <div class="sidebottom"><div class="profile"><div class="avatar">N</div><div class="profileMeta"><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small><span id="profilePlan" class="planBadge planUnknown">Checking plan…</span></div></div></div>
+  <div class="sidebottom"><div class="profile"><div class="avatar">M</div><div class="profileMeta"><b id="profileName">Guest mode</b><small id="profileEmail">Local session</small><span id="profilePlan" class="planBadge planUnknown">Checking plan…</span></div></div></div>
 </aside>
 <main class="main">
-<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">NEXORA AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> NEXORA AI · Beta</span><button class="btn secondary" id="installApp" type="button">⬇ Install app</button><button class="iconbtn" id="topSettings">⚙</button></div></header>
+<header class="top"><div class="row"><button class="iconbtn hamb" id="hamb">☰</button><div class="crumb">MA AI <span style="color:#555">/</span> <b id="crumb">Overview</b></div></div><div class="topright"><span class="pill"><i class="dot"></i> MA AI · Beta</span><button class="btn secondary" id="installApp" type="button">⬇ Install app</button><button class="iconbtn" id="topSettings">⚙</button></div></header>
 
 <section class="view active" id="home">
-  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Welcome, <span class="gradient" id="welcomeName">there</span>!</h1><p>I’m NEXORA AI — your creative intelligence workspace. What would you like to make today?</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
-  <div class="freePromise"><div class="freePromiseIcon">♥</div><div><strong>Useful AI should be accessible to everyone.</strong><p>NEXORA AI values its free community. The core experience is here to help you learn, create and have meaningful conversations — without pressure to pay.</p><span>FREE COMMUNITY · NO PAYMENT PRESSURE</span></div></div>
+  <div class="hero"><div class="eyebrow">YOUR CREATIVE INTELLIGENCE</div><h1>Welcome, <span class="gradient" id="welcomeName">there</span>!</h1><p>I’m MA AI — your creative intelligence workspace. What would you like to make today?</p><div class="minirow"><button class="btn" data-go="chat">Start chatting ↗</button><button class="btn secondary" data-go="image">Create an image</button></div></div>
+  <div class="freePromise"><div class="freePromiseIcon">♥</div><div><strong>Useful AI should be accessible to everyone.</strong><p>MA AI values its free community. The core experience is here to help you learn, create and have meaningful conversations — without pressure to pay.</p><span>FREE COMMUNITY · NO PAYMENT PRESSURE</span></div></div>
   <div class="grid">
     <div class="card toolcard" data-go="chat"><div class="toolicon">✧</div><h3>AI Chat</h3><p>Ask questions, write, learn and brainstorm in multiple languages.</p></div>
     <div class="card toolcard" data-go="image"><div class="toolicon">▧</div><h3>Image Studio</h3><p>Generate images from text prompts with the connected image service.</p></div>
@@ -288,11 +288,11 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
     <div class="card toolcard" data-go="voice"><div class="toolicon">◉</div><h3>Voice Room</h3><p>Speak your message and listen to AI replies where your browser supports it.</p></div>
     <div class="card toolcard" data-go="history"><div class="toolicon">◷</div><h3>History</h3><p>Find your recent local conversations.</p></div>
     <div class="card toolcard" data-go="account"><div class="toolicon">♙</div><h3>Account &amp; Security</h3><p>Configure real sign-in and review bot-protection status.</p></div>
-  </div><div class="footer">NEXORA AI · Created by Mazen Rihani</div>
+  </div><div class="footer">MA AI · Created by Mazen Rihani</div>
 </section>
 
 <section class="view" id="chat">
-  <div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to NEXORA AI in your preferred language.</p></div><button class="btn secondary" id="newChatMain">＋ New chat</button></div>
+  <div class="sectionhead"><div><h2>AI Chat</h2><p>Talk to MA AI in your preferred language.</p></div><button class="btn secondary" id="newChatMain">＋ New chat</button></div>
   <div class="card chatbox" id="messages" aria-live="polite"></div><div id="pendingFiles" class="filebar"></div>
   <div class="composer"><div class="attachwrap"><button class="iconbtn attach-trigger" id="attachBtn" type="button" title="Add attachment" aria-label="Add attachment" aria-expanded="false" aria-controls="attachMenu"><span class="attach-plus" aria-hidden="true">+</span></button><div class="attachmenu" id="attachMenu" aria-hidden="true">
   <button class="attach-option" type="button" data-pick="camera"><span class="attach-option-icon camera-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h3l1.5-2h7l1.5 2h3A1.5 1.5 0 0 1 21.5 9v9A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5Z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="attach-option-copy"><strong>Camera</strong><small>Take a new photo</small></span><svg class="attach-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -300,7 +300,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
   <button class="attach-option" type="button" data-pick="file"><span class="attach-option-icon file-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3.5H6A2.5 2.5 0 0 0 3.5 6v12A2.5 2.5 0 0 0 6 20.5h12a2.5 2.5 0 0 0 2.5-2.5V11Z"/><path d="M13 3.5V11h7.5M8 15h8M8 18h6"/></svg></span><span class="attach-option-copy"><strong>File</strong><small>PDF, Word, Excel and more</small></span><svg class="attach-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
 </div></div>
   <input id="imageInput" type="file" accept="image/*" multiple hidden><input id="cameraInput" type="file" accept="image/*" capture="environment" hidden><input id="docInput" type="file" accept=".pdf,.docx,.txt,.csv,.xlsx,.xls" multiple hidden>
-  <textarea id="prompt" placeholder="Message NEXORA AI… (Enter to send)" rows="1"></textarea><button class="iconbtn think-toggle" id="thinkToggle" type="button" aria-pressed="false" title="Think mode">✧ Think</button><button class="iconbtn mic-compose" id="micCompose" type="button" title="Speak your message" aria-label="Speak your message">🎙</button><button class="btn" id="send">Send ↗</button></div>
+  <textarea id="prompt" placeholder="Message MA AI… (Enter to send)" rows="1"></textarea><button class="iconbtn think-toggle" id="thinkToggle" type="button" aria-pressed="false" title="Think mode">✧ Think</button><button class="iconbtn mic-compose" id="micCompose" type="button" title="Speak your message" aria-label="Speak your message">🎙</button><button class="btn" id="send">Send ↗</button></div>
   <div class="muted" style="margin-top:8px">Images can be analysed by the connected vision model. Documents are read in your browser and extracted text is sent for analysis.</div><div class="muted" id="privacyNotice" style="margin-top:5px" role="note" aria-live="polite"></div>
 <script>
 (function(){
@@ -321,19 +321,19 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 </section>
 
 <section class="view" id="image">
-  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create images with either NEXORA FLUX or Puter AI.</p></div><span class="pill">2 image engines</span></div>
+  <div class="sectionhead"><div><h2>Image Studio</h2><p>Create images with either MA FLUX or Puter AI.</p></div><span class="pill">2 image engines</span></div>
   <div class="card">
     <div class="field"><label for="imagePrompt">Describe the image you want</label><textarea id="imagePrompt" maxlength="1500" placeholder="Example: A cinematic futuristic city at sunset, detailed architecture, soft golden light..."></textarea><div class="muted">Be clear about the subject, setting, lighting and visual style. Maximum 1,500 characters.</div></div>
     <div class="two">
-      <div class="field"><label for="imageModel">Image model</label><select id="imageModel"><option value="flux">NEXORA FLUX.1 Schnell</option><option value="puter">Puter AI · GPT Image</option></select></div>
+      <div class="field"><label for="imageModel">Image model</label><select id="imageModel"><option value="flux">MA FLUX.1 Schnell</option><option value="puter">Puter AI · GPT Image</option></select></div>
       <div class="field"><label for="imageSize">Image format</label><select id="imageSize"><option value="1024x1024">Square · 1:1</option><option value="1024x768">Landscape · 4:3</option><option value="768x1024">Portrait · 3:4</option></select></div>
     </div>
-    <p class="muted">FLUX uses NEXORA's daily generation limits. Puter uses your own Puter account and its usage limits; Puter may charge for usage. You can choose either model before generating.</p>
+    <p class="muted">FLUX uses MA AI's daily generation limits. Puter uses your own Puter account and its usage limits; Puter may charge for usage. You can choose either model before generating.</p>
     <div class="row"><button class="btn" id="generateImageBtn" type="button">✦ Generate image</button><span class="muted" id="imageStatus" role="status" aria-live="polite">Choose a model and describe your image.</span></div>
   </div>
   <div class="card hidden" id="imageResultCard" style="margin-top:16px">
-    <div class="row" style="justify-content:space-between;margin-bottom:12px"><strong>Your generated image</strong><a class="btn secondary hidden" id="downloadGeneratedImage" download="nexora-ai-image.png">Download image ↓</a></div>
-    <img id="generatedImage" alt="Image generated by NEXORA AI" style="display:block;width:100%;max-width:900px;max-height:720px;object-fit:contain;margin:auto;border-radius:14px">
+    <div class="row" style="justify-content:space-between;margin-bottom:12px"><strong>Your generated image</strong><a class="btn secondary hidden" id="downloadGeneratedImage" download="ma-ai-image.png">Download image ↓</a></div>
+    <img id="generatedImage" alt="Image generated by MA AI" style="display:block;width:100%;max-width:900px;max-height:720px;object-fit:contain;margin:auto;border-radius:14px">
   </div>
 </section>
 
@@ -343,14 +343,14 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 </section>
 
 <section class="view" id="voice">
-  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speak naturally with NEXORA AI and hear spoken replies.</p></div><span class="pill">Voice beta</span></div>
+  <div class="sectionhead"><div><h2>Voice Room</h2><p>Speak naturally with MA AI and hear spoken replies.</p></div><span class="pill">Voice beta</span></div>
   <div class="card voiceStage">
     <div class="voiceOrbWrap" id="voiceOrbWrap" aria-label="Voice activity indicator"><div class="voiceOrb" id="voiceOrb"><span>MAZEN</span></div><div class="voiceOrbRing"></div></div>
     <h3 class="voiceTitle">Your voice, your AI</h3><p class="muted voiceHint" id="voiceModeLabel">Choose a language and start speaking.</p>
     <div class="voiceControls"><button class="btn" id="startVoice">🎙 Start speaking</button><button class="btn secondary" id="stopVoice">Stop listening</button><label class="muted"><input type="checkbox" id="speakReplies" checked> Speak AI replies</label></div>
     <div class="field voiceLanguage"><label>Language</label><select id="voiceLanguage"><option value="ar-SA">العربية</option><option value="en-US">English</option><option value="fr-FR">Français</option></select></div>
     <div class="field"><label>Recognized speech / message</label><textarea id="voiceText" placeholder="Your recognized speech appears here…"></textarea></div>
-    <button class="btn" id="sendVoice">Send to NEXORA AI ↗</button><div id="voiceStatus" class="muted" role="status" aria-live="polite" style="margin-top:12px">Ready when you are.</div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
+    <button class="btn" id="sendVoice">Send to MA AI ↗</button><div id="voiceStatus" class="muted" role="status" aria-live="polite" style="margin-top:12px">Ready when you are.</div><div id="voiceReply" class="card hidden" style="margin-top:15px"></div>
     <p class="muted voiceFootnote">Voice recognition and spoken responses use the capabilities available in your browser and device. This version is still turn-based, not a continuous live voice conversation.</p>
   </div>
 </section>
@@ -358,16 +358,16 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 <section class="view" id="history"><div class="sectionhead"><div><h2>History</h2><p>Your conversations are saved only in this browser on this device.</p></div><div class="row"><button class="btn secondary" id="exportHistoryBtn">Export data ↓</button><button class="btn secondary" id="clearHistoryBtn">Clear history</button></div></div><div class="status" style="margin-bottom:14px">Privacy note: conversations are saved only in this browser on this device. Export a backup before clearing browser data.</div><div class="card" id="historyList"></div></section>
 
 <section class="view" id="account">
-  <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Manage your NEXORA AI account.</p></div></div>
+  <div class="sectionhead"><div><h2>Account &amp; Security</h2><p>Manage your MA AI account.</p></div></div>
   <div class="card authgrid"><div class="status success" id="accountConfigStatus">Your account is active.</div><p class="muted" id="accountEmail">Signed-in account</p><div class="accountPlanRow"><span class="muted">Your current plan</span><strong id="accountPlan" class="planBadge planUnknown">Checking plan…</strong></div><button class="btn secondary" id="signOut" type="button">Sign out</button></div>
 </section>
 
 
 <section class="view" id="plans">
   <div class="sectionhead"><div><h2>Plans &amp; Pricing</h2><p>Choose the level that works for you. The Free experience stays useful.</p></div><span class="pill">Launch offer · planned</span></div>
-  <div class="pricingIntro"><div class="pricingGlow"></div><div class="eyebrow">NEXORA AI MEMBERSHIP</div><h2>More room to create.<br><span class="gradient">A fair price for everyone.</span></h2><p>Free stays free. Pro adds higher usage and creative tools for people who need more.</p></div>
+  <div class="pricingIntro"><div class="pricingGlow"></div><div class="eyebrow">MA AI MEMBERSHIP</div><h2>More room to create.<br><span class="gradient">A fair price for everyone.</span></h2><p>Free stays free. Pro adds higher usage and creative tools for people who need more.</p></div>
   <div class="currencyPicker card">
-    <div><strong>Prices in your currency</strong><p class="muted">Choose your country. NEXORA converts the USD base prices into an estimated local display price.</p></div>
+    <div><strong>Prices in your currency</strong><p class="muted">Choose your country. MA AI converts the USD base prices into an estimated local display price.</p></div>
     <label for="pricingCountry">Country / region</label>
     <select id="pricingCountry" class="input" aria-label="Choose your country for local pricing">
       <option value="SA">Saudi Arabia · SAR</option><option value="MA">Morocco · MAD</option><option value="US">United States · USD</option><option value="GB">United Kingdom · GBP</option><option value="AE">United Arab Emirates · AED</option><option value="FR">France · EUR</option><option value="DE">Germany · EUR</option><option value="ES">Spain · EUR</option><option value="IT">Italy · EUR</option><option value="CA">Canada · CAD</option><option value="AU">Australia · AUD</option><option value="IN">India · INR</option><option value="EG">Egypt · EGP</option><option value="TR">Türkiye · TRY</option><option value="JP">Japan · JPY</option><option value="PK">Pakistan · PKR</option><option value="ZA">South Africa · ZAR</option><option value="NG">Nigeria · NGN</option><option value="ID">Indonesia · IDR</option><option value="MY">Malaysia · MYR</option><option value="SG">Singapore · SGD</option><option value="CH">Switzerland · CHF</option><option value="SE">Sweden · SEK</option><option value="NO">Norway · NOK</option><option value="KW">Kuwait · KWD</option><option value="QA">Qatar · QAR</option><option value="BH">Bahrain · BHD</option><option value="OM">Oman · OMR</option><option value="JO">Jordan · JOD</option><option value="IQ">Iraq · IQD</option><option value="TN">Tunisia · TND</option><option value="DZ">Algeria · DZD</option><option value="CN">China · CNY</option><option value="BD">Bangladesh · BDT</option><option value="PH">Philippines · PHP</option><option value="VN">Vietnam · VND</option><option value="TH">Thailand · THB</option><option value="MX">Mexico · MXN</option><option value="BR">Brazil · BRL</option><option value="AR">Argentina · ARS</option><option value="CL">Chile · CLP</option><option value="PL">Poland · PLN</option><option value="RO">Romania · RON</option><option value="CZ">Czechia · CZK</option><option value="DK">Denmark · DKK</option><option value="KR">South Korea · KRW</option><option value="NZ">New Zealand · NZD</option><option value="HK">Hong Kong · HKD</option><option value="IL">Israel · ILS</option><option value="KE">Kenya · KES</option><option value="GH">Ghana · GHS</option>
@@ -384,7 +384,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
     <article class="priceCard featured">
       <div class="popularTag">MOST VALUE</div><div class="priceLabel">FOR CREATORS</div><h3>Pro</h3><p class="priceDesc">More creative power, more room, priority access and an ad-free experience.</p>
       <div class="priceAmount" id="proMonthlyPrice">$4.99 <small>USD</small></div><div class="pricePeriod">Per month · proposed launch price</div>
-      <ul><li><b>Completely ad-free NEXORA AI experience — no ads in Pro</b></li><li><b>AI video generation up to 2 minutes per video</b> (planned Pro maximum; monthly usage quota to be set after provider-cost testing)</li><li>Higher image-generation allowance</li><li>More AI chat and image understanding</li><li>Larger document analysis allowance</li><li>Priority processing when available</li><li>Pro profile badge and new Pro tools</li></ul>
+      <ul><li><b>Completely ad-free MA AI experience — no ads in Pro</b></li><li><b>AI video generation up to 2 minutes per video</b> (planned Pro maximum; monthly usage quota to be set after provider-cost testing)</li><li>Higher image-generation allowance</li><li>More AI chat and image understanding</li><li>Larger document analysis allowance</li><li>Priority processing when available</li><li>Pro profile badge and new Pro tools</li></ul>
       <button class="btn priceCurrent" type="button" disabled>Coming soon · payments not active</button>
       <div class="annualOffer"><b>Weekly option:</b> <span id="proWeeklyPrice">$1.99 USD / 7 days</span><span>For short projects and trying Pro features.</span></div>
       <div class="annualOffer"><b>Annual option:</b> <span id="proAnnualPrice">$39.99 USD / year</span><span>Save about 33% vs paying monthly.</span></div>
@@ -395,7 +395,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 </section>
 
 <section class="view" id="settings">
-  <div class="sectionhead"><div><h2>Settings</h2><p>Personalize the look and feel of your NEXORA AI workspace.</p></div></div>
+  <div class="sectionhead"><div><h2>Settings</h2><p>Personalize the look and feel of your MA AI workspace.</p></div></div>
   <div class="card appearanceCard">
     <div class="appearanceHeading"><div><span class="eyebrow">PERSONALIZATION</span><h3>Appearance</h3><p class="muted">Changes are saved automatically on this device and apply across the whole app.</p></div><span class="appearanceBadge">LIVE</span></div>
     <div class="appearanceGroup"><div class="appearanceLabel"><strong>Theme</strong><span class="muted">Choose your interface mode</span></div>
@@ -425,8 +425,8 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
     <div class="appearanceFooter"><span class="muted" id="appearanceStatus" aria-live="polite">Your appearance is saved automatically.</span><button class="btn secondary" id="resetAppearance" type="button">↺ Reset all</button></div>
   </div>
   <div class="two" style="margin-top:15px"><div class="card"><h3>AI Backend</h3><div class="status success">Backend endpoint is built in. Server API secrets stay on Cloudflare.</div><p class="muted">Never paste your Groq API key into this page.</p></div>
-  <div class="card"><h3>Access</h3><div class="status success">A valid Supabase email/password session is required to use NEXORA AI.</div></div></div>
-  <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">NEXORA AI · Developed by Mazen Rihani</div>
+  <div class="card"><h3>Access</h3><div class="status success">A valid Supabase email/password session is required to use MA AI.</div></div></div>
+  <div class="card" style="margin-top:15px"><h3>Account security</h3><div class="status">Your account session is managed by Supabase. Use a strong, unique password and sign out on shared devices.</div></div><div class="footer">MA AI · Developed by Mazen Rihani</div>
 </section>
 <section class="view" id="admin">
   <div class="sectionhead"><div><div class="eyebrow">OWNER CONTROLS</div><h2>Admin Panel</h2><p>Manage accounts and review only content users choose to report.</p></div><button class="btn secondary" id="adminRefresh">↻ Refresh</button></div>
@@ -442,9 +442,9 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
   <section class="reportDialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle" aria-describedby="reportDescription">
     <button class="reportClose" id="reportClose" type="button" aria-label="Close report dialog">×</button>
     <div class="reportIcon" aria-hidden="true">⚑</div>
-    <div class="eyebrow" style="margin-top:15px">HELP KEEP NEXORA SAFE</div>
+    <div class="eyebrow" style="margin-top:15px">HELP KEEP MA AI SAFE</div>
     <h3 id="reportTitle">Report this response</h3>
-    <p class="reportLead" id="reportDescription">Tell us what went wrong. Your report will be reviewed by the NEXORA moderation team.</p>
+    <p class="reportLead" id="reportDescription">Tell us what went wrong. Your report will be reviewed by the MA AI moderation team.</p>
     <div class="muted" style="font-weight:700">Choose a reason</div>
     <div class="reportReasons" id="reportReasons">
       <label class="reportReason"><input type="radio" name="reportReason" value="Unsafe or harmful content" required><span>Unsafe or harmful content</span></label>
@@ -463,7 +463,7 @@ button,input,textarea,select{font-family:var(--font-ui);letter-spacing:inherit}
 'use strict';
 const BACKEND_URL='https://mazen-ai-backend.9issa1232026.workers.dev';
 const $=id=>document.getElementById(id);
-/* NEXORA local pricing display: USD is the base; local values are estimates only. */
+/* MA AI local pricing display: USD is the base; local values are estimates only. */
 const NEXORA_USD_PRICES={monthly:4.99,weekly:1.99,annual:39.99};
 const NEXORA_COUNTRY_CURRENCY={SA:'SAR',MA:'MAD',US:'USD',GB:'GBP',AE:'AED',FR:'EUR',DE:'EUR',ES:'EUR',IT:'EUR',CA:'CAD',AU:'AUD',IN:'INR',EG:'EGP',TR:'TRY',JP:'JPY',PK:'PKR',ZA:'ZAR',NG:'NGN',ID:'IDR',MY:'MYR',SG:'SGD',CH:'CHF',SE:'SEK',NO:'NOK',KW:'KWD',QA:'QAR',BH:'BHD',OM:'OMR',JO:'JOD',IQ:'IQD',TN:'TND',DZ:'DZD',CN:'CNY',BD:'BDT',PH:'PHP',VN:'VND',TH:'THB',MX:'MXN',BR:'BRL',AR:'ARS',CL:'CLP',PL:'PLN',RO:'RON',CZ:'CZK',DK:'DKK',KR:'KRW',NZ:'NZD',HK:'HKD',IL:'ILS',KE:'KES',GH:'GHS'};
 let nexoraUsdRates={USD:1},nexoraRateDate='';
@@ -563,7 +563,7 @@ function openAttachmentPreview(src,name){
 }
 function renderChat(){
   const box=$('messages'),c=current();box.innerHTML='';
-  if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am NEXORA AI. What would you like to create or explore today?';box.append(d);return}
+  if(!c||!c.messages.length){const d=document.createElement('div');d.className='msg ai';d.textContent='Hello! I am MA AI. What would you like to create or explore today?';box.append(d);return}
   c.messages.forEach((m,index)=>{
     const wrap=document.createElement('div');wrap.className='message-wrap '+(m.role==='user'?'message-user':'message-assistant');
     const d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'ai');d.textContent=m.content||'';wrap.append(d);
@@ -585,7 +585,7 @@ function renderChat(){
   box.scrollTop=box.scrollHeight;
 }
 async function copyMessage(text){try{await navigator.clipboard.writeText(text);toast('Copied to clipboard.')}catch(e){const area=document.createElement('textarea');area.value=text;document.body.append(area);area.select();try{document.execCommand('copy');toast('Copied to clipboard.')}catch(err){toast('Could not copy this message.')}area.remove()}}
-async function shareMessage(text){try{if(navigator.share)await navigator.share({title:'NEXORA AI',text});else{await navigator.clipboard.writeText(text);toast('Share is unavailable here; text copied so you can paste it.')}}catch(e){if(e.name!=='AbortError')toast('Could not share this message.')}}
+async function shareMessage(text){try{if(navigator.share)await navigator.share({title:'MA AI',text});else{await navigator.clipboard.writeText(text);toast('Share is unavailable here; text copied so you can paste it.')}}catch(e){if(e.name!=='AbortError')toast('Could not share this message.')}}
 function setMessageFeedback(index,value){const c=current();if(!c?.messages[index])return;c.messages[index].feedback=c.messages[index].feedback===value?'':value;save();renderChat();toast('Thanks for the feedback.')}
 function editMessage(index){const c=current(),m=c?.messages[index];if(!m||m.role!=='user')return;$('prompt').value=m.content||'';c.messages=c.messages.slice(0,index);c.updated=Date.now();save();renderChat();$('prompt').focus();toast('Edit your message, then send it again.')}
 function branchFromMessage(index){const source=current();if(!source)return;const branch={id:Date.now().toString()+Math.random().toString(16).slice(2),title:'Branch · '+(source.title||'Conversation').slice(0,25),messages:source.messages.slice(0,index+1).map(m=>({...m,attachments:(m.attachments||[]).map(a=>({...a}))})),updated:Date.now()};chats.unshift(branch);active=branch.id;save();renderChat();go('chat');toast('New chat branched from this message.')}
@@ -596,7 +596,7 @@ async function retryAssistant(index){
   const history=c.messages.slice(0,userIndex).filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role==='assistant'?'assistant':'user',content:m.content||''}));
   c.messages=c.messages.slice(0,userIndex+1);save();renderChat();isSending=true;const wait=document.createElement('div');wait.className='msg ai typing';wait.textContent='Thinking';$('messages').append(wait);$('messages').scrollTop=$('messages').scrollHeight;$('send').disabled=true;
   try{const reply=await ask(user.content||'',[],history);wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save()}
-  catch(e){wait.classList.remove('typing');wait.textContent='Could not reach NEXORA AI: '+e.message;toast(e.message)}
+  catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MA AI: '+e.message;toast(e.message)}
   finally{$('send').disabled=false;isSending=false;renderChat()}
 }
 function animateText(el,text){el.textContent='';let i=0;const step=()=>{i=Math.min(i+4,text.length);el.textContent=text.slice(0,i);$('messages').scrollTop=$('messages').scrollHeight;if(i<text.length)requestAnimationFrame(step)};step()}
@@ -606,7 +606,7 @@ async function ask(text,images=[],history=[]){
   if(sessionError)throw sessionError;
   const accessToken=sessionData?.session?.access_token;
   if(!accessToken){setAuthUI(null);throw Error('Please sign in to continue.')}
-  const messages=[{role:'system',content:'You are NEXORA AI, a helpful multilingual assistant. Reply in the language used by the user. Treat free users with respect: never shame, pressure, guilt, or repeatedly ask anyone to pay or upgrade. Give useful, complete help within the capabilities available. Do not invent subscription plans, prices, quotas, or payment features. If asked about payment, explain only features that are actually available. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
+  const messages=[{role:'system',content:'You are MA AI, a helpful multilingual assistant. Reply in the language used by the user. Treat free users with respect: never shame, pressure, guilt, or repeatedly ask anyone to pay or upgrade. Give useful, complete help within the capabilities available. Do not invent subscription plans, prices, quotas, or payment features. If asked about payment, explain only features that are actually available. If asked who developed you, say: I was developed by Mazen Rihani (مازن الريحاني). Do not claim abilities that are not connected.'},...history.slice(-18),{role:'user',content:text}];
   const r=await fetch(BACKEND_URL+'/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+accessToken},body:JSON.stringify({messages,images})});
   let data={};try{data=await r.json()}catch(e){}
   if(r.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}
@@ -629,7 +629,7 @@ async function send(text){
     const reply=await ask(fullText,imgs.map(x=>x.data),historyBefore);
     wait.classList.remove('typing');animateText(wait,reply);c.messages.push({role:'assistant',content:reply});c.updated=Date.now();save();
     if($('speakReplies').checked&&$('voice').classList.contains('active'))speak(reply);
-  }catch(e){wait.classList.remove('typing');wait.textContent='Could not reach NEXORA AI: '+e.message;toast(e.message)}
+  }catch(e){wait.classList.remove('typing');wait.textContent='Could not reach MA AI: '+e.message;toast(e.message)}
   finally{$('send').disabled=false;isSending=false}
 }
 function readData(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error||Error('Could not read file'));r.readAsDataURL(file)})}
@@ -685,7 +685,7 @@ function renderHistory(){
 }
 function exportHistory(){
   if(!chats.length){toast('There is no conversation history to export');return}
-  const backup={app:'NEXORA AI',formatVersion:1,exportedAt:new Date().toISOString(),storage:'This export contains local conversation history only.',conversations:chats};
+  const backup={app:'MA AI',formatVersion:1,exportedAt:new Date().toISOString(),storage:'This export contains local conversation history only.',conversations:chats};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='mazen-ai-conversations-'+new Date().toISOString().slice(0,10)+'.json';
@@ -727,7 +727,7 @@ function setAuthUI(session){
     const displayName=getDisplayNameFromEmail(user.email);$('profileName').textContent=displayName;$('welcomeName').textContent=displayName;
     $('profileEmail').textContent=user.email||'Signed in';
     $('accountEmail').textContent=user.email||'Signed-in account';
-    $('accountConfigStatus').textContent='Your account is active. Your NEXORA AI session is secured by Supabase.';
+    $('accountConfigStatus').textContent='Your account is active. Your MA AI session is secured by Supabase.';
     loadUserPlan(user);
     checkAdminAccess();
   }else{
@@ -809,7 +809,7 @@ async function verifySignupEmail(){
     if(!data?.session)throw Error('Email verification did not create a session. Please sign in.');
     $('emailVerifyPanel').classList.add('hidden');
     setAuthUI(data.session);
-    $('authStatus').textContent='Email verified. Your NEXORA AI account is ready.';
+    $('authStatus').textContent='Email verified. Your MA AI account is ready.';
     pendingVerificationEmail='';
   }catch(e){$('authStatus').textContent=e.message||'The code could not be verified. Check it and try again.'}
   finally{$('verifyEmailCode').disabled=false;$('resendEmailCode').disabled=false}
@@ -825,7 +825,7 @@ async function resendSignupCode(){
   }catch(e){$('authStatus').textContent=e.message||'Could not resend the code.'}
   finally{$('resendEmailCode').disabled=false}
 }
-function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||null;u.onstart=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('listening');w.classList.add('speaking');$('voiceModeLabel').textContent='NEXORA AI is speaking…'}};u.onend=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('speaking');$('voiceModeLabel').textContent='Reply finished. You can speak again.'}};u.onerror=()=>{const w=$('voiceOrbWrap');if(w)w.classList.remove('speaking')};speechSynthesis.speak(u)}
+function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t),lang=$('voiceLanguage').value;u.lang=lang;u.rate=.94;const voices=speechSynthesis.getVoices(),prefix=lang.startsWith('ar')?'ar':lang.split('-')[0];u.voice=voices.find(v=>v.lang.toLowerCase().startsWith(prefix))||null;u.onstart=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('listening');w.classList.add('speaking');$('voiceModeLabel').textContent='MA AI is speaking…'}};u.onend=()=>{const w=$('voiceOrbWrap');if(w){w.classList.remove('speaking');$('voiceModeLabel').textContent='Reply finished. You can speak again.'}};u.onerror=()=>{const w=$('voiceOrbWrap');if(w)w.classList.remove('speaking')};speechSynthesis.speak(u)}
 
 
 /* Appearance preferences: local, automatic, and persistent across app views. */
@@ -855,7 +855,7 @@ function saveAppearance(message='Appearance saved automatically.'){
   const status=$('appearanceStatus');if(status)status.textContent=message;
 }
 function setAppearance(key,value){appearance[key]=value;saveAppearance()}
-function applyColorPreset(name){const preset=COLOR_PRESETS[name];if(!preset)return;appearance={...appearance,...preset};saveAppearance(name==='original'?'Original NEXORA theme restored.':name[0].toUpperCase()+name.slice(1)+' theme applied.')}
+function applyColorPreset(name){const preset=COLOR_PRESETS[name];if(!preset)return;appearance={...appearance,...preset};saveAppearance(name==='original'?'Original MA AI theme restored.':name[0].toUpperCase()+name.slice(1)+' theme applied.')}
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>applyColorPreset(b.dataset.preset)));
 document.querySelectorAll('[data-theme-choice]').forEach(b=>b.addEventListener('click',()=>setAppearance('theme',b.dataset.themeChoice)));
 $('appearanceBg').addEventListener('input',e=>{if(validHex(e.target.value)){appearance.bg=e.target.value;saveAppearance()}});
@@ -864,7 +864,7 @@ document.querySelectorAll('[data-bg]').forEach(b=>b.addEventListener('click',()=
 $('appearanceAccent').addEventListener('input',e=>setAppearance('accent',e.target.value));
 document.querySelectorAll('[data-accent]').forEach(b=>b.addEventListener('click',()=>setAppearance('accent',b.dataset.accent)));
 $('resetBg').addEventListener('click',()=>setAppearance('bg',DEFAULT_APPEARANCE.bg));
-$('resetAppearance').addEventListener('click',()=>{appearance={...DEFAULT_APPEARANCE};saveAppearance('Appearance restored to the original NEXORA AI look.')});
+$('resetAppearance').addEventListener('click',()=>{appearance={...DEFAULT_APPEARANCE};saveAppearance('Appearance restored to the original MA AI look.')});
 applyAppearance();
 if(appearance.theme==='system')matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',applyAppearance);
 
@@ -905,7 +905,7 @@ async function submitMessageReport(){
     })});
     let payload={};try{payload=await response.json()}catch(e){}
     if(!response.ok)throw Error(payload.error||'Could not submit report.');
-    closeReportDialog();toast('Report submitted. Thank you for helping keep NEXORA AI safe.');
+    closeReportDialog();toast('Report submitted. Thank you for helping keep MA AI safe.');
   }catch(e){toast(e.message||'Could not submit report.')}
   finally{submit.disabled=false;submit.textContent='Submit report'}
 }
@@ -1061,7 +1061,7 @@ $('cameraInput').addEventListener('change',e=>{addImages([...e.target.files]);e.
 $('docInput').addEventListener('change',async e=>{for(const f of e.target.files){try{const t=await extractDoc(f);if(!t.trim())throw Error('No selectable text found in '+f.name);const {data,error}=await sb.auth.getSession();if(error)throw error;const token=data?.session?.access_token;if(!token)throw Error('Please sign in again.');const response=await fetch(BACKEND_URL+'/document-quota',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({})});let payload={};try{payload=await response.json()}catch(err){}if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your sign-in session expired. Please sign in again.')}if(!response.ok||payload.allowed!==true)throw Error(payload.error||'Daily document upload limit reached.');const ext=f.name.split('.').pop().toLowerCase();pendingDocs.push({name:f.name,ext,text:t.slice(0,65000)});toast(f.name+' added'+(payload.is_pro?'':' · '+payload.remaining+' uploads left today'))}catch(err){toast(err.message||'Could not add document.')}}renderPending();e.target.value=''});
 
 
-/* NEXORA AI Image Studio — Puter + Cloudflare FLUX */
+/* MA AI Image Studio — Puter + Cloudflare FLUX */
 let generatedImageUrl='';
 async function generateNexoraImage(){
   const prompt=$('imagePrompt').value.trim();
@@ -1088,19 +1088,19 @@ async function generateNexoraImage(){
       if(!imageSrc)throw Error('Puter did not return an image. Please try again.');
       image.src=imageSrc;
       download.href=imageSrc;
-      download.download='nexora-ai-puter-image.png';
+      download.download='ma-ai-puter-image.png';
       status.textContent='Your image is ready · Model: Puter AI (GPT Image). Puter usage is billed or limited through your Puter account.';
     }else{
       if(!sb){throw Error('Account service is not ready. Refresh and try again.')}
       const {data,error}=await sb.auth.getSession();if(error)throw error;
-      const token=data?.session?.access_token;if(!token)throw Error('Please sign in to NEXORA again.');
+      const token=data?.session?.access_token;if(!token)throw Error('Please sign in to MA AI again.');
       status.textContent='Creating your image with FLUX.1 Schnell…';
       const response=await fetch(BACKEND_URL+'/generate-image',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
         body:JSON.stringify({prompt,width,height,model:'flux'})
       });
-      if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your NEXORA sign-in session expired. Please sign in again.')}
+      if(response.status===401){await sb.auth.signOut();setAuthUI(null);throw Error('Your MA AI sign-in session expired. Please sign in again.')}
       if(!response.ok){
         let payload={};try{payload=await response.json()}catch(e){}
         throw Error(payload.error||'FLUX image generation failed ('+response.status+').');
@@ -1111,8 +1111,8 @@ async function generateNexoraImage(){
       if(!blob.type.startsWith('image/'))throw Error('FLUX returned an unsupported response. Please try again.');
       generatedImageUrl=URL.createObjectURL(blob);
       image.src=generatedImageUrl;download.href=generatedImageUrl;
-      download.download='nexora-ai-flux-image.jpg';
-      status.textContent='Your image is ready · Model: '+actualModel+(remaining!==null?' · NEXORA generations left today: '+remaining:'');
+      download.download='ma-ai-flux-image.jpg';
+      status.textContent='Your image is ready · Model: '+actualModel+(remaining!==null?' · MA AI generations left today: '+remaining:'');
     }
     download.classList.remove('hidden');
     resultCard.classList.remove('hidden');
@@ -1136,11 +1136,11 @@ if(isWindowsStoreShell){
   installButton.setAttribute('aria-hidden','true');
   installButton.tabIndex=-1;
 }else{
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install NEXORA AI';installButton.classList.remove('hidden')});
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPromptEvent=e;installButton.textContent='⬇ Install MA AI';installButton.classList.remove('hidden')});
   installButton.addEventListener('click',async()=>{
     if(installPromptEvent){
       installPromptEvent.prompt();const choice=await installPromptEvent.userChoice;
-      if(choice?.outcome==='accepted')toast('NEXORA AI installation started');
+      if(choice?.outcome==='accepted')toast('MA AI installation started');
       installPromptEvent=null;
     }else{
       toast(/iphone|ipad|ipod/i.test(navigator.userAgent)?'On iPhone/iPad: tap Share, then Add to Home Screen.':'Open your browser menu and choose Install app or Add to Home Screen.');
@@ -1175,16 +1175,16 @@ $('startVoice').addEventListener('click',()=>{
     recognition.onstart=()=>{setVoiceMode('listening','Listening… speak naturally.');$('voiceStatus').textContent='Listening…'};
     recognition.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript+' ';$('voiceText').value=t.trim()};
     recognition.onerror=e=>{$('voiceStatus').textContent='Voice error: '+e.error;setVoiceMode('', 'Voice recognition stopped. You can type below.')};
-    recognition.onend=()=>{setVoiceMode('', 'Ready to send your message.');$('voiceStatus').textContent='Listening stopped. Review your message, then send it to NEXORA AI.'};
+    recognition.onend=()=>{setVoiceMode('', 'Ready to send your message.');$('voiceStatus').textContent='Listening stopped. Review your message, then send it to MA AI.'};
     recognition.start();
   }catch(e){$('voiceStatus').textContent='Could not start microphone: '+e.message;setVoiceMode('', 'Check microphone permission and try again.')}
 });
 $('stopVoice').addEventListener('click',()=>{recognition?.stop();setVoiceMode('', 'Listening stopped.')});
 $('sendVoice').addEventListener('click',async()=>{
   const t=$('voiceText').value.trim();if(!t){toast('Speak or type a message first');return}
-  recognition?.stop();const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;setVoiceMode('', 'NEXORA AI is preparing a reply…');
+  recognition?.stop();const box=$('voiceReply');box.classList.remove('hidden');box.textContent='Thinking…';$('sendVoice').disabled=true;setVoiceMode('', 'MA AI is preparing a reply…');
   try{const r=await ask('Reply naturally in the same language as the user. Supported voice languages are Arabic, English and French.\n\n'+t,[],[]);box.textContent=r;if($('speakReplies').checked)speak(r);else setVoiceMode('', 'Reply ready. You can speak again.')}
-  catch(e){box.textContent='Could not reach NEXORA AI: '+e.message;setVoiceMode('', 'Could not complete the reply. Try again.')}
+  catch(e){box.textContent='Could not reach MA AI: '+e.message;setVoiceMode('', 'Could not complete the reply. Try again.')}
   finally{$('sendVoice').disabled=false}
 });
 
@@ -1211,7 +1211,7 @@ if(!current()){
 }
 renderChat();
 go('home');
-const splash=document.createElement('div');splash.id='mazenSplash';splash.innerHTML='<div><div class="splashMark">N</div><div class="splashName">NEXORA AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';document.body.append(splash);
+const splash=document.createElement('div');splash.id='mazenSplash';splash.innerHTML='<div><div class="splashMark">MA</div><div class="splashName">MA AI</div><div class="splashSub">INTELLIGENCE STUDIO</div></div>';document.body.append(splash);
 setTimeout(()=>splash.classList.add('hide'),1800);setTimeout(()=>splash.remove(),2550);
 
 /* Keep the legacy inline handlers available if any are added later. */
