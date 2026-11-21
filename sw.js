@@ -1,10 +1,10 @@
-const CACHE='nexora-ai-shell-v10';
-const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg?v=6','./nexora-app-icon-512.png'];
+const CACHE='ma-ai-shell-v11';
+const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg?v=7'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',event=>{
-  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>(k.startsWith('mazen-ai-shell-')||k.startsWith('nexora-ai-shell-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>(k.startsWith('mazen-ai-shell-')||k.startsWith('nexora-ai-shell-')||k.startsWith('ma-ai-shell-'))&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
 self.addEventListener('fetch',event=>{
   const req=event.request,url=new URL(req.url);
